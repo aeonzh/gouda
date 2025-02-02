@@ -7,25 +7,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#25292e"
+    backgroundColor: "#25292e",
   },
   text: {
-    color: "#fff"
+    color: "#fff",
   },
   button: {
     fontSize: 20,
     textDecorationLine: "underline",
-    color: "#fff"
-  }
-})
+    color: "#fff",
+  },
+});
 
 export default function Index() {
   return (
     <>
-    <Stack.Screen options={{ title: "Opps! Not Found"}} />
-    <View style={styles.container}>
-      <Link href="/" style={styles.button}>Go back to Home screen</Link>
-    </View>
+      <Stack.Screen options={{ title: "Opps! Not Found" }} />
+      <View style={styles.container}>
+        <Link href="/" style={styles.button}>
+          Go back to Home screen
+        </Link>
+      </View>
     </>
   );
 }

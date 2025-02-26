@@ -1,48 +1,54 @@
-import { Tabs } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Tabs } from 'expo-router';
+import { Store, ShoppingBag, User } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        tabBarActiveTintColor: '#3498db', // Active tab icon and label color
+        tabBarInactiveTintColor: '#999', // Inactive tab icon and label color
         tabBarStyle: {
-          backgroundColor: "#25292e",
+          elevation: 0, // Remove shadow on Android
+          shadowOpacity: 0, // Remove shadow on iOS
+          borderTopWidth: 1, // Add a top border
+          borderTopColor: '#f0f0f0', // Border color
+          height: 60, // Tab bar height
+          paddingBottom: 8, // Padding at the bottom
         },
-        tabBarActiveTintColor: "#ffd33d",
-
-        headerStyle: {
-          backgroundColor: "#25292e",
+        tabBarLabelStyle: {
+          fontSize: 12, // Label font size
+          fontWeight: '500', // Label font weight
         },
-        headerTintColor: "#fff",
-        headerShadowVisible: false,
+        headerShown: false, // Hide the header
       }}
     >
+      {/* Shops Tab */}
       <Tabs.Screen
-        name="index"
+        name="shops"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={focused ? "home-sharp" : "home-outline"}
-              color={color}
-              size={24}
-            />
+          title: 'Shops',
+          tabBarIcon: ({ color, size }) => <Store size={size} color={color} />,
+          href: null, // Hide this tab as we're using a custom shops screen
+        }}
+      />
+
+      {/* Orders Tab */}
+      <Tabs.Screen
+        name="orders"
+        options={{
+          title: 'Orders',
+          tabBarIcon: ({ color, size }) => (
+            <ShoppingBag size={size} color={color} />
           ),
         }}
       />
+
+      {/* Profile Tab */}
       <Tabs.Screen
-        name="about"
+        name="profile"
         options={{
-          title: "About",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons
-              name={
-                focused ? "information-circle" : "information-circle-outline"
-              }
-              color={color}
-              size={24}
-            />
-          ),
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </Tabs>

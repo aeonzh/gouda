@@ -35,4 +35,5 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-.tamagui
+# NativeWind
+nativewind-env.d.ts

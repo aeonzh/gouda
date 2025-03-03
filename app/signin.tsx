@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import '../global.css';
 
@@ -24,14 +24,14 @@ export default function LoginScreen() {
       </View>
 
       <View className="mt-5">
-        <TouchableOpacity
+        <Pressable
           className="bg-blue-500 py-4 rounded-lg items-center mb-5"
           onPress={handleLogin}
         >
           <Text className="text-white text-lg font-bold">
             Continue as Guest
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </ScrollView>
   );

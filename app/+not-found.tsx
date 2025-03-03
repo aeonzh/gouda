@@ -10,7 +10,7 @@ export default function NotFoundScreen() {
           404 This screen doesn't exist.
         </Text>
         <Link href="/" className="mt-4 py-4 text-blue-500 font-bold">
-          <Text>Go to home screen!</Text>
+          Go to home screen!
         </Link>
       </View>
     </>

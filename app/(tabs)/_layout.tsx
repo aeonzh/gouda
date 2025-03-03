@@ -16,7 +16,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="shops/index"
+        name="shops"
         options={{
           title: 'Shops',
           tabBarIcon: ({ color, size }) => <Store size={size} color={color} />,
@@ -24,7 +24,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="orders/index"
+        name="orders"
         options={{
           title: 'Orders',
           tabBarIcon: ({ color, size }) => (
@@ -34,7 +34,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profile/index"
+        name="profile"
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => <User size={size} color={color} />,

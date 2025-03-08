@@ -172,7 +172,12 @@ export default function ShopsScreen() {
       {/* Stores List */}
       <FlatList
         data={filteredStores}
-        renderItem={renderStoreItem}
+        renderItem={({ item }) => (
+          <Store
+            item={item}
+            onPress={() => router.push(`/stores/${item.id}`)}
+          />
+        )}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}

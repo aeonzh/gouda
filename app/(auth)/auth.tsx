@@ -1,13 +1,13 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import '../global.css';
+import '../../global.css';
 
 export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = () => {
     // In a real app, you would validate and authenticate here
-    router.replace('/shops');
+    router.replace('/');
   };
 
   return (

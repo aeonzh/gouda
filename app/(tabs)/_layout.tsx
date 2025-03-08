@@ -6,17 +6,16 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarStyle: {
-          height: 60, // Tab bar height
+          height: 60,
         },
         tabBarLabelStyle: {
-          fontSize: 12, // Label font size
-          fontWeight: '500', // Label font weight
+          fontSize: 12,
+          fontWeight: '500',
         },
-        // headerShown: false, // Hide the header
       }}
     >
       <Tabs.Screen
-        name="shops"
+        name="index"
         options={{
           title: 'Shops',
           tabBarIcon: ({ color, size }) => <Store size={size} color={color} />,

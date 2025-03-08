@@ -23,14 +23,14 @@ export default function ShopsScreen() {
 
   return (
     <View className="flex-1 bg-gray-50 pt-14">
-      {/* Header */}
-      <View className="px-5 mb-5">
-        <Text className="text-2xl font-bold text-gray-800">Discover Shops</Text>
-        <Text className="text-base text-gray-600 mt-1">
-          Find the best stores near you
-        </Text>
-      </View>
-
+      <Stack.Screen
+        options={{
+          headerTitle: 'Stores',
+          headerTitleStyle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+          headerStyle: { backgroundColor: '#f8f8f8' },
+          headerShadowVisible: false, // This removes the border/shadow under the header
+        }}
+      />
       {/* Search Bar */}
       <View className="flex-row items-center bg-white mx-5 p-3 rounded-lg shadow-sm mb-5">
         <Search size={20} color="#999" />

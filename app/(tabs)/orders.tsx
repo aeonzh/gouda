@@ -2,52 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { ChevronRight, Clock, ShoppingBag } from 'lucide-react-native';
-
-// Mock data for orders
-const ORDERS = [
-  {
-    id: '1',
-    storeName: 'Fashion Boutique',
-    storeImage:
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xvdGhpbmclMjBzdG9yZXxlbnwwfHwwfHx8MA%3D%3D',
-    date: '2025-05-15',
-    status: 'Delivered',
-    items: [
-      { id: '101', name: 'Designer T-Shirt', price: 49.99, quantity: 1 },
-      { id: '102', name: 'Premium Jeans', price: 89.99, quantity: 1 },
-    ],
-    total: 139.98,
-    orderNumber: 'ORD-12345',
-  },
-  {
-    id: '2',
-    storeName: 'Tech Haven',
-    storeImage:
-      'https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWxlY3Ryb25pY3MlMjBzdG9yZXxlbnwwfHwwfHx8MA%3D%3D',
-    date: '2025-05-10',
-    status: 'In Transit',
-    items: [
-      { id: '201', name: 'Wireless Earbuds', price: 129.99, quantity: 1 },
-    ],
-    total: 129.99,
-    orderNumber: 'ORD-67890',
-  },
-  {
-    id: '3',
-    storeName: 'Gourmet Delights',
-    storeImage:
-      'https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z3JvY2VyeSUyMHN0b3JlfGVufDB8fDB8fHww',
-    date: '2025-05-05',
-    status: 'Processing',
-    items: [
-      { id: '301', name: 'Organic Olive Oil', price: 19.99, quantity: 1 },
-      { id: '302', name: 'Artisan Cheese', price: 12.99, quantity: 2 },
-      { id: '303', name: 'Fresh Pasta', price: 8.99, quantity: 1 },
-    ],
-    total: 54.96,
-    orderNumber: 'ORD-24680',
-  },
-];
+import ORDERS from '../../mock/orders.json';
 
 // Filter options for orders
 const FILTERS = [
@@ -56,6 +11,7 @@ const FILTERS = [
   { id: 'in-transit', name: 'In Transit' },
   { id: 'delivered', name: 'Delivered' },
 ];
+
 export default function OrdersScreen() {
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('all');

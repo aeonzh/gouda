@@ -77,64 +77,10 @@ const CATEGORIES = [
 export default function ShopsScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const filteredStores = STORES.filter((store) => {
-    const matchesSearch = store.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'All' || store.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return store.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
-
-  const renderStoreItem = ({ item }) => (
-    <TouchableOpacity
-      className="flex-row bg-white rounded-xl mb-4 shadow-sm overflow-hidden"
-      onPress={() => router.push(`/shops/${item.id}`)}
-    >
-      <Image source={{ uri: item.image }} className="w-24 h-24" />
-      <View className="flex-1 p-3 justify-between">
-        <Text className="text-base font-bold text-gray-800 mb-1">
-          {item.name}
-        </Text>
-        <View className="flex-row items-center mb-2">
-          <View className="flex-row items-center mr-3">
-            <Star size={16} color="#FFD700" fill="#FFD700" />
-            <Text className="text-sm text-gray-600 ml-1">{item.rating}</Text>
-          </View>
-          <View className="flex-row items-center">
-            <MapPin size={16} color="#666" />
-            <Text className="text-sm text-gray-600 ml-1">{item.location}</Text>
-          </View>
-        </View>
-        <View className="flex-row justify-between items-center">
-          <Text className="text-xs text-blue-500 bg-blue-50 px-2 py-1 rounded-full">
-            {item.category}
-          </Text>
-          <Text className="text-xs text-gray-600">{item.distance}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderCategoryItem = ({ item }) => (
-    <TouchableOpacity
-      className={`items-center justify-center mx-2 py-2 px-4 rounded-full ${
-        selectedCategory === item.name ? 'bg-blue-500' : 'bg-white'
-      } shadow-sm`}
-      onPress={() => setSelectedCategory(item.name)}
-    >
-      <Text className="text-lg">{item.icon}</Text>
-      <Text
-        className={`text-sm ${
-          selectedCategory === item.name ? 'text-white' : 'text-gray-800'
-        }`}
-      >
-        {item.name}
-      </Text>
-    </TouchableOpacity>
-  );
 
   return (
     <View className="flex-1 bg-gray-50 pt-14">
@@ -154,18 +100,6 @@ export default function ShopsScreen() {
           placeholder="Search stores..."
           value={searchQuery}
           onChangeText={setSearchQuery}
-        />
-      </View>
-
-      {/* Categories */}
-      <View className="mb-5">
-        <FlatList
-          data={CATEGORIES}
-          renderItem={renderCategoryItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20 }}
         />
       </View>
 

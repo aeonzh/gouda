@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { ChevronRight, Clock, ShoppingBag } from 'lucide-react-native';
+import { Stack } from 'expo-router';
 import ORDERS from '../../mock/orders.json';
 
 // Filter options for orders
@@ -122,10 +123,14 @@ export default function OrdersScreen() {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="bg-white px-5 pt-14 pb-4">
-        <Text className="text-2xl font-bold text-gray-800">My Orders</Text>
-      </View>
+      <Stack.Screen
+        options={{
+          headerTitle: 'My Orders',
+          headerTitleStyle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+          headerStyle: { backgroundColor: '#f8f8f8' },
+          headerShadowVisible: false,
+        }}
+      />
 
       {/* Filters */}
       <View className="bg-white pb-3 border-b border-gray-200">

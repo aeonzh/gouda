@@ -1,6 +1,5 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import '../../global.css';
 
 export default function LoginScreen() {
   const router = useRouter();

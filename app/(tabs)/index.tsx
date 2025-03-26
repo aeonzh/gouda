@@ -1,17 +1,10 @@
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import { View, FlatList, TextInput } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Search } from 'lucide-react-native';
+import Store from '@/components/Store';
 
-import Store from '../../components/Store';
-import STORES from '../../mock/stores.json';
+import STORES from '@/mock/stores.json';
 
 export default function ShopsScreen() {
   const router = useRouter();
@@ -26,7 +19,11 @@ export default function ShopsScreen() {
       <Stack.Screen
         options={{
           headerTitle: 'Stores',
-          headerTitleStyle: { fontSize: 24, fontWeight: 'bold', color: '#333' },
+          headerTitleStyle: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: '#1f2937',
+          },
           headerStyle: { backgroundColor: '#f8f8f8' },
           headerShadowVisible: false,
         }}
@@ -45,13 +42,8 @@ export default function ShopsScreen() {
       {/* Stores List */}
       <FlatList
         data={filteredStores}
-        renderItem={({ item }) => (
-          <Store
-            item={item}
-            onPress={() => router.push(`/stores/${item.id}`)}
-          />
-        )}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <Store store={item} />}
+        keyExtractor={(store) => store.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
       />

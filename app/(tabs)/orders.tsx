@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { ChevronRight, Clock, ShoppingBag } from 'lucide-react-native';
 import { Stack } from 'expo-router';
-import ORDERS from '../../mock/orders.json';
+
+import ORDERS from '@/mock/orders.json';
 
 // Filter options for orders
 const FILTERS = [
@@ -83,8 +84,8 @@ export default function OrdersScreen() {
               item.status === 'Delivered'
                 ? 'bg-green-50'
                 : item.status === 'In Transit'
-                ? 'bg-blue-50'
-                : 'bg-yellow-50'
+                  ? 'bg-blue-50'
+                  : 'bg-yellow-50'
             }`}
           >
             <Text
@@ -92,8 +93,8 @@ export default function OrdersScreen() {
                 item.status === 'Delivered'
                   ? 'text-green-600'
                   : item.status === 'In Transit'
-                  ? 'text-blue-600'
-                  : 'text-yellow-600'
+                    ? 'text-blue-600'
+                    : 'text-yellow-600'
               }`}
             >
               {item.status}

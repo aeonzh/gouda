@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { ReceiptText, Store, User } from 'lucide-react-native';
+import '@/global.css';
 
 export default function TabLayout() {
   return (

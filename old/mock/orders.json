@@ -1,41 +1,169 @@
 [
   {
-    "id": "1",
+    "id": "1001",
+    "orderNumber": "ORD-1001",
     "storeName": "Fashion Boutique",
-    "storeImage": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xvdGhpbmclMjBzdG9yZXxlbnwwfHwwfHx8MA%3D%3D",
-    "date": "2025-05-15",
+    "storeImage": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c3RvcmV8ZW58MHx8MHx8fDA%3D",
+    "date": "2025-04-10",
     "status": "Delivered",
     "items": [
-      { "id": "101", "name": "Designer T-Shirt", "price": 49.99, "quantity": 1 },
-      { "id": "102", "name": "Premium Jeans", "price": 89.99, "quantity": 1 }
+      {
+        "id": "101",
+        "name": "Designer T-Shirt",
+        "price": 49.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dHNoaXJ0fGVufDB8fDB8fHww"
+      },
+      {
+        "id": "103",
+        "name": "Leather Jacket",
+        "price": 199.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGVhdGhlciUyMGphY2tldHxlbnwwfHwwfHx8MA%3D%3D"
+      }
     ],
-    "total": 139.98,
-    "orderNumber": "ORD-12345"
+    "subtotal": 249.98,
+    "tax": 20.00,
+    "deliveryFee": 5.99,
+    "total": 275.97,
+    "deliveryAddress": "123 Main St, Apt 4B, New York, NY 10001",
+    "paymentMethod": "Visa ending in 4242",
+    "estimatedDelivery": "2025-04-13",
+    "trackingNumber": "TRK-987654321"
   },
   {
-    "id": "2",
+    "id": "1002",
+    "orderNumber": "ORD-1002",
     "storeName": "Tech Haven",
-    "storeImage": "https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWxlY3Ryb25pY3MlMjBzdG9yZXxlbnwwfHwwfHx8MA%3D%3D",
-    "date": "2025-05-10",
+    "storeImage": "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8ZWxlY3Ryb25pY3MlMjBzdG9yZXxlbnwwfHwwfHx8MA%3D%3D",
+    "date": "2025-04-11",
     "status": "In Transit",
     "items": [
-      { "id": "201", "name": "Wireless Earbuds", "price": 129.99, "quantity": 1 }
+      {
+        "id": "202",
+        "name": "Smart Watch",
+        "price": 249.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c21hcnQlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D"
+      },
+      {
+        "id": "203",
+        "name": "Bluetooth Speaker",
+        "price": 79.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1589003077984-894e133dabab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Ymx1ZXRvb3RoJTIwc3BlYWtlcnxlbnwwfHwwfHx8MA%3D%3D"
+      }
     ],
-    "total": 129.99,
-    "orderNumber": "ORD-67890"
+    "subtotal": 329.98,
+    "tax": 26.40,
+    "deliveryFee": 0.00,
+    "total": 356.38,
+    "deliveryAddress": "456 Park Ave, Suite 202, Boston, MA 02108",
+    "paymentMethod": "Mastercard ending in 1234",
+    "estimatedDelivery": "2025-04-14",
+    "trackingNumber": "TRK-123456789"
   },
   {
-    "id": "3",
+    "id": "1003",
+    "orderNumber": "ORD-1003",
     "storeName": "Gourmet Delights",
-    "storeImage": "https://images.unsplash.com/photo-1534723452862-4c874018d66d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z3JvY2VyeSUyMHN0b3JlfGVufDB8fDB8fHww",
-    "date": "2025-05-05",
+    "storeImage": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z3JvY2VyeSUyMHN0b3JlfGVufDB8fDB8fHww",
+    "date": "2025-04-12",
     "status": "Processing",
     "items": [
-      { "id": "301", "name": "Organic Olive Oil", "price": 19.99, "quantity": 1 },
-      { "id": "302", "name": "Artisan Cheese", "price": 12.99, "quantity": 2 },
-      { "id": "303", "name": "Fresh Pasta", "price": 8.99, "quantity": 1 }
+      {
+        "id": "301",
+        "name": "Organic Olive Oil",
+        "price": 19.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8b2xpdmUlMjBvaWx8ZW58MHx8MHx8fDA%3D"
+      },
+      {
+        "id": "302",
+        "name": "Artisan Cheese",
+        "price": 12.99,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1452195100486-9cc805987862?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hlZXNlfGVufDB8fDB8fHww"
+      },
+      {
+        "id": "303",
+        "name": "Fresh Pasta",
+        "price": 8.99,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1611068120813-eca5a8cbf793?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZnJlc2glMjBwYXN0YXxlbnwwfHwwfHx8MA%3D%3D"
+      }
     ],
-    "total": 54.96,
-    "orderNumber": "ORD-24680"
+    "subtotal": 63.95,
+    "tax": 5.12,
+    "deliveryFee": 3.99,
+    "total": 73.06,
+    "deliveryAddress": "789 Culinary Blvd, Chicago, IL 60607",
+    "paymentMethod": "American Express ending in 9876",
+    "estimatedDelivery": "2025-04-15",
+    "trackingNumber": "TRK-456789123"
+  },
+  {
+    "id": "1004",
+    "orderNumber": "ORD-1004",
+    "storeName": "Home Essentials",
+    "storeImage": "https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aG9tZSUyMGRlY29yfGVufDB8fDB8fHww",
+    "date": "2025-04-12",
+    "status": "Processing",
+    "items": [
+      {
+        "id": "401",
+        "name": "Throw Pillows",
+        "price": 24.99,
+        "quantity": 2,
+        "image": "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGhyb3clMjBwaWxsb3dzfGVufDB8fDB8fHww"
+      },
+      {
+        "id": "402",
+        "name": "Table Lamp",
+        "price": 59.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGFibGUlMjBsYW1wfGVufDB8fDB8fHww"
+      }
+    ],
+    "subtotal": 109.97,
+    "tax": 8.80,
+    "deliveryFee": 7.99,
+    "total": 126.76,
+    "deliveryAddress": "321 Decor St, Austin, TX 78701",
+    "paymentMethod": "Discover ending in 5678",
+    "estimatedDelivery": "2025-04-16",
+    "trackingNumber": "TRK-345678912"
+  },
+  {
+    "id": "1005",
+    "orderNumber": "ORD-1005",
+    "storeName": "Active Living",
+    "storeImage": "https://images.unsplash.com/photo-1526178613552-2b45c6c302f0?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c3BvcnRzJTIwc3RvcmV8ZW58MHx8MHx8fDA%3D",
+    "date": "2025-04-09",
+    "status": "Delivered",
+    "items": [
+      {
+        "id": "501",
+        "name": "Running Shoes",
+        "price": 119.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cnVubmluZyUyMHNob2VzfGVufDB8fDB8fHww"
+      },
+      {
+        "id": "502",
+        "name": "Yoga Mat",
+        "price": 29.99,
+        "quantity": 1,
+        "image": "https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8eW9nYSUyMG1hdHxlbnwwfHwwfHx8MA%3D%3D"
+      }
+    ],
+    "subtotal": 149.98,
+    "tax": 12.00,
+    "deliveryFee": 4.99,
+    "total": 166.97,
+    "deliveryAddress": "567 Fitness Way, San Francisco, CA 94107",
+    "paymentMethod": "PayPal",
+    "estimatedDelivery": "2025-04-12",
+    "trackingNumber": "TRK-234567891"
   }
 ]

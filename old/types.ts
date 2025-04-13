@@ -7,7 +7,7 @@ export type StoreType = {
   category: string;
 };
 
-export type StoreItemType = {
+export type StoreProductType = {
   id: string;
   name: string;
   price: number;

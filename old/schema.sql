@@ -47,22 +47,22 @@ CREATE TABLE BuyerProfiles (
     UNIQUE(user_id) -- One buyer profile per user
 );
 
--- ItemCategories table with nested structure
-CREATE TABLE ItemCategories (
+-- ProductCategories table with nested structure
+CREATE TABLE ProductCategories (
     id SERIAL PRIMARY KEY,
     store_id INT REFERENCES Stores(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
-    parent_id INT REFERENCES ItemCategories(id) ON DELETE CASCADE NULL,
+    parent_id INT REFERENCES ProductCategories(id) ON DELETE CASCADE NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- Add constraint to prevent cycles
     CONSTRAINT prevent_circular_reference CHECK (parent_id != id)
 );
 
--- StoreItems table
-CREATE TABLE StoreItems (
+-- StoreProducts table
+CREATE TABLE StoreProducts (
     id SERIAL PRIMARY KEY,
     store_id INT REFERENCES Stores(id) ON DELETE CASCADE,
-    category_id INT REFERENCES ItemCategories(id) ON DELETE SET NULL,
+    category_id INT REFERENCES ProductCategories(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     image TEXT,
@@ -86,7 +86,7 @@ CREATE TABLE Orders (
 CREATE TABLE OrderItems (
     id SERIAL PRIMARY KEY,
     order_id INT REFERENCES Orders(id) ON DELETE CASCADE,
-    item_id INT REFERENCES StoreItems(id) ON DELETE CASCADE,
+    product_id INT REFERENCES StoreProducts(id) ON DELETE CASCADE,
     quantity INT DEFAULT 1,
     price_at_purchase DECIMAL(10, 2) NOT NULL -- Store the price at time of purchase
 );

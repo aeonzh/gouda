@@ -3,11 +3,11 @@ import { View, Text, Image, FlatList } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import StoreDetails from '@/components/store/StoreDetails';
 import CartButton from '@/components/CartButton';
-import StoreCatalogItem from '@/components/store/StoreCatalogItem';
+import StoreCatalogProduct from '@/components/store/StoreProduct';
 
 import STORES from '@/mock/stores.json';
-import STORE_ITEMS from '@/mock/storeitems.json';
-import { StoreItemType } from '@/types';
+import STORE_PRODUCTS from '@/mock/storeproducts.json';
+import { StoreProductType } from '@/types';
 
 export default function StoreScreen() {
   const { storeId } = useLocalSearchParams();
@@ -24,7 +24,7 @@ export default function StoreScreen() {
     );
   }
 
-  const storeItems = STORE_ITEMS[storeId] || [];
+  const storeProducts = STORE_PRODUCTS[storeId] || [];
 
   const storeScreenHeader = (
     <View className="flex-1">
@@ -49,9 +49,9 @@ export default function StoreScreen() {
       />
       <FlatList
         ListHeaderComponent={storeScreenHeader}
-        data={storeItems}
-        renderItem={StoreCatalogItem}
-        keyExtractor={(item) => item.id}
+        data={storeProducts}
+        renderItem={StoreCatalogProduct}
+        keyExtractor={(product) => product.id}
         numColumns={2}
         contentContainerStyle={{ paddingBottom: 20 }}
       />

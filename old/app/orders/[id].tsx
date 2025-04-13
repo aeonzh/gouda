@@ -9,57 +9,32 @@ import {
   Check,
   Truck,
 } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 
-// Mock order data
-const ORDER = {
-  id: '12345',
-  date: '2025-05-15',
-  status: 'In Transit',
-  items: [
-    {
-      id: '101',
-      name: 'Designer T-Shirt',
-      price: 49.99,
-      quantity: 1,
-      image:
-        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dHNoaXJ0fGVufDB8fDB8fHww',
-      storeName: 'Fashion Boutique',
-    },
-    {
-      id: '202',
-      name: 'Smart Watch',
-      price: 249.99,
-      quantity: 1,
-      image:
-        'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c21hcnQlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D',
-      storeName: 'Tech Haven',
-    },
-    {
-      id: '302',
-      name: 'Artisan Cheese',
-      price: 12.99,
-      quantity: 2,
-      image:
-        'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hlZXNlfGVufDB8fDB8fHww',
-      storeName: 'Gourmet Delights',
-    },
-  ],
-  subtotal: 325.96,
-  tax: 26.08,
-  deliveryFee: 5.99,
-  total: 358.03,
-  deliveryAddress: '123 Main St, Apt 4B, New York, NY 10001',
-  paymentMethod: 'Visa ending in 4242',
-  estimatedDelivery: '2025-05-18',
-  trackingNumber: 'TRK-987654321',
-};
+// Import mock orders data
+import mockOrders from '../../mock/orders.json';
 
 export default function OrderDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const [order, setOrder] = useState(null);
 
-  // In a real app, you would fetch the order details based on the ID
-  const order = ORDER;
+  useEffect(() => {
+    // Find the order with the matching ID from the mock data
+    const foundOrder = mockOrders.find(order => order.id === id);
+    if (foundOrder) {
+      setOrder(foundOrder);
+    }
+  }, [id]);
+
+  // Show loading state if order is not yet loaded
+  if (!order) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-gray-600">Loading order details...</Text>
+      </View>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -106,7 +81,7 @@ export default function OrderDetailScreen() {
         <View className="flex-row justify-between items-center mb-6">
           <View>
             <Text className="text-lg font-bold text-gray-800">
-              Order #{order.id}
+              Order #{order.orderNumber}
             </Text>
             <Text className="text-sm text-gray-600">
               Placed on {new Date(order.date).toLocaleDateString()}
@@ -123,6 +98,20 @@ export default function OrderDetailScreen() {
             >
               {order.status}
             </Text>
+          </View>
+        </View>
+
+        {/* Store Information */}
+        <View className="bg-white rounded-xl p-4 mb-6 shadow-sm">
+          <View className="flex-row items-center">
+            <Image
+              source={{ uri: order.storeImage }}
+              className="w-12 h-12 rounded-full"
+            />
+            <View className="ml-3">
+              <Text className="text-base font-bold text-gray-800">{order.storeName}</Text>
+              <Text className="text-sm text-gray-600">Order from this store</Text>
+            </View>
           </View>
         </View>
 
@@ -143,7 +132,7 @@ export default function OrderDetailScreen() {
                   {item.name}
                 </Text>
                 <Text className="text-sm text-gray-600 mb-1">
-                  {item.storeName}
+                  {order.storeName}
                 </Text>
                 <View className="flex-row justify-between items-center">
                   <Text className="text-base font-bold text-blue-500">

@@ -2,6 +2,11 @@
   "name": "gouda",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "packageManager": "pnpm@8.15.4",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "scripts": {
     "start": "EXPO_NO_TELEMETRY=1 expo start",
     "android": "expo start --android",

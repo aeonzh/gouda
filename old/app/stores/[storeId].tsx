@@ -38,6 +38,10 @@ export default function StoreScreen() {
     </View>
   );
 
+  const renderStoreProduct = ({ item }: { item: StoreProductType }) => (
+    <StoreCatalogProduct item={item} storeId={storeId as string} />
+  );
+
   return (
     <>
       <Stack.Screen
@@ -50,7 +54,7 @@ export default function StoreScreen() {
       <FlatList
         ListHeaderComponent={storeScreenHeader}
         data={storeProducts}
-        renderItem={StoreCatalogProduct}
+        renderItem={renderStoreProduct}
         keyExtractor={(product) => product.id}
         numColumns={2}
         contentContainerStyle={{ paddingBottom: 20 }}

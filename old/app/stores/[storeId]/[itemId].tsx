@@ -148,17 +148,19 @@ export default function ProductDetailScreen() {
           </View>
 
           {/* Add to Cart Button */}
-          <TouchableOpacity
-            className="bg-blue-500 py-4 rounded-xl items-center mb-10"
-            onPress={addToCart}
-          >
-            <View className="flex-row items-center">
-              <ShoppingBag size={20} color="#fff" />
-              <Text className="text-base font-bold text-white ml-2">
-                Add to Cart
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <View className="flex-row justify-center mb-10">
+            <TouchableOpacity
+              className="bg-blue-500 py-4 px-8 rounded-xl items-center"
+              onPress={addToCart}
+            >
+              <View className="flex-row items-center">
+                <ShoppingBag size={20} color="#fff" />
+                <Text className="text-base font-bold text-white ml-2">
+                  Add to Cart
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 

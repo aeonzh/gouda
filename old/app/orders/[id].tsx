@@ -1,15 +1,7 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  ArrowLeft,
-  Package,
-  Clock,
-  MapPin,
-  CreditCard,
-  Check,
-  Truck,
-} from 'lucide-react-native';
+import { ArrowLeft, Package, Clock, Check, Truck } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 
 // Import mock orders data
 import mockOrders from '../../mock/orders.json';
@@ -21,7 +13,7 @@ export default function OrderDetailScreen() {
 
   useEffect(() => {
     // Find the order with the matching ID from the mock data
-    const foundOrder = mockOrders.find(order => order.id === id);
+    const foundOrder = mockOrders.find((order) => order.id === id);
     if (foundOrder) {
       setOrder(foundOrder);
     }
@@ -109,8 +101,12 @@ export default function OrderDetailScreen() {
               className="w-12 h-12 rounded-full"
             />
             <View className="ml-3">
-              <Text className="text-base font-bold text-gray-800">{order.storeName}</Text>
-              <Text className="text-sm text-gray-600">Order from this store</Text>
+              <Text className="text-base font-bold text-gray-800">
+                {order.storeName}
+              </Text>
+              <Text className="text-sm text-gray-600">
+                Order from this store
+              </Text>
             </View>
           </View>
         </View>
@@ -147,45 +143,6 @@ export default function OrderDetailScreen() {
           ))}
         </View>
 
-        {/* Delivery Information Section */}
-        <View className="bg-white rounded-xl p-4 mb-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-800 mb-4">
-            Delivery Information
-          </Text>
-          <View className="flex-row items-center mb-3">
-            <MapPin size={18} color="#666" />
-            <Text className="text-sm text-gray-600 ml-2">
-              {order.deliveryAddress}
-            </Text>
-          </View>
-          <View className="flex-row items-center mb-3">
-            <Clock size={18} color="#666" />
-            <Text className="text-sm text-gray-600 ml-2">
-              Estimated delivery:{' '}
-              {new Date(order.estimatedDelivery).toLocaleDateString()}
-            </Text>
-          </View>
-          <View className="flex-row items-center">
-            <Truck size={18} color="#666" />
-            <Text className="text-sm text-gray-600 ml-2">
-              Tracking number: {order.trackingNumber}
-            </Text>
-          </View>
-        </View>
-
-        {/* Payment Information Section */}
-        <View className="bg-white rounded-xl p-4 mb-6 shadow-sm">
-          <Text className="text-lg font-bold text-gray-800 mb-4">
-            Payment Information
-          </Text>
-          <View className="flex-row items-center">
-            <CreditCard size={18} color="#666" />
-            <Text className="text-sm text-gray-600 ml-2">
-              {order.paymentMethod}
-            </Text>
-          </View>
-        </View>
-
         {/* Order Summary Section */}
         <View className="bg-white rounded-xl p-4 mb-6 shadow-sm">
           <Text className="text-lg font-bold text-gray-800 mb-4">
@@ -201,12 +158,6 @@ export default function OrderDetailScreen() {
             <Text className="text-sm text-gray-600">Tax</Text>
             <Text className="text-sm text-gray-800">
               ${order.tax.toFixed(2)}
-            </Text>
-          </View>
-          <View className="flex-row justify-between mb-4">
-            <Text className="text-sm text-gray-600">Delivery Fee</Text>
-            <Text className="text-sm text-gray-800">
-              ${order.deliveryFee.toFixed(2)}
             </Text>
           </View>
           <View className="h-px bg-gray-100 mb-4" />

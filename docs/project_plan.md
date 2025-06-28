@@ -149,6 +149,7 @@ graph TD
     - [ ] 1.2.3: Define API endpoints for product catalog (list, details, search). (MVP)
     - [ ] 1.2.4: Define API endpoints for order management (create, view, update status). (MVP)
     - [ ] 1.2.5: Define API endpoints for user/customer management. (MVP)
+    - [ ] 1.2.6: Plan for initial use of fixed mocked JSON data for frontend development. (MVP)
 
 - [ ] **Task 1.3: Initialize Buyer Application (MVP)**
 

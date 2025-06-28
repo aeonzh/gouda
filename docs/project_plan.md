@@ -390,46 +390,46 @@ graph TD
     - [ ] 6.4.7: Create Payment Gateway Settings screen UI. (Future)
     - [ ] 6.4.8: Implement payment gateway settings API integration. (Future)
 
-### 7. Testing & Quality Assurance (MVP)
+### 7. Testing & Quality Assurance (Future)
 
-- [ ] **Task 7.1: Unit Testing (MVP)**
+- [ ] **Task 7.1: Unit Testing (Future)**
 
   - **Description**: Write unit tests for individual functions, components, and API client modules in both applications and the backend.
   - **Dependencies**: All previous development tasks (as code is written)
   - **Subtasks**:
-    - [ ] 7.1.1: Set up testing frameworks (e.g., Jest for React Native, appropriate framework for backend). (MVP)
-    - [ ] 7.1.2: Write unit tests for shared utilities. (MVP)
-    - [ ] 7.1.3: Write unit tests for authentication logic. (MVP)
-    - [ ] 7.1.4: Write unit tests for data models and API client functions. (MVP)
+    - [ ] 7.1.1: Set up testing frameworks (e.g., Jest for React Native, appropriate framework for backend). (Future)
+    - [ ] 7.1.2: Write unit tests for shared utilities. (Future)
+    - [ ] 7.1.3: Write unit tests for authentication logic. (Future)
+    - [ ] 7.1.4: Write unit tests for data models and API client functions. (Future)
 
-- [ ] **Task 7.2: Integration Testing (MVP)**
+- [ ] **Task 7.2: Integration Testing (Future)**
 
   - **Description**: Write integration tests to ensure different modules and services (frontend-backend, component interactions) work correctly together.
   - **Dependencies**: Task 7.1
   - **Subtasks**:
-    - [ ] 7.2.1: Write integration tests for user authentication flow. (MVP)
-    - [ ] 7.2.2: Write integration tests for product browsing and ordering flow. (MVP)
-    - [ ] 7.2.3: Write integration tests for admin management flows. (MVP)
+    - [ ] 7.2.1: Write integration tests for user authentication flow. (Future)
+    - [ ] 7.2.2: Write integration tests for product browsing and ordering flow. (Future)
+    - [ ] 7.2.3: Write integration tests for admin management flows. (Future)
 
-- [ ] **Task 7.3: End-to-End (E2E) Testing (MVP)**
+- [ ] **Task 7.3: End-to-End (E2E) Testing (Future)**
 
   - **Description**: Implement E2E tests to simulate real user scenarios across the entire application stack.
   - **Dependencies**: Task 7.2
   - **Subtasks**:
-    - [ ] 7.3.1: Choose an E2E testing framework (e.g., Detox for React Native). (MVP)
-    - [ ] 7.3.2: Write E2E tests for critical user journeys (e.g., buyer registration to order placement). (MVP)
-    - [ ] 7.3.3: Write E2E tests for critical admin workflows (e.g., product creation to order status update). (MVP)
+    - [ ] 7.3.1: Choose an E2E testing framework (e.g., Detox for React Native). (Future)
+    - [ ] 7.3.2: Write E2E tests for critical user journeys (e.g., buyer registration to order placement). (Future)
+    - [ ] 7.3.3: Write E2E tests for critical admin workflows (e.g., product creation to order status update). (Future)
 
-- [ ] **Task 7.4: Manual Testing & User Acceptance Testing (UAT) (MVP)**
+- [ ] **Task 7.4: Manual Testing & User Acceptance Testing (UAT) (Future)**
   - **Description**: Conduct manual testing and prepare for UAT with stakeholders to validate features against requirements.
   - **Dependencies**: All development and automated testing tasks completed.
   - **Subtasks**:
-    - [ ] 7.4.1: Develop manual test cases based on PRDs. (MVP)
-    - [ ] 7.4.2: Perform internal manual testing. (MVP)
-    - [ ] 7.4.3: Prepare UAT environment and test plan. (MVP)
-    - [ ] 7.4.4: Conduct UAT with target users/stakeholders. (MVP)
+    - [ ] 7.4.1: Develop manual test cases based on PRDs. (Future)
+    - [ ] 7.4.2: Perform internal manual testing. (Future)
+    - [ ] 7.4.3: Prepare UAT environment and test plan. (Future)
+    - [ ] 7.4.4: Conduct UAT with target users/stakeholders. (Future)
 
-### 8. Deployment & Monitoring (MVP)
+### 8. Deployment & Monitoring (Future)
 
 - [ ] **Task 8.1: Backend Deployment Strategy (MVP)**
 
@@ -450,22 +450,22 @@ graph TD
     - [ ] 8.2.3: Set up app store listings and metadata. (MVP)
     - [ ] 8.2.4: Submit apps for review/publish. (MVP)
 
-- [ ] **Task 8.3: Monitoring & Logging Setup (MVP)**
+- [ ] **Task 8.3: Monitoring & Logging Setup (Future)**
 
   - **Description**: Implement monitoring and logging solutions for both backend and mobile applications to track performance, errors, and user behavior.
   - **Dependencies**: Task 8.1, Task 8.2
   - **Subtasks**:
-    - [ ] 8.3.1: Integrate logging libraries/services (e.g., Sentry, Crashlytics). (MVP)
-    - [ ] 8.3.2: Set up performance monitoring (e.g., APM tools). (MVP)
-    - [ ] 8.3.3: Configure alerts for critical errors or performance degradation. (MVP)
+    - [ ] 8.3.1: Integrate logging libraries/services (e.g., Sentry, Crashlytics). (Future)
+    - [ ] 8.3.2: Set up performance monitoring (e.g., APM tools). (Future)
+    - [ ] 8.3.3: Configure alerts for critical errors or performance degradation. (Future)
 
-- [ ] **Task 8.4: Analytics Integration (MVP)**
+- [ ] **Task 8.4: Analytics Integration (Future)**
   - **Description**: Integrate analytics tools to gather insights on user engagement and application usage.
   - **Dependencies**: Task 8.2
   - **Subtasks**:
-    - [ ] 8.4.1: Choose an analytics platform (e.g., Google Analytics, Firebase Analytics). (MVP)
-    - [ ] 8.4.2: Integrate analytics SDKs into both mobile apps. (MVP)
-    - [ ] 8.4.3: Define key events and user properties to track. (MVP)
+    - [ ] 8.4.1: Choose an analytics platform (e.g., Google Analytics, Firebase Analytics). (Future)
+    - [ ] 8.4.2: Integrate analytics SDKs into both mobile apps. (Future)
+    - [ ] 8.4.3: Define key events and user properties to track. (Future)
 
 ### 9. Maintenance & Iteration (Future)
 

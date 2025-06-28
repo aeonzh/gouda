@@ -9,7 +9,7 @@ The Gouda project aims to develop a B2B wholesale store platform consisting of t
 1.  **Buyer Application**: A mobile interface for buyers to browse products, create orders, manage accounts, and view order history.
 2.  **Administrative Application**: A mobile interface for store managers and seller agents to manage products, inventory, orders, buyers, and administrative users, with role-based functionalities.
 
-Both applications will be built using React Native, Expo, and NativeWind for styling, supported by a robust backend API.
+Both applications will be built using React Native, Expo, and NativeWind for styling, supported by a robust backend API, with Supabase as the chosen backend-as-a-service.
 
 ## Project Plan Diagram
 
@@ -139,17 +139,20 @@ graph TD
     - [ ] 1.1.2: Create root project directory and initialize monorepo. (MVP)
     - [ ] 1.1.3: Configure basic monorepo settings (e.g., workspace definitions). (MVP)
 
-- [ ] **Task 1.2: High-Level Backend API Design (MVP)**
+- [ ] **Task 1.2: High-Level Backend API Design (MVP) - Supabase Focused**
 
   - **Description**: Define the essential API endpoints and data models required to support the core functionalities of both mobile applications. This is a conceptual design to guide frontend development.
   - **Dependencies**: None
   - **Subtasks**:
-    - [ ] 1.2.1: Identify core entities (Users, Products, Orders, Inventory, etc.) and their relationships. (MVP)
-    - [ ] 1.2.2: Define API endpoints for user authentication (login, registration). (MVP)
-    - [ ] 1.2.3: Define API endpoints for product catalog (list, details, search). (MVP)
-    - [ ] 1.2.4: Define API endpoints for order management (create, view, update status). (MVP)
-    - [ ] 1.2.5: Define API endpoints for user/customer management. (MVP)
-    - [ ] 1.2.6: Plan for initial use of fixed mocked JSON data for frontend development. (MVP)
+    - [ ] 1.2.1: Set up Supabase project and initial database schema. (MVP)
+    - [ ] 1.2.2: Identify core entities (Users, Products, Orders, Inventory, etc.) and their relationships within Supabase. (MVP)
+    - [ ] 1.2.3: Leverage Supabase's built-in authentication for user management. (MVP)
+    - [ ] 1.2.4: Define Supabase RLS (Row Level Security) policies for data access. (MVP)
+    - [ ] 1.2.5: Plan for initial use of Supabase's auto-generated APIs (PostgREST) for frontend development. (MVP)
+    - [ ] 1.2.6: Set up local Supabase development environment (via Docker). (MVP)
+    - [ ] 1.2.7: Define API endpoints for product catalog (list, details, search) using Supabase. (MVP)
+    - [ ] 1.2.8: Define API endpoints for order management (create, view, update status) using Supabase. (MVP)
+    - [ ] 1.2.9: Define API endpoints for user/customer management using Supabase. (MVP)
 
 - [ ] **Task 1.3: Initialize Buyer Application (MVP)**
 
@@ -179,15 +182,15 @@ graph TD
 
 ### 2. Authentication Implementation (MVP)
 
-- [ ] **Task 2.1: Implement Backend Authentication Endpoints (MVP)**
+- [ ] **Task 2.1: Implement Backend Authentication (Supabase) (MVP)**
 
   - **Description**: Develop the necessary backend API endpoints for user registration, login, and potentially password reset for both buyer and administrative users.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 2.1.1: Implement user registration endpoint. (MVP)
-    - [ ] 2.1.2: Implement user login endpoint. (MVP)
-    - [ ] 2.1.3: Implement password reset/forgot password endpoint (if in scope). (MVP)
-    - [ ] 2.1.4: Define token-based authentication mechanism (e.g., JWT). (MVP)
+    - [ ] 2.1.1: Configure Supabase Authentication (Email/Password). (MVP)
+    - [ ] 2.1.2: Implement user registration using Supabase client library. (MVP)
+    - [ ] 2.1.3: Implement user login using Supabase client library. (MVP)
+    - [ ] 2.1.4: Implement password reset/forgot password using Supabase client library (if in scope). (MVP)
 
 - [ ] **Task 2.2: Buyer App Authentication UI & Logic (MVP)**
 
@@ -212,16 +215,17 @@ graph TD
 
 ### 3. Product Catalog & Search Implementation (MVP)
 
-- [ ] **Task 3.1: Implement Backend Product Endpoints (MVP)**
+- [ ] **Task 3.1: Implement Backend Product Management (Supabase) (MVP)**
 
   - **Description**: Develop backend API endpoints for managing products (CRUD operations) and fetching product data, including search and filtering capabilities.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 3.1.1: Implement endpoint to list all products (with pagination/filtering). (MVP)
-    - [ ] 3.1.2: Implement endpoint to get product details by ID. (MVP)
-    - [ ] 3.1.3: Implement endpoint for product search. (MVP)
-    - [ ] 3.1.4: Implement endpoint for product category management. (MVP)
-    - [ ] 3.1.5: Implement endpoints for adding, editing, and deleting products (Admin only). (MVP)
+    - [ ] 3.1.1: Design `products` table schema in Supabase. (MVP)
+    - [ ] 3.1.2: Implement Supabase queries to list all products (with pagination/filtering). (MVP)
+    - [ ] 3.1.3: Implement Supabase queries to get product details by ID. (MVP)
+    - [ ] 3.1.4: Implement Supabase queries for product search. (MVP)
+    - [ ] 3.1.5: Design `categories` table schema and implement management queries. (MVP)
+    - [ ] 3.1.6: Implement Supabase queries for adding, editing, and deleting products (Admin only). (MVP)
 
 - [ ] **Task 3.2: Buyer App Product Catalog UI & Logic (MVP)**
 
@@ -248,17 +252,18 @@ graph TD
 
 ### 4. Shopping Cart & Order Management (MVP)
 
-- [ ] **Task 4.1: Implement Backend Order Endpoints (MVP)**
+- [ ] **Task 4.1: Implement Backend Order Management (Supabase) (MVP)**
 
   - **Description**: Develop backend API endpoints for managing shopping carts, creating orders, viewing order history, and updating order statuses.
   - **Dependencies**: Task 1.2, Task 3.1
   - **Subtasks**:
-    - [ ] 4.1.1: Implement endpoints for shopping cart operations (add, remove, update quantity). (MVP)
-    - [ ] 4.1.2: Implement endpoint for creating a new order from a cart. (MVP)
-    - [ ] 4.1.3: Implement endpoint to list buyer's order history. (MVP)
-    - [ ] 4.1.4: Implement endpoint to get detailed order information. (MVP)
-    - [ ] 4.1.5: Implement endpoint to update order status (Admin only). (MVP)
-    - [ ] 4.1.6: Implement endpoint for seller agents to create orders on behalf of buyers. (MVP)
+    - [ ] 4.1.1: Design `carts` and `orders` table schemas in Supabase. (MVP)
+    - [ ] 4.1.2: Implement Supabase queries for shopping cart operations (add, remove, update quantity). (MVP)
+    - [ ] 4.1.3: Implement Supabase queries for creating a new order from a cart. (MVP)
+    - [ ] 4.1.4: Implement Supabase queries to list buyer's order history. (MVP)
+    - [ ] 4.1.5: Implement Supabase queries to get detailed order information. (MVP)
+    - [ ] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
+    - [ ] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of buyers. (MVP)
 
 - [ ] **Task 4.2: Buyer App Shopping Cart & Order Creation UI & Logic (MVP)**
 
@@ -295,18 +300,19 @@ graph TD
 
 ### 5. User/Customer & Inventory Management (MVP)
 
-- [ ] **Task 5.1: Implement Backend User/Customer & Inventory Endpoints (MVP)**
+- [ ] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
 
   - **Description**: Develop backend API endpoints for managing buyer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 5.1.1: Implement endpoint to get/update buyer profile. (MVP)
-    - [ ] 5.1.2: Implement endpoints for managing buyer shipping addresses (add, edit, delete). (MVP)
-    - [ ] 5.1.3: Implement endpoint to list all buyers (Admin only). (MVP)
-    - [ ] 5.1.4: Implement endpoints for adding/editing buyer accounts (Admin only). (MVP)
-    - [ ] 5.1.5: Implement endpoint to list inventory levels. (MVP)
-    - [ ] 5.1.6: Implement endpoint to adjust inventory levels (Admin only). (MVP)
-    - [ ] 5.1.7: Implement endpoints for managing administrative users and roles (Super Admin only). (Future)
+    - [ ] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
+    - [ ] 5.1.2: Implement Supabase queries to get/update buyer profile. (MVP)
+    - [ ] 5.1.3: Implement Supabase queries for managing buyer shipping addresses (add, edit, delete). (MVP)
+    - [ ] 5.1.4: Implement Supabase queries to list all buyers (Admin only). (MVP)
+    - [ ] 5.1.5: Implement Supabase queries for adding/editing buyer accounts (Admin only). (MVP)
+    - [ ] 5.1.6: Implement Supabase queries to list inventory levels. (MVP)
+    - [ ] 5.1.7: Implement Supabase queries to adjust inventory levels (Admin only). (MVP)
+    - [ ] 5.1.8: Implement Supabase queries for managing administrative users and roles (Super Admin only). (Future)
 
 - [ ] **Task 5.2: Buyer App User Profile UI & Logic (MVP)**
 
@@ -349,14 +355,14 @@ graph TD
 
 ### 6. Reporting, Analytics & Advanced Features (Future)
 
-- [ ] **Task 6.1: Implement Backend Reporting Endpoints (Future)**
+- [ ] **Task 6.1: Implement Backend Reporting (Supabase) (Future)**
 
   - **Description**: Develop backend API endpoints to generate various reports (e.g., sales, inventory) and potentially handle pricing rules/discounts.
   - **Dependencies**: Task 1.2, Task 3.1, Task 4.1, Task 5.1
   - **Subtasks**:
-    - [ ] 6.1.1: Implement endpoint for sales reports (by product, buyer, date range). (Future)
-    - [ ] 6.1.2: Implement endpoint for inventory reports. (Future)
-    - [ ] 6.1.3: Implement endpoints for managing pricing rules and discounts (if applicable). (Future)
+    - [ ] 6.1.1: Implement Supabase queries/functions for sales reports (by product, buyer, date range). (Future)
+    - [ ] 6.1.2: Implement Supabase queries/functions for inventory reports. (Future)
+    - [ ] 6.1.3: Implement Supabase queries/functions for managing pricing rules and discounts (if applicable). (Future)
 
 - [ ] **Task 6.2: Admin App Reporting & Analytics UI & Logic (Future)**
 
@@ -368,15 +374,16 @@ graph TD
     - [ ] 6.2.3: Create Inventory Reports screen UI. (Future)
     - [ ] 6.2.4: Implement inventory report API integration. (Future)
 
-- [ ] **Task 6.3: Implement Backend Settings & Configuration Endpoints (Future)**
+- [ ] **Task 6.3: Implement Backend Settings & Configuration (Supabase) (Future)**
 
   - **Description**: Develop backend API endpoints for managing general application settings, pricing rules, shipping methods, and payment gateways.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 6.3.1: Implement endpoints for general settings. (Future)
-    - [ ] 6.3.2: Implement endpoints for pricing rules. (Future)
-    - [ ] 6.3.3: Implement endpoints for shipping methods. (Future)
-    - [ ] 6.3.4: Implement endpoints for payment gateway settings. (Future)
+    - [ ] 6.3.1: Design `settings` table schema in Supabase. (Future)
+    - [ ] 6.3.2: Implement Supabase queries for general settings. (Future)
+    - [ ] 6.3.3: Implement Supabase queries for pricing rules. (Future)
+    - [ ] 6.3.4: Implement Supabase queries for shipping methods. (Future)
+    - [ ] 6.3.5: Implement Supabase queries for payment gateway settings. (Future)
 
 - [ ] **Task 6.4: Admin App Settings & Configuration UI & Logic (Future)**
   - **Description**: Develop the UI and integrate logic for managing application settings, pricing rules, shipping methods, and payment gateways in the Administrative application.
@@ -432,14 +439,14 @@ graph TD
 
 ### 8. Deployment & Monitoring (Future)
 
-- [ ] **Task 8.1: Backend Deployment Strategy (MVP)**
+- [ ] **Task 8.1: Backend Deployment Strategy (Supabase) (MVP)**
 
   - **Description**: Define and implement the deployment strategy for the backend API (e.g., cloud provider, serverless functions, containerization).
   - **Dependencies**: All backend development tasks completed.
   - **Subtasks**:
-    - [ ] 8.1.1: Choose cloud provider/hosting solution. (MVP)
-    - [ ] 8.1.2: Set up CI/CD pipeline for backend deployment. (MVP)
-    - [ ] 8.1.3: Configure production environment variables and secrets. (MVP)
+    - [ ] 8.1.1: Configure Supabase project for production. (MVP)
+    - [ ] 8.1.2: Set up CI/CD for Supabase database migrations and Edge Functions. (MVP)
+    - [ ] 8.1.3: Configure Supabase environment variables and secrets. (MVP)
 
 - [ ] **Task 8.2: Mobile App Deployment (Buyer & Admin) (MVP)**
 

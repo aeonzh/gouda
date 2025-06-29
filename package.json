@@ -7,9 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "expo start --web",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web"
+    "admin": "pnpm --filter admin",
+    "buyer": "pnpm --filter buyer",
+    "start": "pnpm --filter buyer start",
+    "web": "pnpm --filter buyer web",
+    "android": "pnpm --filter buyer android",
+    "ios": "pnpm --filter buyer ios"
   }
 }

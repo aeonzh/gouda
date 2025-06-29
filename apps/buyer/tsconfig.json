@@ -3,13 +3,23 @@
   "compilerOptions": {
     "strict": true,
     "types": ["nativewind/types"],
-    "moduleResolution": "node"
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "packages/shared/*": ["../../packages/shared/*"]
+    }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "global.d.ts"
+    "global.d.ts",
+    "../../packages/shared/global.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../../packages/shared"
+    }
   ]
 }

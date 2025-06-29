@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { resetPasswordForEmail } from "../../../packages/shared/api/supabase"; // Adjust path as needed
+import { resetPasswordForEmail } from "packages/shared/api/supabase"; // Adjust path as needed
 import { Stack } from "expo-router";
 
 export default function ForgotPasswordScreen() {

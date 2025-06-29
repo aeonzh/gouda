@@ -13,10 +13,10 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "global.d.ts",
-    "../../packages/shared/global.d.ts",
+    "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "../../packages/shared/nativewind-env.d.ts"
   ],
   "references": [
     {

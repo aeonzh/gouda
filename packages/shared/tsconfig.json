@@ -19,6 +19,11 @@
     // "noEmit": false
     // "emitDeclarationOnly": true // Removed to allow JavaScript emit for referenced projects
   },
-  "include": ["index.ts", "api/**/*.ts", "components/**/*.tsx", "global.d.ts"],
+  "include": [
+    "index.ts",
+    "api/**/*.ts",
+    "components/**/*.tsx",
+    "nativewind-env.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

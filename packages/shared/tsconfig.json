@@ -15,8 +15,8 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist",
-    "composite": true,
-    "emitDeclarationOnly": true
+    "composite": true
+    // "emitDeclarationOnly": true // Removed to allow JavaScript emit for referenced projects
   },
   "include": ["index.ts", "api/**/*.ts", "components/**/*.tsx", "global.d.ts"],
   "exclude": ["node_modules", "dist"]

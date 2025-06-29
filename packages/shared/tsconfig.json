@@ -14,7 +14,9 @@
     "baseUrl": ".",
     "declaration": true,
     "declarationMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "composite": true,
+    "emitDeclarationOnly": true
   },
   "include": ["index.ts", "api/**/*.ts", "components/**/*.tsx", "global.d.ts"],
   "exclude": ["node_modules", "dist"]

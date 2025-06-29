@@ -15,9 +15,8 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist",
-    "composite": true
-    // "noEmit": false
-    // "emitDeclarationOnly": true // Removed to allow JavaScript emit for referenced projects
+    "composite": true,
+    "noEmit": false
   },
   "include": [
     "index.ts",

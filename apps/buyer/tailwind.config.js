@@ -2,6 +2,7 @@
 module.exports = {
   content: [
     "./App.{js,jsx,ts,tsx}",
+    "../../packages/shared/**/*.{js,jsx,ts,tsx}",
     "./<custom directory>/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {

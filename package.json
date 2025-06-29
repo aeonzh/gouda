@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "admin": "pnpm --filter admin start",
-    "buyer": "pnpm --filter buyer start"
+    "buyer": "pnpm --filter buyer start",
+    "build-shared": "pnpm --filter shared build"
   }
 }

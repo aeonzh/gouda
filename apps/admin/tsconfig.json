@@ -1,7 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,    
+    "strict": true,
     "paths": {
       "packages/shared/*": ["../../packages/shared/*"],
       "@/*": ["./*"]
@@ -16,8 +16,7 @@
     "**/*.tsx",
     "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "../../packages/shared/nativewind-env.d.ts"
+    "expo-env.d.ts"
   ],
   "references": [
     {

@@ -16,8 +16,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts",
-    "../../packages/shared/nativewind-env.d.ts"
+    "nativewind-env.d.ts"
   ],
   "references": [
     {

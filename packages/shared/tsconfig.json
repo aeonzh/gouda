@@ -10,14 +10,12 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "composite": true,
     "lib": ["es2017", "dom"],
     "baseUrl": ".",
-    "paths": {
-      "*": ["src/*"]
-    }
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "dist"
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["index.ts", "api/**/*.ts", "components/**/*.tsx", "global.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }

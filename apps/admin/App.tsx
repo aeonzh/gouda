@@ -1,30 +1,70 @@
-import { StatusBar } from "expo-status-bar";
-import { Text, View } from "react-native";
 import "./global.css";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "shared/api/supabase";
+import { Slot, useRouter, useSegments } from "expo-router";
+import { View, Text } from "react-native";
 
-const Stack = createNativeStackNavigator();
+export default function AppLayout() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const segments = useSegments();
 
-function HomeScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold">Admin Home Screen</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", session.user.id)
+            .single();
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Admin Dashboard" }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+          if (profile?.role === "admin" || profile?.role === "seller_agent") {
+            setSession(session);
+          } else {
+            // Not an admin, sign them out
+            await supabase.auth.signOut();
+            setSession(null);
+          }
+        } else {
+          setSession(null);
+        }
+        setLoading(false);
+      }
+    );
+
+    // Fetch initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (session && !inAuthGroup) {
+      router.replace("/(tabs)");
+    } else if (!session) {
+      router.replace("/(auth)/login");
+    }
+  }, [session, loading, segments]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return <Slot />;
 }

@@ -9,14 +9,17 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
     "@expo/vector-icons": "^14.1.0",
     "@supabase/supabase-js": "^2.50.2",
     "expo": "~53.0.13",
     "expo-constants": "~17.1.6",
     "nativewind": "^4.1.23",
     "react": "19.0.0",
-    "react-native": "0.79.4"
+    "react-dom": "19.0.0",
+    "react-native": "0.79.4",
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@types/react": "~19.0.10",

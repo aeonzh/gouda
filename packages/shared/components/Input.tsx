@@ -1,5 +1,4 @@
-import React from "react";
-import { TextInput, View, Text } from "react-native";
+import { Text, TextInput, View } from 'react-native';
 
 interface InputProps {
   label?: string;
@@ -7,23 +6,23 @@ interface InputProps {
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
-  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   className?: string;
   labelClassName?: string;
   inputClassName?: string;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const Input = ({
   label,
   placeholder,
   value,
   onChangeText,
   secureTextEntry = false,
-  keyboardType = "default",
-  className = "",
-  labelClassName = "",
-  inputClassName = "",
-}) => {
+  keyboardType = 'default',
+  className = '',
+  labelClassName = '',
+  inputClassName = '',
+}: InputProps) => {
   return (
     <View className={`w-full ${className}`}>
       {label && (

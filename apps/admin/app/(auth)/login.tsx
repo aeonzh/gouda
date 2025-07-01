@@ -1,53 +1,61 @@
-import { useState } from "react";
-import { View, Text, Alert } from "react-native";
-import { Input } from "shared/components/Input";
-import { Button } from "shared/components/Button";
-import { signIn } from "shared/api/supabase";
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Text, View } from 'react-native';
+import { signInWithEmail } from 'shared/api/supabase';
+import { Button } from 'shared/components/Button';
+import { Input } from 'shared/components/Input';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signInWithEmail(email, password);
       // Session change will be handled by the root layout
     } catch (error: any) {
-      Alert.alert("Login Failed", error.message);
+      Alert.alert('Login Failed', error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View className="flex-1 justify-center items-center p-4 bg-gray-50">
-      <View className="w-full max-w-sm">
-        <Text className="text-3xl font-bold text-center mb-8 text-gray-800">
-          Admin Login
+    <View className="flex-1 justify-center items-center p-6 bg-gradient-to-br from-blue-600 to-purple-700">
+      <View className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl">
+        <Text className="text-4xl font-extrabold text-center mb-2 text-gray-900">
+          Welcome Back
+        </Text>
+        <Text className="text-lg text-center text-gray-600 mb-8">
+          Admin Portal
         </Text>
         <Input
-          placeholder="Email"
+          label="Email Address"
+          placeholder="admin@example.com"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
-          autoCapitalize="none"
           className="mb-4"
+          inputClassName="border-gray-300 focus:border-blue-500"
         />
         <Input
-          placeholder="Password"
+          label="Password"
+          placeholder="••••••••"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
           className="mb-6"
+          inputClassName="border-gray-300 focus:border-blue-500"
         />
         <Button
-          title={loading ? "Logging in..." : "Login"}
+          title={loading ? 'Authenticating...' : 'Login Securely'}
           onPress={handleLogin}
           disabled={loading}
+          className="w-full py-3"
+          size="lg"
         />
       </View>
     </View>

@@ -98,5 +98,10 @@ export default function InitialLayout() {
   }
 
   // Render the main app stack once loading is complete
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="products/manage" options={{ headerShown: false }} />
+      {/* Add other admin routes here if needed */}
+    </Stack>
+  );
 }

@@ -244,17 +244,17 @@ graph TD
 
 ### 4. Shopping Cart & Order Management (MVP)
 
-- [ ] **Task 4.1: Implement Backend Order Management (Supabase) (MVP)**
+- [x] **Task 4.1: Implement Backend Order Management (Supabase) (MVP)**
   - **Description**: Develop backend API endpoints for managing shopping carts, creating orders, viewing order history, and updating order statuses.
   - **Dependencies**: Task 1.2, Task 3.1
   - **Subtasks**:
-    - [ ] 4.1.1: Design `carts` and `orders` table schemas in Supabase. (MVP)
-    - [ ] 4.1.2: Implement Supabase queries for shopping cart operations (add, remove, update quantity). (MVP)
-    - [ ] 4.1.3: Implement Supabase queries for creating a new order from a cart. (MVP)
-    - [ ] 4.1.4: Implement Supabase queries to list buyer's order history. (MVP)
-    - [ ] 4.1.5: Implement Supabase queries to get detailed order information. (MVP)
-    - [ ] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
-    - [ ] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of buyers. (MVP)
+    - [x] 4.1.1: Design `carts` and `orders` table schemas in Supabase. (MVP)
+    - [x] 4.1.2: Implement Supabase queries for shopping cart operations (add, remove, update quantity). (MVP)
+    - [x] 4.1.3: Implement Supabase queries for creating a new order from a cart. (MVP)
+    - [x] 4.1.4: Implement Supabase queries to list buyer's order history. (MVP)
+    - [x] 4.1.5: Implement Supabase queries to get detailed order information. (MVP)
+    - [x] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
+    - [x] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of buyers. (MVP)
 
 - [ ] **Task 4.2: Buyer App Shopping Cart & Order Creation UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Buyer application.

@@ -131,7 +131,6 @@ graph TD
 ### 1. Project Setup & Core Infrastructure
 
 - [ ] **Task 1.1: Initialize Monorepo Structure (MVP)**
-
   - **Description**: Set up a monorepo (e.g., using Expo's built-in monorepo support or a tool like Nx/Lerna) to host both Buyer and Admin applications, and potentially a shared backend/common utilities.
   - **Dependencies**: None
   - **Subtasks**:
@@ -140,7 +139,6 @@ graph TD
     - [ ] 1.1.3: Configure basic monorepo settings (e.g., workspace definitions). (MVP)
 
 - [ ] **Task 1.2: High-Level Backend API Design (MVP) - Supabase Focused**
-
   - **Description**: Define the essential API endpoints and data models required to support the core functionalities of both mobile applications. This is a conceptual design to guide frontend development.
   - **Dependencies**: None
   - **Subtasks**:
@@ -155,7 +153,6 @@ graph TD
     - [ ] 1.2.9: Define API endpoints for user/customer management using Supabase. (MVP)
 
 - [ ] **Task 1.3: Initialize Buyer Application (MVP)**
-
   - **Description**: Create the React Native/Expo project for the Buyer application within the monorepo and configure NativeWind for styling.
   - **Dependencies**: Task 1.1
   - **Subtasks**:
@@ -164,7 +161,6 @@ graph TD
     - [ ] 1.3.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
 
 - [ ] **Task 1.4: Initialize Administrative Application (MVP)**
-
   - **Description**: Create the React Native/Expo project for the Administrative application within the monorepo and configure NativeWind for styling.
   - **Dependencies**: Task 1.1
   - **Subtasks**:
@@ -183,7 +179,6 @@ graph TD
 ### 2. Authentication Implementation (MVP)
 
 - [ ] **Task 2.1: Implement Backend Authentication (Supabase) (MVP)**
-
   - **Description**: Develop the necessary backend API endpoints for user registration, login, and potentially password reset for both buyer and administrative users.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
@@ -193,7 +188,6 @@ graph TD
     - [ ] 2.1.4: Implement password reset/forgot password using Supabase client library (if in scope). (MVP)
 
 - [ ] **Task 2.2: Buyer App Authentication UI & Logic (MVP)**
-
   - **Description**: Develop the user interface and integrate the authentication logic for the Buyer application (Login, Sign Up, Forgot Password screens).
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.1
   - **Subtasks**:
@@ -216,19 +210,17 @@ graph TD
 ### 3. Product Catalog & Search Implementation (MVP)
 
 - [ ] **Task 3.1: Implement Backend Product Management (Supabase) (MVP)**
-
   - **Description**: Develop backend API endpoints for managing products (CRUD operations) and fetching product data, including search and filtering capabilities.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 3.1.1: Design `products` table schema in Supabase. (MVP)
-    - [ ] 3.1.2: Implement Supabase queries to list all products (with pagination/filtering). (MVP)
-    - [ ] 3.1.3: Implement Supabase queries to get product details by ID. (MVP)
-    - [ ] 3.1.4: Implement Supabase queries for product search. (MVP)
-    - [ ] 3.1.5: Design `categories` table schema and implement management queries. (MVP)
-    - [ ] 3.1.6: Implement Supabase queries for adding, editing, and deleting products (Admin only). (MVP)
+    - [x] 3.1.1: Design `products` table schema in Supabase. (MVP)
+    - [x] 3.1.2: Implement Supabase queries to list all products (with pagination/filtering). (MVP)
+    - [x] 3.1.3: Implement Supabase queries to get product details by ID. (MVP)
+    - [x] 3.1.4: Implement Supabase queries for product search. (MVP)
+    - [x] 3.1.5: Design `categories` table schema and implement management queries. (MVP)
+    - [x] 3.1.6: Implement Supabase queries for adding, editing, and deleting products (Admin only). (MVP)
 
 - [ ] **Task 3.2: Buyer App Product Catalog UI & Logic (MVP)**
-
   - **Description**: Develop the UI and integrate logic for product browsing, search, filtering, and viewing product details in the Buyer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.2, Task 3.1
   - **Subtasks**:
@@ -253,7 +245,6 @@ graph TD
 ### 4. Shopping Cart & Order Management (MVP)
 
 - [ ] **Task 4.1: Implement Backend Order Management (Supabase) (MVP)**
-
   - **Description**: Develop backend API endpoints for managing shopping carts, creating orders, viewing order history, and updating order statuses.
   - **Dependencies**: Task 1.2, Task 3.1
   - **Subtasks**:
@@ -266,7 +257,6 @@ graph TD
     - [ ] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of buyers. (MVP)
 
 - [ ] **Task 4.2: Buyer App Shopping Cart & Order Creation UI & Logic (MVP)**
-
   - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Buyer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 3.2, Task 4.1
   - **Subtasks**:
@@ -277,7 +267,6 @@ graph TD
     - [ ] 4.2.5: Implement order creation API integration and display confirmation. (MVP)
 
 - [ ] **Task 4.3: Buyer App Order History UI & Logic (MVP)**
-
   - **Description**: Develop the UI and integrate logic for viewing past order history and status updates in the Buyer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 4.1
   - **Subtasks**:
@@ -301,7 +290,6 @@ graph TD
 ### 5. User/Customer & Inventory Management (MVP)
 
 - [ ] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
-
   - **Description**: Develop backend API endpoints for managing buyer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
@@ -315,7 +303,6 @@ graph TD
     - [ ] 5.1.8: Implement Supabase queries for managing administrative users and roles (Super Admin only). (Future)
 
 - [ ] **Task 5.2: Buyer App User Profile UI & Logic (MVP)**
-
   - **Description**: Develop the UI and integrate logic for viewing and editing personal information and managing shipping addresses in the Buyer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 5.1
   - **Subtasks**:
@@ -325,7 +312,6 @@ graph TD
     - [ ] 5.2.4: Implement shipping address management (add, edit, delete) with API integration. (MVP)
 
 - [ ] **Task 5.3: Admin App Customer/Buyer Management UI & Logic (MVP)**
-
   - **Description**: Develop the UI and integrate logic for viewing and managing buyer accounts in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 5.1
   - **Subtasks**:
@@ -356,7 +342,6 @@ graph TD
 ### 6. Reporting, Analytics & Advanced Features (Future)
 
 - [ ] **Task 6.1: Implement Backend Reporting (Supabase) (Future)**
-
   - **Description**: Develop backend API endpoints to generate various reports (e.g., sales, inventory) and potentially handle pricing rules/discounts.
   - **Dependencies**: Task 1.2, Task 3.1, Task 4.1, Task 5.1
   - **Subtasks**:
@@ -365,7 +350,6 @@ graph TD
     - [ ] 6.1.3: Implement Supabase queries/functions for managing pricing rules and discounts (if applicable). (Future)
 
 - [ ] **Task 6.2: Admin App Reporting & Analytics UI & Logic (Future)**
-
   - **Description**: Develop the UI and integrate logic for accessing and displaying various reports in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 6.1
   - **Subtasks**:
@@ -375,7 +359,6 @@ graph TD
     - [ ] 6.2.4: Implement inventory report API integration. (Future)
 
 - [ ] **Task 6.3: Implement Backend Settings & Configuration (Supabase) (Future)**
-
   - **Description**: Develop backend API endpoints for managing general application settings, pricing rules, shipping methods, and payment gateways.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
@@ -401,7 +384,6 @@ graph TD
 ### 7. Testing & Quality Assurance (Future)
 
 - [ ] **Task 7.1: Unit Testing (Future)**
-
   - **Description**: Write unit tests for individual functions, components, and API client modules in both applications and the backend.
   - **Dependencies**: All previous development tasks (as code is written)
   - **Subtasks**:
@@ -411,7 +393,6 @@ graph TD
     - [ ] 7.1.4: Write unit tests for data models and API client functions. (Future)
 
 - [ ] **Task 7.2: Integration Testing (Future)**
-
   - **Description**: Write integration tests to ensure different modules and services (frontend-backend, component interactions) work correctly together.
   - **Dependencies**: Task 7.1
   - **Subtasks**:
@@ -420,7 +401,6 @@ graph TD
     - [ ] 7.2.3: Write integration tests for admin management flows. (Future)
 
 - [ ] **Task 7.3: End-to-End (E2E) Testing (Future)**
-
   - **Description**: Implement E2E tests to simulate real user scenarios across the entire application stack.
   - **Dependencies**: Task 7.2
   - **Subtasks**:
@@ -440,7 +420,6 @@ graph TD
 ### 8. Deployment & Monitoring (Future)
 
 - [ ] **Task 8.1: Backend Deployment Strategy (Supabase) (MVP)**
-
   - **Description**: Define and implement the deployment strategy for the backend API (e.g., cloud provider, serverless functions, containerization).
   - **Dependencies**: All backend development tasks completed.
   - **Subtasks**:
@@ -449,7 +428,6 @@ graph TD
     - [ ] 8.1.3: Configure Supabase environment variables and secrets. (MVP)
 
 - [ ] **Task 8.2: Mobile App Deployment (Buyer & Admin) (MVP)**
-
   - **Description**: Prepare and deploy both React Native applications to respective app stores (Apple App Store, Google Play Store) or internal distribution channels.
   - **Dependencies**: All frontend development and testing tasks completed.
   - **Subtasks**:
@@ -459,7 +437,6 @@ graph TD
     - [ ] 8.2.4: Submit apps for review/publish. (MVP)
 
 - [ ] **Task 8.3: Monitoring & Logging Setup (Future)**
-
   - **Description**: Implement monitoring and logging solutions for both backend and mobile applications to track performance, errors, and user behavior.
   - **Dependencies**: Task 8.1, Task 8.2
   - **Subtasks**:
@@ -478,7 +455,6 @@ graph TD
 ### 9. Maintenance & Iteration (Future)
 
 - [ ] **Task 9.1: Post-Launch Support & Bug Fixing (Future)**
-
   - **Description**: Establish processes for ongoing support, bug reporting, and hotfixes post-launch.
   - **Dependencies**: Task 8.3
   - **Subtasks**:
@@ -487,7 +463,6 @@ graph TD
     - [ ] 9.1.3: Plan for emergency hotfix deployments. (Future)
 
 - [ ] **Task 9.2: Feature Backlog & Prioritization (Future)**
-
   - **Description**: Maintain a backlog of future features and enhancements, and establish a process for their prioritization and planning.
   - **Dependencies**: Ongoing user feedback, business needs.
   - **Subtasks**:
@@ -496,7 +471,6 @@ graph TD
     - [ ] 9.2.3: Plan for regular sprint/iteration cycles for new feature development. (Future)
 
 - [ ] **Task 9.3: Technical Debt Management (Future)**
-
   - **Description**: Regularly review and address technical debt to ensure the long-term health and maintainability of the codebase.
   - **Dependencies**: Ongoing development.
   - **Subtasks**:

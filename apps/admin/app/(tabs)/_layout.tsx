@@ -1,5 +1,5 @@
-import { Tabs } from "expo-router";
-import { TabBarIcon } from "shared/components/TabBarIcon";
+import { Tabs } from 'expo-router';
+import { TabBarIcon } from 'shared/components/TabBarIcon';
 
 export default function TabLayout() {
   return (
@@ -7,22 +7,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
+          title: 'Dashboard',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="products"
         options={{
-          title: "Products",
+          title: 'Products',
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
         }}
       />
       <Tabs.Screen
         name="orders"
         options={{
-          title: "Orders",
+          title: 'Orders',
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
+          headerShown: false, // Hide header for the tab screen itself, as individual screens will have their own headers
         }}
       />
     </Tabs>

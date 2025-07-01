@@ -318,13 +318,15 @@ export async function createOrderFromCart(
  * @returns {Promise<Order[] | null>} A promise that resolves to an array of orders or null on error.
  */
 export async function getBuyerOrderHistory(
-  userId: string,
+  userId?: string, // Make userId optional
 ): Promise<Order[] | null> {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('user_id', userId)
-    .order('order_date', { ascending: false });
+  let query = supabase.from('orders').select('*');
+
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
+
+  const { data, error } = await query.order('order_date', { ascending: false });
 
   if (error) {
     console.error('Error fetching buyer order history:', error.message);

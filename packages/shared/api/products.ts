@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
-interface Product {
-  id?: string;
+export interface Product {
+  id: string;
   name: string;
   description?: string;
   price: number;
@@ -9,8 +9,8 @@ interface Product {
   image_url?: string;
 }
 
-interface Category {
-  id?: string;
+export interface Category {
+  id: string | null; // Explicitly allow null for 'All' category
   name: string;
 }
 

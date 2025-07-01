@@ -266,14 +266,14 @@ graph TD
     - [ ] 4.2.4: Create Order Confirmation screen UI. (MVP)
     - [ ] 4.2.5: Implement order creation API integration and display confirmation. (MVP)
 
-- [ ] **Task 4.3: Buyer App Order History UI & Logic (MVP)**
+- [x] **Task 4.3: Buyer App Order History UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing past order history and status updates in the Buyer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 4.1
   - **Subtasks**:
-    - [ ] 4.3.1: Create Order History list screen UI. (MVP)
-    - [ ] 4.3.2: Implement order history API integration and display. (MVP)
-    - [ ] 4.3.3: Create Order Details screen UI for buyers. (MVP)
-    - [ ] 4.3.4: Implement order details API integration for buyers. (MVP)
+    - [x] 4.3.1: Create Order History list screen UI. (MVP)
+    - [x] 4.3.2: Implement order history API integration and display. (MVP)
+    - [x] 4.3.3: Create Order Details screen UI for buyers. (MVP)
+    - [x] 4.3.4: Implement order details API integration for buyers. (MVP)
 
 - [ ] **Task 4.4: Admin App Order Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing, managing, and updating the status of orders in the Administrative application.

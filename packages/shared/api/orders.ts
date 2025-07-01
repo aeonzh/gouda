@@ -26,11 +26,19 @@ export interface Order {
   order_date: string;
   total_amount: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shipping_address: object; // JSONB type in Supabase
-  billing_address: object; // JSONB type in Supabase
+  shipping_address: Address; // JSONB type in Supabase
+  billing_address: Address; // JSONB type in Supabase
   created_at: string;
   updated_at: string;
   order_items?: OrderItem[]; // Optional: to include order item details when fetching order
+}
+
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  country: string;
 }
 
 export interface OrderItem {

@@ -57,6 +57,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="orders/[id]"
+        options={{
+          href: null, // Hide this tab from the tab bar
+          headerShown: true, // Show header for order details
+          title: 'Order Details',
+        }}
+      />
+      <Tabs.Screen
         name="cart"
         options={{
           title: 'Cart',

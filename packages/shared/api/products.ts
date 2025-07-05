@@ -7,11 +7,18 @@ export interface Product {
   price: number;
   category_id?: string;
   image_url?: string;
+  stock_quantity: number;
 }
 
 export interface Category {
   id: string | null; // Explicitly allow null for 'All' category
   name: string;
+}
+
+export interface InventoryProduct {
+  id: string;
+  name: string;
+  stock_quantity: number;
 }
 
 /**
@@ -208,4 +215,44 @@ export async function deleteCategory(id: string): Promise<void> {
     console.error('Error deleting category:', error.message);
     throw error;
   }
+}
+
+/**
+ * Fetches current stock levels for all products. (Admin only)
+ * @returns {Promise<Product[] | null>} A promise that resolves to an array of products with stock quantities or null on error.
+ */
+export async function getInventoryLevels(): Promise<InventoryProduct[] | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, stock_quantity'); // Select only relevant fields
+
+  if (error) {
+    console.error('Error fetching inventory levels:', error.message);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Adjusts the stock quantity of a product. (Admin only)
+ * @param {string} productId - The ID of the product to adjust.
+ * @param {number} newQuantity - The new stock quantity.
+ * @returns {Promise<Product | null>} A promise that resolves to the updated product or null on error.
+ */
+export async function adjustInventoryLevel(
+  productId: string,
+  newQuantity: number,
+): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .update({ stock_quantity: newQuantity })
+    .eq('id', productId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error adjusting inventory level:', error.message);
+    throw error;
+  }
+  return data;
 }

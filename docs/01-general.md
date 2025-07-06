@@ -20,18 +20,18 @@ VERY IMPORTANT:
 
 ## Key areas
 
-For the design of the B2B wholesale store platform with separate sides for the store manager and the customer, we should consider the following key areas:
+For the design of the B2B wholesale store platform with separate sides for the business owner and the customer, we should consider the following key areas:
 
 1. **User Authentication and Authorization**:
-   1. How will users (both managers and customers) log in?
+   1. How will users (both business owner and customers) log in?
    2. How will we differentiate their permissions and access levels?
 2. **Data Model**:
    1. What are the core entities we need to represent? (e.g., Products, Orders, Customers/customers, Stores, Inventory, Pricing).
    2. How will they relate to each other?
-3. **Store Manager Side**:
-   1. What functionalities does the store manager need? (e.g., managing products, inventory, orders, customer accounts, setting prices, generating reports).
+3. **Business Owner Side**:
+   1. What functionalities does the business owner need? (e.g., managing products, inventory, orders, customer accounts, setting prices, generating reports).
 4. **Customer Side**:
-   1. What functionalities does the customer need? (e.g., browsing products, placing orders, viewing order history, managing their profile, potentially managing multiple shipping addresses or payment methods).
+   1. What functionalities does the customer need? (e.g., browsing products, placing orders, viewing order history, managing their profile).
 5. **Order Processing**:
    1. How will orders be placed, confirmed, processed, and tracked?
 6. **Search and Filtering**:

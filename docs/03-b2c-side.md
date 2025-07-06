@@ -1,8 +1,8 @@
-# Customer Application PRD
+# B2C Application PRD
 
 ## 1. Project Overview
 
-This document outlines the requirements for the Customer application, a mobile application designed to serve as the primary interface for Customers interacting with the B2B wholesale store platform. The application will allow Customers to browse products, create orders, manage their accounts, and view their order history.
+This document outlines the requirements for the B2C application, a mobile application designed to serve as the primary interface for buyers interacting with the B2B wholesale store platform. The application will allow Customers to browse products, create orders, manage their accounts, and view their order history.
 
 ## 2. Core Requirements
 
@@ -19,7 +19,7 @@ This document outlines the requirements for the Customer application, a mobile a
 - **Shopping Cart:** Add, remove, and update product quantities in the cart.
 - **Order Creation:** Create an order directly from the shopping cart.
 - **Order History:** View a list of past orders with details and status.
-- **User Profile:** View and edit personal information, manage shipping addresses.
+- **User Profile:** View and edit personal information.
 
 ## 4. Core Components
 
@@ -65,7 +65,7 @@ The implementation will follow an iterative approach, starting with core functio
 7. Integrating with the backend API for data fetching and submission.
 8. Thorough testing and debugging.
 
-Subsequent iterations will focus on adding features like payment method management (if introduced later), wishlists, notifications, and potentially more advanced search and filtering options.
+Subsequent iterations will focus on adding features like wishlists, notifications, and potentially more advanced search and filtering options.
 
 ---
 
@@ -74,7 +74,7 @@ Customer Application Screens:
 Authentication Screens:
 
 - Login: For existing Customers to sign in.
-- Sign Up/Registration: Depending on your business model, you might allow Customers to request an account or sign up directly.
+- Sign Up/Registration: Allow Customers to request an account or sign up directly.
 - Forgot Password: To help Customers reset their password.
 
 Product Browsing and Discovery:
@@ -84,18 +84,15 @@ Product Browsing and Discovery:
 - Product Details: To show detailed information about a single product (description, images, pricing, availability).
 - Search Results: To display results based on Customer searches.
 
-Ordering and Purchasing:
+Ordering:
 
 - Shopping Cart: To manage items the Customer wants to purchase.
-- Checkout: A multi-step process to finalize the order (shipping information, payment method, order review).
 - Order Confirmation: To display a summary of the placed order.
 
 Account Management:
 
 - My Account/Profile: To view and edit personal information.
 - Order History: To view past orders and their status.
-- Saved Addresses: (Removed as per user's request for no Customer shipping addresses)
-- Payment Methods: To manage saved payment information (if applicable).
 
 Other potentially useful screens:
 

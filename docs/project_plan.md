@@ -7,7 +7,7 @@ This document outlines a detailed step-by-step plan for building the Gouda B2B w
 The Gouda project aims to develop a B2B wholesale store platform consisting of two main mobile applications:
 
 1.  **Customer Application**: A mobile interface for customers to browse products, create orders, manage accounts, and view order history.
-2.  **Administrative Application**: A mobile interface for store managers and sales agents to manage products, inventory, orders, customers, and administrative users, with role-based functionalities.
+2.  **Administrative Application**: A mobile interface for business owners and sales agents to manage products, inventory, orders, customers, and administrative users, with role-based functionalities.
 
 Both applications will be built using React Native, Expo, and NativeWind for styling, supported by a robust backend API, with Supabase as the chosen backend-as-a-service.
 
@@ -290,7 +290,7 @@ graph TD
 ### 5. User/Customer & Inventory Management (MVP)
 
 - [x] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
-  - **Description**: Develop backend API endpoints for managing customer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
+  - **Description**: Develop backend API endpoints for managing customer profiles, and administrative user accounts, as well as inventory levels.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
     - [x] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
@@ -303,13 +303,12 @@ graph TD
     - [ ] 5.1.8: Implement Supabase queries for managing administrative users and roles (Super Admin only). (Future)
 
 - [ ] **Task 5.2: Customer App User Profile UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for viewing and editing personal information and managing shipping addresses in the Customer application.
+  - **Description**: Develop the UI and integrate logic for viewing and editing personal information in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 5.1
   - **Subtasks**:
     - [ ] 5.2.1: Create My Account/Profile screen UI. (MVP)
     - [ ] 5.2.2: Implement profile data fetching and update API integration. (MVP)
     - [ ] 5.2.3: Create Saved Addresses screen UI. (MVP)
-    - [ ] 5.2.4: Implement shipping address management (add, edit, delete) with API integration. (MVP)
 
 - [ ] **Task 5.3: Admin App Customer/Customer Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing and managing customer accounts in the Administrative application.
@@ -350,7 +349,7 @@ graph TD
     - [ ] 6.1.3: Implement Supabase queries/functions for managing pricing rules and discounts (if applicable). (Future)
 
 - [ ] **Task 6.2: Admin App Reporting & Analytics UI & Logic (Future)**
-  - **Description**: Develop the UI and integrate logic for accessing and displaying various reports in the Administrative application.
+  - **Description**: Develop the UI and integrate logic for accessing and displaying various reports in the B2B application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 6.1
   - **Subtasks**:
     - [ ] 6.2.1: Create Sales Reports screen UI. (Future)
@@ -359,27 +358,21 @@ graph TD
     - [ ] 6.2.4: Implement inventory report API integration. (Future)
 
 - [ ] **Task 6.3: Implement Backend Settings & Configuration (Supabase) (Future)**
-  - **Description**: Develop backend API endpoints for managing general application settings, pricing rules, shipping methods, and payment gateways.
+  - **Description**: Develop backend API endpoints for managing general application settings, pricing rules.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
     - [ ] 6.3.1: Design `settings` table schema in Supabase. (Future)
     - [ ] 6.3.2: Implement Supabase queries for general settings. (Future)
     - [ ] 6.3.3: Implement Supabase queries for pricing rules. (Future)
-    - [ ] 6.3.4: Implement Supabase queries for shipping methods. (Future)
-    - [ ] 6.3.5: Implement Supabase queries for payment gateway settings. (Future)
 
 - [ ] **Task 6.4: Admin App Settings & Configuration UI & Logic (Future)**
-  - **Description**: Develop the UI and integrate logic for managing application settings, pricing rules, shipping methods, and payment gateways in the Administrative application.
+  - **Description**: Develop the UI and integrate logic for managing application settings, pricing rules, in the B2B application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 6.3
   - **Subtasks**:
     - [ ] 6.4.1: Create General Settings screen UI. (Future)
     - [ ] 6.4.2: Implement general settings API integration. (Future)
     - [ ] 6.4.3: Create Pricing Rules screen UI. (Future)
     - [ ] 6.4.4: Implement pricing rules API integration. (Future)
-    - [ ] 6.4.5: Create Shipping Methods screen UI. (Future)
-    - [ ] 6.4.6: Implement shipping methods API integration. (Future)
-    - [ ] 6.4.7: Create Payment Gateway Settings screen UI. (Future)
-    - [ ] 6.4.8: Implement payment gateway settings API integration. (Future)
 
 ### 7. Testing & Quality Assurance (Future)
 

@@ -10,7 +10,8 @@
     "b2b": "pnpm --filter b2b start",
     "b2c": "pnpm --filter b2c start",
     "build-shared": "pnpm --filter shared build",
-    "lint": "eslint . --fix"
+    "lint": "eslint .",
+    "format": "eslint. --fix"
   },
   "devDependencies": {
     "@react-native/eslint-config": "^0.74.83",

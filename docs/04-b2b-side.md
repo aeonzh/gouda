@@ -1,33 +1,30 @@
-# Administrative Application PRD
+# B2B Application PRD
 
 ## 1. Project Overview
 
-This document outlines the requirements for the Administrative application, a mobile application designed to serve as the interface for store managers and sales agents interacting with the B2B wholesale store platform. The application will provide tools for managing products, inventory, orders, customers, and administrative users, with functionalities varying based on user roles.
+This document outlines the requirements for the B2B application, a mobile application designed to serve as the interface for high-level admins, business owners, sales agents interacting with the B2B wholesale store platform. The application will provide tools for managing products, inventory, orders, and users, with functionalities varying based on user roles.
 
 ## 2. Core Requirements
 
-- Enable administrative users (store managers and sales agents) to log in securely.
-
+- Enable users (high-level admins, business owners, sales agents) to log in securely.
 - Provide a dashboard with key information and quick access to common tasks based on user role.
 - Allow users to manage product information, including adding, editing, and organizing products.
 - Enable users to monitor and adjust inventory levels.
 - Provide tools for viewing, managing, and updating the status of orders.
-- Allow sales agents to create orders on behalf of customers.
-- Enable users to view and manage customer accounts.
-- (For higher-level admins) Allow management of administrative user accounts and permissions.
+- Allow B2B users (business owners, sales agents) to create orders on behalf of customers.
 - Provide access to relevant reports and analytics.
+- (For higher-level admins) Allow management of user accounts and permissions.
 
 ## 3. Core Features
 
 - **Authentication:** User login for administrative roles.
 - **Dashboard:** Role-specific overview and shortcuts.
 - **Product Management:** View, search, filter products; Add/Edit product details (description, pricing, inventory, images); Category management.
-- **Inventory Management:** View inventory list; Adjust stock levels; Low stock alerts.
-- **Order Management:** View, search, filter orders; View order details; Update order status; Create orders for customers (Sales Agent).
-- **Customer/Customer Management:** View customer list; View customer details; Add/Edit customer accounts.
-- **User Management (Admin):** View user list; Add/Edit user accounts and roles.
+- **Inventory Management:** View inventory list; Adjust stock levels.
+- **Order Management:** View, search, filter orders; View order details; Update order status; Create orders for customers (B2B users).
 - **Reporting & Analytics:** Access to sales reports, inventory reports, etc.
-- **Settings & Configuration (Admin):** Manage general settings, pricing rules, shipping, payment gateways.
+- **User Management (Admin):** View user list; Add/Edit user accounts and roles.
+- **Settings & Configuration (Admin):** Manage general settings, pricing rules.
 
 ## 4. Core Components
 
@@ -37,11 +34,9 @@ This document outlines the requirements for the Administrative application, a mo
 - Inventory listing and adjustment interfaces
 - Order listing and detail views
 - Order status update controls
-- Order creation form (for Sales Agent)
-- Customer listing and detail views
-- Customer add/edit forms
-- User listing and add/edit forms (Admin)
+- Order creation form (for B2B users)
 - Reporting views
+- User listing and add/edit forms (Admin)
 - Settings forms
 
 ## 5. App/User Flow
@@ -50,7 +45,7 @@ User flows will vary significantly based on the user's role (Store Manager or Sa
 
 **General Login Flow:**
 
-1. User opens the app and logs in with administrative credentials.
+1. User opens the app and logs in with credentials.
 2. User is directed to their role-specific dashboard.
 
 **Store Manager Flows (Examples):**
@@ -78,7 +73,7 @@ The Administrative application will be built using:
 The implementation will follow an iterative approach, starting with core functionalities shared by both roles and then developing role-specific features. The initial focus will be on:
 
 1. Setting up the project environment with React Native, Expo, and NativeWind.
-2. Implementing the administrative login and role-based dashboard.
+2. Implementing the login and role-based dashboard.
 3. Developing core Product Management features (viewing, adding, editing).
 4. Building core Order Management features (viewing, updating status).
 5. Implementing basic Inventory Management (viewing levels).
@@ -89,11 +84,12 @@ The implementation will follow an iterative approach, starting with core functio
 10. Thorough testing and debugging.
 
 Subsequent iterations will focus on adding more advanced features like detailed reporting, inventory adjustments, low stock alerts, user management (for higher-level admins), and settings/configuration.
-Administrative Application Screens:
+
+B2B Application Screens:
 
 Authentication and Dashboard:
 
-- Login: For administrative users (managers and agents) to sign in.
+- Login: For B2B users (business owners and sales agents) to sign in.
 - Dashboard: A central landing page providing an overview of key metrics and quick access to common tasks (e.g., new orders, pending approvals, sales summaries - potentially role-specific).
 
 Product Management:
@@ -111,20 +107,14 @@ Inventory Management:
 Order Management:
 
 - Order List: To view, search, and filter all orders.
-- Order Details: To view the details of a specific order (items, quantities, pricing, shipping information, status).
+- Order Details: To view the details of a specific order (items, quantities, pricing, status).
 - Update Order Status: To change the status of an order (e.g., pending, processing, shipped, delivered, cancelled).
 - Create Order (for Sales Agent): A screen for sales agents to create orders on behalf of customers.
 
-Customer/Customer Management:
-
-- Customer List: To view and manage customer accounts.
-- Customer Details: To view details of a specific customer (contact information, order history, assigned sales agent).
-- Add/Edit Customer: To create new customer accounts or modify existing ones.
-
 User Management (for higher-level admins):
 
-- User List: To view and manage administrative user accounts (managers, agents).
-- Add/Edit User: To create new administrative users or modify existing ones (including assigning roles and permissions).
+- User List: To view and manage user accounts (business owners, sales agents, customers).
+- Add/Edit User: To create new users or modify existing ones (including assigning roles and permissions).
 
 Reporting and Analytics:
 
@@ -136,12 +126,10 @@ Settings and Configuration:
 
 - General Settings: To configure application settings.
 - Pricing Rules: To manage wholesale pricing rules, discounts, etc.
-- Shipping Methods: To configure available shipping options.
-- Payment Gateway Settings: To configure payment processing.
 
 Role-Specific Access:
 
-Within this administrative app, we would use the role-based access control we discussed to ensure that Store Managers and Sales Agents only see and can interact with the screens and data relevant to their roles. For example:
+Within this B2B app, we would use the role-based access control we discussed to ensure that Business Owners and Sales Agents only see and can interact with the screens and data relevant to their roles. For example:
 
-- Store Managers would likely have full access to product, inventory, order, and user management (within their scope).
-- Sales Agents would focus on customer management, creating orders for their assigned customers, and accessing sales reports related to their performance.
+- Business Owners would likely have full access to product, inventory, order, and user management (within their scope).
+- Sales Agents would focus on creating orders for their assigned customers, and accessing sales reports related to their performance.

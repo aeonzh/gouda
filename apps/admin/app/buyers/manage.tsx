@@ -66,7 +66,7 @@ export default function ManageBuyerScreen() {
     try {
       const buyerData: Partial<Profile> = {
         username: username.trim(),
-        full_name: fullName.trim() || null,
+        full_name: fullName.trim() || undefined,
       };
 
       if (isEditing) {

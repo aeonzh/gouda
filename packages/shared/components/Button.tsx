@@ -20,6 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'default',
   className = '',
+  children,
 }) => {
   const baseClasses = 'flex-row items-center justify-center rounded-md';
   let variantClasses = '';

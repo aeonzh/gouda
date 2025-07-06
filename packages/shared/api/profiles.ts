@@ -5,7 +5,7 @@ export interface Profile {
   username: string;
   full_name?: string;
   avatar_url?: string;
-  role: 'customer' | 'admin' | 'seller_agent';
+  role: 'customer' | 'admin' | 'sales_agent';
   created_at: string;
   updated_at: string;
 }

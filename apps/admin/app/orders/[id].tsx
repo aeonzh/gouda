@@ -124,10 +124,10 @@ export default function OrderDetailsScreen() {
           <Text className="text-base text-gray-700">
             <Text className="font-semibold">Cuyer ID:</Text> {order.user_id}
           </Text>
-          {order.seller_agent_id && (
+          {order.sales_agent_id && (
             <Text className="text-base text-gray-700">
-              <Text className="font-semibold">Seller Agent ID:</Text>{' '}
-              {order.seller_agent_id}
+              <Text className="font-semibold">Sales Agent ID:</Text>{' '}
+              {order.sales_agent_id}
             </Text>
           )}
         </View>

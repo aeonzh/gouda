@@ -67,11 +67,11 @@ export default function InitialLayout() {
             return;
           }
 
-          // Basic role-based redirection: Admins and seller agents go to tabs
-          if (profile?.role === 'admin' || profile?.role === 'seller_agent') {
+          // Basic role-based redirection: Admins and sales agents go to tabs
+          if (profile?.role === 'admin' || profile?.role === 'sales_agent') {
             router.replace('/(tabs)');
           } else {
-            // If not an admin or seller_agent, log them out or redirect to a generic error page
+            // If not an admin or sales_agent, log them out or redirect to a generic error page
             console.warn('Unauthorized role detected. Logging out.');
             supabase.auth.signOut(); // Sign out the unauthorized user
             router.replace('/(auth)/login'); // Redirect to login page

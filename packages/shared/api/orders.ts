@@ -22,7 +22,7 @@ export interface CartItem {
 export interface Order {
   id: string;
   user_id: string;
-  seller_agent_id?: string;
+  sales_agent_id?: string;
   order_date: string;
   total_amount: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
@@ -362,15 +362,15 @@ export async function updateOrderStatus(
 }
 
 /**
- * Allows a seller agent to create an order on behalf of a customer. (Seller Agent only)
+ * Allows a sales agent to create an order on behalf of a customer. (Sales Agent only)
  * @param {string} customerId - The ID of the customer for whom the order is created.
- * @param {string} sellerAgentId - The ID of the seller agent creating the order.
+ * @param {string} salesAgentId - The ID of the sales agent creating the order.
  * @param {Array<{productId: string, quantity: number, priceAtOrder: number}>} items - Array of items to include in the order.
  * @returns {Promise<Order | null>} A promise that resolves to the created order or null on error.
  */
 export async function createOrderForCustomer(
   customerId: string,
-  sellerAgentId: string,
+  salesAgentId: string,
   items: Array<{ productId: string; quantity: number; priceAtOrder: number }>,
 ): Promise<Order | null> {
   if (!items || items.length === 0) {
@@ -387,7 +387,7 @@ export async function createOrderForCustomer(
     .insert([
       {
         user_id: customerId,
-        seller_agent_id: sellerAgentId,
+        sales_agent_id: salesAgentId,
         total_amount: totalAmount,
         status: 'pending',
       },

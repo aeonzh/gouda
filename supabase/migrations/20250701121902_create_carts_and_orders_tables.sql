@@ -25,7 +25,7 @@ CREATE TABLE cart_items (
 CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL, -- The customer
-  seller_agent_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- Nullable, if created by a seller agent
+  sales_agent_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- Nullable, if created by a sales agent
   order_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   total_amount NUMERIC(10, 2) NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending', -- e.g., 'pending', 'processing', 'shipped', 'delivered', 'cancelled'
@@ -76,14 +76,14 @@ CREATE POLICY "Customers can view their own orders." ON orders FOR SELECT USING 
 CREATE POLICY "Admins can view all orders." ON orders FOR SELECT USING (auth.role() = 'admin');
 CREATE POLICY "Admins can update order status." ON orders FOR UPDATE USING (auth.role() = 'admin');
 CREATE POLICY "Admins can create orders on behalf of customers." ON orders FOR INSERT WITH CHECK (auth.role() = 'admin');
--- Seller agents can SELECT all orders and INSERT orders on behalf of customers
-CREATE POLICY "Seller agents can view all orders." ON orders FOR SELECT USING (auth.role() = 'seller_agent');
-CREATE POLICY "Seller agents can create orders on behalf of customers." ON orders FOR INSERT WITH CHECK (auth.role() = 'seller_agent');
+-- Sales agents can SELECT all orders and INSERT orders on behalf of customers
+CREATE POLICY "Sales agents can view all orders." ON orders FOR SELECT USING (auth.role() = 'sales_agent');
+CREATE POLICY "Sales agents can create orders on behalf of customers." ON orders FOR INSERT WITH CHECK (auth.role() = 'sales_agent');
 
 -- RLS Policies for order_items
 -- Customers can SELECT their own order items
 CREATE POLICY "Customers can view their own order items." ON order_items FOR SELECT USING (EXISTS (SELECT 1 FROM orders WHERE orders.id = order_id AND orders.user_id = auth.uid()));
 -- Admins can SELECT all order items
 CREATE POLICY "Admins can view all order items." ON order_items FOR SELECT USING (auth.role() = 'admin');
--- Seller agents can SELECT all order items
-CREATE POLICY "Seller agents can view all order items." ON order_items FOR SELECT USING (auth.role() = 'seller_agent');
+-- Sales agents can SELECT all order items
+CREATE POLICY "Sales agents can view all order items." ON order_items FOR SELECT USING (auth.role() = 'sales_agent');

@@ -7,7 +7,7 @@ This document outlines a detailed step-by-step plan for building the Gouda B2B w
 The Gouda project aims to develop a B2B wholesale store platform consisting of two main mobile applications:
 
 1.  **Customer Application**: A mobile interface for customers to browse products, create orders, manage accounts, and view order history.
-2.  **Administrative Application**: A mobile interface for store managers and seller agents to manage products, inventory, orders, customers, and administrative users, with role-based functionalities.
+2.  **Administrative Application**: A mobile interface for store managers and sales agents to manage products, inventory, orders, customers, and administrative users, with role-based functionalities.
 
 Both applications will be built using React Native, Expo, and NativeWind for styling, supported by a robust backend API, with Supabase as the chosen backend-as-a-service.
 
@@ -254,7 +254,7 @@ graph TD
     - [x] 4.1.4: Implement Supabase queries to list customer's order history. (MVP)
     - [x] 4.1.5: Implement Supabase queries to get detailed order information. (MVP)
     - [x] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
-    - [x] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of customers. (MVP)
+    - [x] 4.1.7: Implement Supabase queries for sales agents to create orders on behalf of customers. (MVP)
 
 - [ ] **Task 4.2: Customer App Shopping Cart & Order Creation UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Customer application.
@@ -284,7 +284,7 @@ graph TD
     - [ ] 4.4.3: Create Admin Order Details screen UI. (MVP)
     - [ ] 4.4.4: Implement order details API integration for admin. (MVP)
     - [ ] 4.4.5: Implement 'Update Order Status' functionality with API integration. (MVP)
-    - [ ] 4.4.6: Create 'Create Order for Customer' screen UI (for Seller Agent). (MVP)
+    - [ ] 4.4.6: Create 'Create Order for Customer' screen UI (for Sales Agent). (MVP)
     - [ ] 4.4.7: Implement 'Create Order for Customer' API integration and logic. (MVP)
 
 ### 5. User/Customer & Inventory Management (MVP)

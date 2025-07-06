@@ -175,12 +175,12 @@ export default function CreateOrderScreen() {
 
     setSubmitting(true);
     try {
-      // TODO: Get sellerAgentId from current authenticated admin user
-      const sellerAgentId = 'YOUR_ADMIN_USER_ID'; // Placeholder for now
+      // TODO: Get salesAgentId from current authenticated admin user
+      const salesAgentId = 'YOUR_ADMIN_USER_ID'; // Placeholder for now
 
       await createOrderForCustomer(
         selectedCustomerId,
-        sellerAgentId,
+        salesAgentId,
         parsedItems,
       );
       Alert.alert('Success', 'Order created successfully!');

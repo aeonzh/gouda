@@ -9,17 +9,17 @@ CREATE TABLE profiles (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create the addresses table
-CREATE TABLE addresses (
+-- Create the business_details table
+CREATE TABLE business_details (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  business_name TEXT NOT NULL,
   address_line1 TEXT NOT NULL,
   address_line2 TEXT,
   city TEXT NOT NULL,
   state TEXT NOT NULL,
   postal_code TEXT NOT NULL,
   country TEXT NOT NULL,
-  is_default BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -30,7 +30,7 @@ ADD COLUMN stock_quantity INTEGER NOT NULL DEFAULT 0;
 
 -- Enable Row Level Security (RLS) for new tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE business_details ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for profiles
 -- Users can view their own profile
@@ -46,14 +46,14 @@ CREATE POLICY "Admins can update any profile." ON profiles FOR UPDATE USING (aut
 -- Admins can delete profiles
 CREATE POLICY "Admins can delete profiles." ON profiles FOR DELETE USING (auth.role() = 'admin');
 
--- RLS Policies for addresses
--- Users can view their own addresses
-CREATE POLICY "Users can view their own addresses." ON addresses FOR SELECT USING (auth.uid() = user_id);
--- Users can add their own addresses
-CREATE POLICY "Users can add their own addresses." ON addresses FOR INSERT WITH CHECK (auth.uid() = user_id);
--- Users can update their own addresses
-CREATE POLICY "Users can update their own addresses." ON addresses FOR UPDATE USING (auth.uid() = user_id);
--- Users can delete their own addresses
-CREATE POLICY "Users can delete their own addresses." ON addresses FOR DELETE USING (auth.uid() = user_id);
--- Admins can view all addresses
-CREATE POLICY "Admins can view all addresses." ON addresses FOR SELECT USING (auth.role() = 'admin');
+-- RLS Policies for business_details
+-- Users can view their own business details
+CREATE POLICY "Users can view their own business details." ON business_details FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = profile_id AND profiles.id = auth.uid()));
+-- Users can add their own business details
+CREATE POLICY "Users can add their own business details." ON business_details FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = profile_id AND profiles.id = auth.uid()));
+-- Users can update their own business details
+CREATE POLICY "Users can update their own business details." ON business_details FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = profile_id AND profiles.id = auth.uid()));
+-- Users can delete their own business details
+CREATE POLICY "Users can delete their own business details." ON business_details FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = profile_id AND profiles.id = auth.uid()));
+-- Admins can view all business details
+CREATE POLICY "Admins can view all business details." ON business_details FOR SELECT USING (auth.role() = 'admin');

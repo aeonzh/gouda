@@ -10,6 +10,7 @@ interface InputProps {
   className?: string;
   labelClassName?: string;
   inputClassName?: string;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
 export const Input = ({
@@ -22,6 +23,7 @@ export const Input = ({
   className = '',
   labelClassName = '',
   inputClassName = '',
+  autoCapitalize = 'sentences', // Default to 'sentences' for general input
 }: InputProps) => {
   return (
     <View className={`w-full ${className}`}>
@@ -40,6 +42,7 @@ export const Input = ({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         placeholderTextColor="#9ca3af"
+        autoCapitalize={autoCapitalize}
       />
     </View>
   );

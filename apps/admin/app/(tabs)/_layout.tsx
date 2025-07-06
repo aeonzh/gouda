@@ -26,6 +26,14 @@ export default function TabLayout() {
           headerShown: false, // Hide header for the tab screen itself, as individual screens will have their own headers
         }}
       />
+      <Tabs.Screen
+        name="buyers"
+        options={{
+          title: 'Buyers',
+          tabBarIcon: ({ color }) => <TabBarIcon name="people" color={color} />,
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

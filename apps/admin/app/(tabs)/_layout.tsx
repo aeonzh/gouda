@@ -34,6 +34,16 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="inventory"
+        options={{
+          title: 'Inventory',
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="archive" color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

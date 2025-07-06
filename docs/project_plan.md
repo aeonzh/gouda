@@ -1,13 +1,13 @@
 # Gouda Project - Detailed Implementation Plan
 
-This document outlines a detailed step-by-step plan for building the Gouda B2B wholesale store platform, encompassing both the Buyer and Administrative mobile applications, and their underlying backend infrastructure. The plan is broken down into phases, tasks, and subtasks, with dependencies clearly identified.
+This document outlines a detailed step-by-step plan for building the Gouda B2B wholesale store platform, encompassing both the Customer and Administrative mobile applications, and their underlying backend infrastructure. The plan is broken down into phases, tasks, and subtasks, with dependencies clearly identified.
 
 ## Project Overview
 
 The Gouda project aims to develop a B2B wholesale store platform consisting of two main mobile applications:
 
-1.  **Buyer Application**: A mobile interface for buyers to browse products, create orders, manage accounts, and view order history.
-2.  **Administrative Application**: A mobile interface for store managers and seller agents to manage products, inventory, orders, buyers, and administrative users, with role-based functionalities.
+1.  **Customer Application**: A mobile interface for customers to browse products, create orders, manage accounts, and view order history.
+2.  **Administrative Application**: A mobile interface for store managers and seller agents to manage products, inventory, orders, customers, and administrative users, with role-based functionalities.
 
 Both applications will be built using React Native, Expo, and NativeWind for styling, supported by a robust backend API, with Supabase as the chosen backend-as-a-service.
 
@@ -17,7 +17,7 @@ Both applications will be built using React Native, Expo, and NativeWind for sty
 graph TD
     subgraph Phase 1: Project Setup & Core Infrastructure
         A[1.1: Initialize Monorepo Structure] --> B(1.2: High-Level Backend API Design)
-        A --> C(1.3: Initialize Buyer Application)
+        A --> C(1.3: Initialize Customer Application)
         A --> D(1.4: Initialize Administrative Application)
         C --> E(1.5: Setup Shared Components & Utilities)
         D --> E
@@ -25,7 +25,7 @@ graph TD
 
     subgraph Phase 2: Authentication Implementation
         B --> F(2.1: Implement Backend Authentication Endpoints)
-        C --> G(2.2: Buyer App Authentication UI & Logic)
+        C --> G(2.2: Customer App Authentication UI & Logic)
         D --> H(2.3: Admin App Authentication UI & Logic)
         F --> G
         F --> H
@@ -35,7 +35,7 @@ graph TD
 
     subgraph Phase 3: Product Catalog & Search Implementation
         B --> I(3.1: Implement Backend Product Endpoints)
-        G --> J(3.2: Buyer App Product Catalog UI & Logic)
+        G --> J(3.2: Customer App Product Catalog UI & Logic)
         H --> K(3.3: Admin App Product Management UI & Logic)
         I --> J
         I --> K
@@ -46,10 +46,10 @@ graph TD
     subgraph Phase 4: Shopping Cart & Order Management
         B --> L(4.1: Implement Backend Order Endpoints)
         I --> L
-        J --> M(4.2: Buyer App Shopping Cart & Order Creation UI & Logic)
+        J --> M(4.2: Customer App Shopping Cart & Order Creation UI & Logic)
         L --> M
         E --> M
-        M --> N(4.3: Buyer App Order History UI & Logic)
+        M --> N(4.3: Customer App Order History UI & Logic)
         L --> N
         E --> N
         K --> O(4.4: Admin App Order Management UI & Logic)
@@ -60,10 +60,10 @@ graph TD
 
     subgraph Phase 5: User/Customer & Inventory Management
         B --> P(5.1: Implement Backend User/Customer & Inventory Endpoints)
-        N --> Q(5.2: Buyer App User Profile UI & Logic)
+        N --> Q(5.2: Customer App User Profile UI & Logic)
         P --> Q
         E --> Q
-        O --> R(5.3: Admin App Customer/Buyer Management UI & Logic)
+        O --> R(5.3: Admin App Customer/Customer Management UI & Logic)
         P --> R
         E --> R
         H --> R
@@ -109,7 +109,7 @@ graph TD
         Z --> CC
         AA --> CC
         BB --> CC
-        Y --> DD(8.2: Mobile App Deployment Buyer & Admin)
+        Y --> DD(8.2: Mobile App Deployment Customer & Admin)
         Z --> DD
         AA --> DD
         BB --> DD
@@ -131,7 +131,7 @@ graph TD
 ### 1. Project Setup & Core Infrastructure
 
 - [ ] **Task 1.1: Initialize Monorepo Structure (MVP)**
-  - **Description**: Set up a monorepo (e.g., using Expo's built-in monorepo support or a tool like Nx/Lerna) to host both Buyer and Admin applications, and potentially a shared backend/common utilities.
+  - **Description**: Set up a monorepo (e.g., using Expo's built-in monorepo support or a tool like Nx/Lerna) to host both Customer and Admin applications, and potentially a shared backend/common utilities.
   - **Dependencies**: None
   - **Subtasks**:
     - [ ] 1.1.1: Choose monorepo tool/strategy. (MVP)
@@ -152,11 +152,11 @@ graph TD
     - [ ] 1.2.8: Define API endpoints for order management (create, view, update status) using Supabase. (MVP)
     - [ ] 1.2.9: Define API endpoints for user/customer management using Supabase. (MVP)
 
-- [ ] **Task 1.3: Initialize Buyer Application (MVP)**
-  - **Description**: Create the React Native/Expo project for the Buyer application within the monorepo and configure NativeWind for styling.
+- [ ] **Task 1.3: Initialize Customer Application (MVP)**
+  - **Description**: Create the React Native/Expo project for the Customer application within the monorepo and configure NativeWind for styling.
   - **Dependencies**: Task 1.1
   - **Subtasks**:
-    - [ ] 1.3.1: Create new Expo project for Buyer app. (MVP)
+    - [ ] 1.3.1: Create new Expo project for Customer app. (MVP)
     - [ ] 1.3.2: Integrate NativeWind and Tailwind CSS configuration. (MVP)
     - [ ] 1.3.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
 
@@ -179,7 +179,7 @@ graph TD
 ### 2. Authentication Implementation (MVP)
 
 - [ ] **Task 2.1: Implement Backend Authentication (Supabase) (MVP)**
-  - **Description**: Develop the necessary backend API endpoints for user registration, login, and potentially password reset for both buyer and administrative users.
+  - **Description**: Develop the necessary backend API endpoints for user registration, login, and potentially password reset for both customer and administrative users.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
     - [ ] 2.1.1: Configure Supabase Authentication (Email/Password). (MVP)
@@ -187,8 +187,8 @@ graph TD
     - [ ] 2.1.3: Implement user login using Supabase client library. (MVP)
     - [ ] 2.1.4: Implement password reset/forgot password using Supabase client library (if in scope). (MVP)
 
-- [ ] **Task 2.2: Buyer App Authentication UI & Logic (MVP)**
-  - **Description**: Develop the user interface and integrate the authentication logic for the Buyer application (Login, Sign Up, Forgot Password screens).
+- [ ] **Task 2.2: Customer App Authentication UI & Logic (MVP)**
+  - **Description**: Develop the user interface and integrate the authentication logic for the Customer application (Login, Sign Up, Forgot Password screens).
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.1
   - **Subtasks**:
     - [ ] 2.2.1: Create Login screen UI. (MVP)
@@ -220,8 +220,8 @@ graph TD
     - [x] 3.1.5: Design `categories` table schema and implement management queries. (MVP)
     - [x] 3.1.6: Implement Supabase queries for adding, editing, and deleting products (Admin only). (MVP)
 
-- [ ] **Task 3.2: Buyer App Product Catalog UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for product browsing, search, filtering, and viewing product details in the Buyer application.
+- [ ] **Task 3.2: Customer App Product Catalog UI & Logic (MVP)**
+  - **Description**: Develop the UI and integrate logic for product browsing, search, filtering, and viewing product details in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.2, Task 3.1
   - **Subtasks**:
     - [ ] 3.2.1: Create Product Listing/Catalog screen UI. (MVP)
@@ -251,13 +251,13 @@ graph TD
     - [x] 4.1.1: Design `carts` and `orders` table schemas in Supabase. (MVP)
     - [x] 4.1.2: Implement Supabase queries for shopping cart operations (add, remove, update quantity). (MVP)
     - [x] 4.1.3: Implement Supabase queries for creating a new order from a cart. (MVP)
-    - [x] 4.1.4: Implement Supabase queries to list buyer's order history. (MVP)
+    - [x] 4.1.4: Implement Supabase queries to list customer's order history. (MVP)
     - [x] 4.1.5: Implement Supabase queries to get detailed order information. (MVP)
     - [x] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
-    - [x] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of buyers. (MVP)
+    - [x] 4.1.7: Implement Supabase queries for seller agents to create orders on behalf of customers. (MVP)
 
-- [ ] **Task 4.2: Buyer App Shopping Cart & Order Creation UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Buyer application.
+- [ ] **Task 4.2: Customer App Shopping Cart & Order Creation UI & Logic (MVP)**
+  - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 3.2, Task 4.1
   - **Subtasks**:
     - [ ] 4.2.1: Create Shopping Cart screen UI. (MVP)
@@ -266,14 +266,14 @@ graph TD
     - [ ] 4.2.4: Create Order Confirmation screen UI. (MVP)
     - [ ] 4.2.5: Implement order creation API integration and display confirmation. (MVP)
 
-- [x] **Task 4.3: Buyer App Order History UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for viewing past order history and status updates in the Buyer application.
+- [x] **Task 4.3: Customer App Order History UI & Logic (MVP)**
+  - **Description**: Develop the UI and integrate logic for viewing past order history and status updates in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 4.1
   - **Subtasks**:
     - [x] 4.3.1: Create Order History list screen UI. (MVP)
     - [x] 4.3.2: Implement order history API integration and display. (MVP)
-    - [x] 4.3.3: Create Order Details screen UI for buyers. (MVP)
-    - [x] 4.3.4: Implement order details API integration for buyers. (MVP)
+    - [x] 4.3.3: Create Order Details screen UI for customers. (MVP)
+    - [x] 4.3.4: Implement order details API integration for customers. (MVP)
 
 - [ ] **Task 4.4: Admin App Order Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing, managing, and updating the status of orders in the Administrative application.
@@ -284,26 +284,26 @@ graph TD
     - [ ] 4.4.3: Create Admin Order Details screen UI. (MVP)
     - [ ] 4.4.4: Implement order details API integration for admin. (MVP)
     - [ ] 4.4.5: Implement 'Update Order Status' functionality with API integration. (MVP)
-    - [ ] 4.4.6: Create 'Create Order for Buyer' screen UI (for Seller Agent). (MVP)
-    - [ ] 4.4.7: Implement 'Create Order for Buyer' API integration and logic. (MVP)
+    - [ ] 4.4.6: Create 'Create Order for Customer' screen UI (for Seller Agent). (MVP)
+    - [ ] 4.4.7: Implement 'Create Order for Customer' API integration and logic. (MVP)
 
 ### 5. User/Customer & Inventory Management (MVP)
 
 - [x] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
-  - **Description**: Develop backend API endpoints for managing buyer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
+  - **Description**: Develop backend API endpoints for managing customer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
     - [x] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
-    - [ ] 5.1.2: Implement Supabase queries to get/update buyer profile. (MVP)
+    - [ ] 5.1.2: Implement Supabase queries to get/update customer profile. (MVP)
     - [x] 5.1.3: Implement Supabase queries for managing business details (add, edit, delete). (MVP)
-    - [ ] 5.1.4: Implement Supabase queries to list all buyers (Admin only). (MVP)
-    - [ ] 5.1.5: Implement Supabase queries for adding/editing buyer accounts (Admin only). (MVP)
+    - [ ] 5.1.4: Implement Supabase queries to list all customers (Admin only). (MVP)
+    - [ ] 5.1.5: Implement Supabase queries for adding/editing customer accounts (Admin only). (MVP)
     - [ ] 5.1.6: Implement Supabase queries to list inventory levels. (MVP)
     - [ ] 5.1.7: Implement Supabase queries to adjust inventory levels (Admin only). (MVP)
     - [ ] 5.1.8: Implement Supabase queries for managing administrative users and roles (Super Admin only). (Future)
 
-- [ ] **Task 5.2: Buyer App User Profile UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for viewing and editing personal information and managing shipping addresses in the Buyer application.
+- [ ] **Task 5.2: Customer App User Profile UI & Logic (MVP)**
+  - **Description**: Develop the UI and integrate logic for viewing and editing personal information and managing shipping addresses in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 5.1
   - **Subtasks**:
     - [ ] 5.2.1: Create My Account/Profile screen UI. (MVP)
@@ -311,16 +311,16 @@ graph TD
     - [ ] 5.2.3: Create Saved Addresses screen UI. (MVP)
     - [ ] 5.2.4: Implement shipping address management (add, edit, delete) with API integration. (MVP)
 
-- [ ] **Task 5.3: Admin App Customer/Buyer Management UI & Logic (MVP)**
-  - **Description**: Develop the UI and integrate logic for viewing and managing buyer accounts in the Administrative application.
+- [ ] **Task 5.3: Admin App Customer/Customer Management UI & Logic (MVP)**
+  - **Description**: Develop the UI and integrate logic for viewing and managing customer accounts in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 5.1
   - **Subtasks**:
-    - [ ] 5.3.1: Create Admin Buyer List screen UI. (MVP)
-    - [ ] 5.3.2: Implement buyer list API integration. (MVP)
-    - [ ] 5.3.3: Create Buyer Details screen UI. (MVP)
-    - [ ] 5.3.4: Implement buyer details API integration. (MVP)
-    - [ ] 5.3.5: Create Add/Edit Buyer screen UI. (MVP)
-    - [ ] 5.3.6: Implement add/edit buyer API integration. (MVP)
+    - [ ] 5.3.1: Create Admin Customer List screen UI. (MVP)
+    - [ ] 5.3.2: Implement customer list API integration. (MVP)
+    - [ ] 5.3.3: Create Customer Details screen UI. (MVP)
+    - [ ] 5.3.4: Implement customer details API integration. (MVP)
+    - [ ] 5.3.5: Create Add/Edit Customer screen UI. (MVP)
+    - [ ] 5.3.6: Implement add/edit customer API integration. (MVP)
 
 - [ ] **Task 5.4: Admin App Inventory Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for monitoring and adjusting inventory levels in the Administrative application.
@@ -345,7 +345,7 @@ graph TD
   - **Description**: Develop backend API endpoints to generate various reports (e.g., sales, inventory) and potentially handle pricing rules/discounts.
   - **Dependencies**: Task 1.2, Task 3.1, Task 4.1, Task 5.1
   - **Subtasks**:
-    - [ ] 6.1.1: Implement Supabase queries/functions for sales reports (by product, buyer, date range). (Future)
+    - [ ] 6.1.1: Implement Supabase queries/functions for sales reports (by product, customer, date range). (Future)
     - [ ] 6.1.2: Implement Supabase queries/functions for inventory reports. (Future)
     - [ ] 6.1.3: Implement Supabase queries/functions for managing pricing rules and discounts (if applicable). (Future)
 
@@ -405,7 +405,7 @@ graph TD
   - **Dependencies**: Task 7.2
   - **Subtasks**:
     - [ ] 7.3.1: Choose an E2E testing framework (e.g., Detox for React Native). (Future)
-    - [ ] 7.3.2: Write E2E tests for critical user journeys (e.g., buyer registration to order placement). (Future)
+    - [ ] 7.3.2: Write E2E tests for critical user journeys (e.g., customer registration to order placement). (Future)
     - [ ] 7.3.3: Write E2E tests for critical admin workflows (e.g., product creation to order status update). (Future)
 
 - [ ] **Task 7.4: Manual Testing & User Acceptance Testing (UAT) (Future)**
@@ -427,7 +427,7 @@ graph TD
     - [ ] 8.1.2: Set up CI/CD for Supabase database migrations and Edge Functions. (MVP)
     - [ ] 8.1.3: Configure Supabase environment variables and secrets. (MVP)
 
-- [ ] **Task 8.2: Mobile App Deployment (Buyer & Admin) (MVP)**
+- [ ] **Task 8.2: Mobile App Deployment (Customer & Admin) (MVP)**
   - **Description**: Prepare and deploy both React Native applications to respective app stores (Apple App Store, Google Play Store) or internal distribution channels.
   - **Dependencies**: All frontend development and testing tasks completed.
   - **Subtasks**:

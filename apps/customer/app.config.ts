@@ -1,9 +1,9 @@
-import { ExpoConfig, ConfigContext } from '@expo/config';
+import { ConfigContext, ExpoConfig } from '@expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'buyer',
-  slug: 'buyer',
+  name: 'customer',
+  slug: 'customer',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',

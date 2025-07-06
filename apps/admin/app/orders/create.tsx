@@ -12,13 +12,13 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Address, createOrderForBuyer } from 'shared/api/orders';
+import { createOrderForCustomer } from 'shared/api/orders';
 import { Product, getProducts } from 'shared/api/products';
 import { supabase } from 'shared/api/supabase';
 
 // Assuming profiles table is accessible via supabase client
 
-interface Buyer {
+interface Customer {
   id: string;
   full_name: string;
   email: string;
@@ -32,11 +32,11 @@ interface OrderItemInput {
 
 export default function CreateOrderScreen() {
   const router = useRouter();
-  const [buyers, setBuyers] = useState<Buyer[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedBuyerId, setSelectedBuyerId] = useState<string | undefined>(
-    undefined,
-  );
+  const [selectedCustomerId, setSelectedCustomerId] = useState<
+    string | undefined
+  >(undefined);
   const [orderItems, setOrderItems] = useState<OrderItemInput[]>([
     { productId: '', quantity: '', priceAtOrder: '' },
   ]);
@@ -44,30 +44,30 @@ export default function CreateOrderScreen() {
     street: '',
     city: '',
     state: '',
-    zip_code: '',
+    zipCode: '',
     country: '',
   });
   const [billingAddress, setBillingAddress] = useState<Address>({
     street: '',
     city: '',
     state: '',
-    zip_code: '',
+    zipCode: '',
     country: '',
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchBuyersAndProducts = useCallback(async () => {
+  const fetchCustomersAndProducts = useCallback(async () => {
     try {
       setLoading(true);
-      // Fetch buyers (users with 'buyer' role from profiles table)
+      // Fetch customers (users with 'customer' role from profiles table)
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, username') // Assuming username is email
-        .eq('role', 'buyer');
+        .eq('role', 'customer');
 
       if (profilesError) throw profilesError;
-      setBuyers(
+      setCustomers(
         profilesData.map((p) => ({
           id: p.id,
           full_name: p.full_name,
@@ -80,15 +80,15 @@ export default function CreateOrderScreen() {
       setProducts(productsData || []);
     } catch (error: any) {
       Alert.alert('Error', `Failed to load data: ${error.message}`);
-      console.error('Error fetching buyers or products:', error);
+      console.error('Error fetching customers or products:', error);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchBuyersAndProducts();
-  }, [fetchBuyersAndProducts]);
+    fetchCustomersAndProducts();
+  }, [fetchCustomersAndProducts]);
 
   const handleAddItem = () => {
     setOrderItems([
@@ -119,15 +119,15 @@ export default function CreateOrderScreen() {
     value: string,
   ) => {
     if (addressType === 'shipping') {
-      setShippingAddress((prev) => ({ ...prev, [field]: value }));
+      setShippingAddress((prev: Address) => ({ ...prev, [field]: value }));
     } else {
-      setBillingAddress((prev) => ({ ...prev, [field]: value }));
+      setBillingAddress((prev: Address) => ({ ...prev, [field]: value }));
     }
   };
 
   const handleSubmit = async () => {
-    if (!selectedBuyerId) {
-      Alert.alert('Validation Error', 'Please select a buyer.');
+    if (!selectedCustomerId) {
+      Alert.alert('Validation Error', 'Please select a customer.');
       return;
     }
 
@@ -159,10 +159,10 @@ export default function CreateOrderScreen() {
 
     // Basic address validation
     const isShippingAddressValid = Object.values(shippingAddress).every(
-      (val) => val.trim() !== '',
+      (val: string) => val.trim() !== '',
     );
     const isBillingAddressValid = Object.values(billingAddress).every(
-      (val) => val.trim() !== '',
+      (val: string) => val.trim() !== '',
     );
 
     if (!isShippingAddressValid || !isBillingAddressValid) {
@@ -178,12 +178,10 @@ export default function CreateOrderScreen() {
       // TODO: Get sellerAgentId from current authenticated admin user
       const sellerAgentId = 'YOUR_ADMIN_USER_ID'; // Placeholder for now
 
-      await createOrderForBuyer(
-        selectedBuyerId,
+      await createOrderForCustomer(
+        selectedCustomerId,
         sellerAgentId,
         parsedItems,
-        shippingAddress,
-        billingAddress,
       );
       Alert.alert('Success', 'Order created successfully!');
       router.back();
@@ -221,25 +219,25 @@ export default function CreateOrderScreen() {
         }}
       />
       <ScrollView className="p-4">
-        {/* Buyer Selection */}
+        {/* Customer Selection */}
         <View className="mb-4 bg-white p-4 rounded-lg shadow-md">
           <Text className="text-base font-medium text-gray-700 mb-1">
-            Select Buyer:
+            Select Customer:
           </Text>
           <View className="border border-gray-300 rounded-lg bg-white">
             <Picker
-              selectedValue={selectedBuyerId}
+              selectedValue={selectedCustomerId}
               onValueChange={(itemValue: string | undefined) =>
-                setSelectedBuyerId(itemValue)
+                setSelectedCustomerId(itemValue)
               }
               className="w-full text-gray-800"
             >
-              <Picker.Item label="-- Select a Buyer --" value={undefined} />
-              {buyers.map((buyer) => (
+              <Picker.Item label="-- Select a Customer --" value={undefined} />
+              {customers.map((customer) => (
                 <Picker.Item
-                  key={buyer.id}
-                  label={`${buyer.full_name} (${buyer.email})`}
-                  value={buyer.id}
+                  key={customer.id}
+                  label={`${customer.full_name} (${customer.email})`}
+                  value={customer.id}
                 />
               ))}
             </Picker>
@@ -367,9 +365,9 @@ export default function CreateOrderScreen() {
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
             placeholder="Zip Code"
-            value={shippingAddress.zip_code}
+            value={shippingAddress.zipCode}
             onChangeText={(text) =>
-              handleAddressChange('shipping', 'zip_code', text)
+              handleAddressChange('shipping', 'zipCode', text)
             }
           />
           <TextInput
@@ -414,9 +412,9 @@ export default function CreateOrderScreen() {
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
             placeholder="Zip Code"
-            value={billingAddress.zip_code}
+            value={billingAddress.zipCode}
             onChangeText={(text) =>
-              handleAddressChange('billing', 'zip_code', text)
+              handleAddressChange('billing', 'zipCode', text)
             }
           />
           <TextInput

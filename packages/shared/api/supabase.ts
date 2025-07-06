@@ -6,7 +6,7 @@ const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error(
-    'Supabase URL or Anon Key is not defined in app.json extra field.'
+    'Supabase URL or Anon Key is not defined in app.json extra field.',
   );
   // Fallback for development or error handling
   // In a production app, you might want to throw an error or prevent app load
@@ -14,13 +14,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(
   supabaseUrl || 'YOUR_SUPABASE_URL',
-  supabaseAnonKey || 'YOUR_SUPABASE_ANON_KEY'
+  supabaseAnonKey || 'YOUR_SUPABASE_ANON_KEY',
 );
 
 export async function signUpWithEmail(
   email: string,
   password: string,
-  fullName: string
+  fullName: string,
 ) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -44,7 +44,7 @@ export async function signUpWithEmail(
         id: data.user.id,
         full_name: fullName,
         username: email, // Using email as username for simplicity, can be changed later
-        role: 'buyer', // Default role for new sign-ups
+        role: 'customer', // Default role for new sign-ups
       },
     ]);
 

@@ -1,16 +1,16 @@
-# Buyer Application PRD
+# Customer Application PRD
 
 ## 1. Project Overview
 
-This document outlines the requirements for the Buyer application, a mobile application designed to serve as the primary interface for buyers interacting with the B2B wholesale store platform. The application will allow buyers to browse products, create orders, manage their accounts, and view their order history.
+This document outlines the requirements for the Customer application, a mobile application designed to serve as the primary interface for Customers interacting with the B2B wholesale store platform. The application will allow Customers to browse products, create orders, manage their accounts, and view their order history.
 
 ## 2. Core Requirements
 
-- Enable buyers to register and log in securely.
-- Provide a clear and intuitive way for buyers to discover and view products.
-- Allow buyers to add products to a shopping cart and create an order from it.
+- Enable Customers to register and log in securely.
+- Provide a clear and intuitive way for Customers to discover and view products.
+- Allow Customers to add products to a shopping cart and create an order from it.
 - Provide access to past order history and status updates.
-- Allow buyers to manage their profile information.
+- Allow Customers to manage their profile information.
 
 ## 3. Core Features
 
@@ -46,7 +46,7 @@ A typical user flow would involve:
 
 ## 6. Tech Stack
 
-The Buyer application will be built using:
+The Customer application will be built using:
 
 - React Native
 - Expo
@@ -69,24 +69,24 @@ Subsequent iterations will focus on adding features like payment method manageme
 
 ---
 
-Buyer Application Screens:
+Customer Application Screens:
 
 Authentication Screens:
 
-- Login: For existing buyers to sign in.
-- Sign Up/Registration: Depending on your business model, you might allow buyers to request an account or sign up directly.
-- Forgot Password: To help buyers reset their password.
+- Login: For existing Customers to sign in.
+- Sign Up/Registration: Depending on your business model, you might allow Customers to request an account or sign up directly.
+- Forgot Password: To help Customers reset their password.
 
 Product Browsing and Discovery:
 
 - Home/Dashboard: A landing page that might feature promotions, new arrivals, or curated collections.
 - Product Listing/Catalog: To display products, likely with filtering and sorting options (by category, price, etc.).
 - Product Details: To show detailed information about a single product (description, images, pricing, availability).
-- Search Results: To display results based on buyer searches.
+- Search Results: To display results based on Customer searches.
 
 Ordering and Purchasing:
 
-- Shopping Cart: To manage items the buyer wants to purchase.
+- Shopping Cart: To manage items the Customer wants to purchase.
 - Checkout: A multi-step process to finalize the order (shipping information, payment method, order review).
 - Order Confirmation: To display a summary of the placed order.
 
@@ -94,7 +94,7 @@ Account Management:
 
 - My Account/Profile: To view and edit personal information.
 - Order History: To view past orders and their status.
-- Saved Addresses: (Removed as per user's request for no buyer shipping addresses)
+- Saved Addresses: (Removed as per user's request for no Customer shipping addresses)
 - Payment Methods: To manage saved payment information (if applicable).
 
 Other potentially useful screens:

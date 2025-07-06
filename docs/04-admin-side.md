@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-This document outlines the requirements for the Administrative application, a mobile application designed to serve as the interface for store managers and seller agents interacting with the B2B wholesale store platform. The application will provide tools for managing products, inventory, orders, buyers, and administrative users, with functionalities varying based on user roles.
+This document outlines the requirements for the Administrative application, a mobile application designed to serve as the interface for store managers and seller agents interacting with the B2B wholesale store platform. The application will provide tools for managing products, inventory, orders, customers, and administrative users, with functionalities varying based on user roles.
 
 ## 2. Core Requirements
 
@@ -12,8 +12,8 @@ This document outlines the requirements for the Administrative application, a mo
 - Allow users to manage product information, including adding, editing, and organizing products.
 - Enable users to monitor and adjust inventory levels.
 - Provide tools for viewing, managing, and updating the status of orders.
-- Allow seller agents to create orders on behalf of buyers.
-- Enable users to view and manage buyer accounts.
+- Allow seller agents to create orders on behalf of customers.
+- Enable users to view and manage customer accounts.
 - (For higher-level admins) Allow management of administrative user accounts and permissions.
 - Provide access to relevant reports and analytics.
 
@@ -23,8 +23,8 @@ This document outlines the requirements for the Administrative application, a mo
 - **Dashboard:** Role-specific overview and shortcuts.
 - **Product Management:** View, search, filter products; Add/Edit product details (description, pricing, inventory, images); Category management.
 - **Inventory Management:** View inventory list; Adjust stock levels; Low stock alerts.
-- **Order Management:** View, search, filter orders; View order details; Update order status; Create orders for buyers (Seller Agent).
-- **Customer/Buyer Management:** View buyer list; View buyer details; Add/Edit buyer accounts.
+- **Order Management:** View, search, filter orders; View order details; Update order status; Create orders for customers (Seller Agent).
+- **Customer/Customer Management:** View customer list; View customer details; Add/Edit customer accounts.
 - **User Management (Admin):** View user list; Add/Edit user accounts and roles.
 - **Reporting & Analytics:** Access to sales reports, inventory reports, etc.
 - **Settings & Configuration (Admin):** Manage general settings, pricing rules, shipping, payment gateways.
@@ -38,8 +38,8 @@ This document outlines the requirements for the Administrative application, a mo
 - Order listing and detail views
 - Order status update controls
 - Order creation form (for Seller Agent)
-- Buyer listing and detail views
-- Buyer add/edit forms
+- Customer listing and detail views
+- Customer add/edit forms
 - User listing and add/edit forms (Admin)
 - Reporting views
 - Settings forms
@@ -61,8 +61,8 @@ User flows will vary significantly based on the user's role (Store Manager or Se
 
 **Seller Agent Flows (Examples):**
 
-- **Customer Management:** Navigate to Buyer List -> View/Search/Filter Buyers -> Select a Buyer -> View Buyer Details.
-- **Order Creation:** Navigate to Create Order (for Seller Agent) -> Select a Buyer -> Add Products to Order -> Review Order -> Create Order.
+- **Customer Management:** Navigate to Customer List -> View/Search/Filter Customers -> Select a Customer -> View Customer Details.
+- **Order Creation:** Navigate to Create Order (for Seller Agent) -> Select a Customer -> Add Products to Order -> Review Order -> Create Order.
 - **Reporting:** Navigate to Reports -> Select a Sales Report -> View Report.
 
 ## 6. Tech Stack
@@ -82,7 +82,7 @@ The implementation will follow an iterative approach, starting with core functio
 3. Developing core Product Management features (viewing, adding, editing).
 4. Building core Order Management features (viewing, updating status).
 5. Implementing basic Inventory Management (viewing levels).
-6. Developing Customer/Buyer Management features (viewing, adding, editing).
+6. Developing Customer/Customer Management features (viewing, adding, editing).
 7. Implementing the "Create Order" feature for Seller Agents.
 8. Implementing role-based access control to restrict feature visibility and access.
 9. Integrating with the backend API for data fetching and submission.
@@ -113,13 +113,13 @@ Order Management:
 - Order List: To view, search, and filter all orders.
 - Order Details: To view the details of a specific order (items, quantities, pricing, shipping information, status).
 - Update Order Status: To change the status of an order (e.g., pending, processing, shipped, delivered, cancelled).
-- Create Order (for Seller Agent): A screen for seller agents to create orders on behalf of buyers.
+- Create Order (for Seller Agent): A screen for seller agents to create orders on behalf of customers.
 
-Customer/Buyer Management:
+Customer/Customer Management:
 
-- Buyer List: To view and manage buyer accounts.
-- Buyer Details: To view details of a specific buyer (contact information, order history, assigned seller agent).
-- Add/Edit Buyer: To create new buyer accounts or modify existing ones.
+- Customer List: To view and manage customer accounts.
+- Customer Details: To view details of a specific customer (contact information, order history, assigned seller agent).
+- Add/Edit Customer: To create new customer accounts or modify existing ones.
 
 User Management (for higher-level admins):
 
@@ -128,7 +128,7 @@ User Management (for higher-level admins):
 
 Reporting and Analytics:
 
-- Sales Reports: To view sales data by product, buyer, seller agent, date range, etc.
+- Sales Reports: To view sales data by product, customer, seller agent, date range, etc.
 - Inventory Reports: To view inventory levels and turnover.
 - Other relevant reports based on business needs.
 
@@ -144,4 +144,4 @@ Role-Specific Access:
 Within this administrative app, we would use the role-based access control we discussed to ensure that Store Managers and Seller Agents only see and can interact with the screens and data relevant to their roles. For example:
 
 - Store Managers would likely have full access to product, inventory, order, and user management (within their scope).
-- Seller Agents would focus on customer management, creating orders for their assigned buyers, and accessing sales reports related to their performance.
+- Seller Agents would focus on customer management, creating orders for their assigned customers, and accessing sales reports related to their performance.

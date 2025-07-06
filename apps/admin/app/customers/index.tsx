@@ -8,35 +8,35 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Profile, getAllBuyers } from 'shared/api/profiles';
+import { Profile, getAllCustomers } from 'shared/api/profiles';
 import { TabBarIcon } from 'shared/components/TabBarIcon';
 
-export default function AdminBuyerListScreen() {
-  const [buyers, setBuyers] = useState<Profile[]>([]);
+export default function AdminCustomerListScreen() {
+  const [customers, setCustomers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBuyers();
+    fetchCustomers();
   }, []);
 
-  const fetchBuyers = async () => {
+  const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const data = await getAllBuyers();
+      const data = await getAllCustomers();
       if (data) {
-        setBuyers(data);
+        setCustomers(data);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch buyers');
+      setError(err.message || 'Failed to fetch customers');
     } finally {
       setLoading(false);
     }
   };
 
-  const renderBuyerItem = ({ item }: { item: Profile }) => (
+  const renderCustomerItem = ({ item }: { item: Profile }) => (
     <Link
-      href={{ pathname: '/buyers/[id]' as any, params: { id: item.id } }}
+      href={{ pathname: '/customers/[id]' as any, params: { id: item.id } }}
       asChild
     >
       <TouchableOpacity className="p-4 border-b border-gray-200 flex-row justify-between items-center">
@@ -64,7 +64,7 @@ export default function AdminBuyerListScreen() {
       <View className="flex-1 justify-center items-center p-4">
         <Text className="text-red-500 text-center">{error}</Text>
         <TouchableOpacity
-          onPress={fetchBuyers}
+          onPress={fetchCustomers}
           className="mt-4 p-2 bg-blue-500 rounded"
         >
           <Text className="text-white">Retry</Text>
@@ -77,9 +77,9 @@ export default function AdminBuyerListScreen() {
     <View className="flex-1 bg-white">
       <Stack.Screen
         options={{
-          title: 'Manage Buyers',
+          title: 'Manage Customers',
           headerRight: () => (
-            <Link href={{ pathname: '/buyers/manage' as any }} asChild>
+            <Link href={{ pathname: '/customers/manage' as any }} asChild>
               <TouchableOpacity className="p-2">
                 <TabBarIcon name="add" color="blue" />
               </TouchableOpacity>
@@ -87,20 +87,20 @@ export default function AdminBuyerListScreen() {
           ),
         }}
       />
-      {buyers.length === 0 ? (
+      {customers.length === 0 ? (
         <View className="flex-1 justify-center items-center">
-          <Text className="text-gray-500">No buyers found.</Text>
-          <Link href={{ pathname: '/buyers/manage' as any }} asChild>
+          <Text className="text-gray-500">No customers found.</Text>
+          <Link href={{ pathname: '/customers/manage' as any }} asChild>
             <TouchableOpacity className="mt-4 p-2 bg-blue-500 rounded">
-              <Text className="text-white">Add New Buyer</Text>
+              <Text className="text-white">Add New Customer</Text>
             </TouchableOpacity>
           </Link>
         </View>
       ) : (
         <FlatList
-          data={buyers}
+          data={customers}
           keyExtractor={(item) => item.id}
-          renderItem={renderBuyerItem}
+          renderItem={renderCustomerItem}
           contentContainerClassName="py-2"
         />
       )}

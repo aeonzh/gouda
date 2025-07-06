@@ -6,7 +6,7 @@ This document outlines the high-level backend API design for the Gouda project, 
 
 ### 1.1 Supabase Project Initialization
 
-A new Supabase project will be created via the Supabase dashboard. This project will serve as the central backend for both the Buyer and Administrative applications.
+A new Supabase project will be created via the Supabase dashboard. This project will serve as the central backend for both the Customer and Administrative applications.
 
 ### 1.2 Local Development Environment Setup (via Docker)
 
@@ -16,9 +16,9 @@ For local development, the Supabase CLI and Docker will be used to run a local i
 
 1.  **Install Supabase CLI**:
     ```bash
-    brew install supabase/supabase/supabase # macOS
+    brew install supabase/tap/supabase
     # or via npm
-    npm install -g supabase
+    npm install supabase
     ```
 2.  **Initialize Supabase in project root**:
     ```bash
@@ -42,14 +42,14 @@ The following core entities and their relationships will form the initial databa
 
 This table will store additional user profile information, linked to Supabase's built-in `auth.users` table.
 
-| Column Name  | Data Type                  | Constraints               | Description                                  |
-| :----------- | :------------------------- | :------------------------ | :------------------------------------------- |
-| `id`         | `uuid`                     | PK, FK (`auth.users.id`)  | Primary key, links to Supabase Auth user ID. |
-| `username`   | `text`                     | UNIQUE, NOT NULL          | User's chosen username.                      |
-| `full_name`  | `text`                     | NULLABLE                  | User's full name.                            |
-| `avatar_url` | `text`                     | NULLABLE                  | URL to user's avatar image.                  |
-| `role`       | `text`                     | NOT NULL, DEFAULT 'buyer' | User role: 'buyer', 'admin', 'seller_agent'. |
-| `created_at` | `timestamp with time zone` | DEFAULT `now()`           | Timestamp of profile creation.               |
+| Column Name  | Data Type                  | Constraints                  | Description                                  |
+| :----------- | :------------------------- | :--------------------------- | :------------------------------------------- |
+| `id`         | `uuid`                     | PK, FK (`auth.users.id`)     | Primary key, links to Supabase Auth user ID. |
+| `username`   | `text`                     | UNIQUE, NOT NULL             | User's chosen username.                      |
+| `full_name`  | `text`                     | NULLABLE                     | User's full name.                            |
+| `avatar_url` | `text`                     | NULLABLE                     | URL to user's avatar image.                  |
+| `role`       | `text`                     | NOT NULL, DEFAULT 'customer' | User role: 'customer', 'admin', 'owner'.     |
+| `created_at` | `timestamp with time zone` | DEFAULT `now()`              | Timestamp of profile creation.               |
 
 ### 2.2 `products` Table
 
@@ -105,15 +105,14 @@ Items within a shopping cart.
 
 Represents a placed order.
 
-| Column Name        | Data Type                  | Constraints                     | Description                                                                 |
-| :----------------- | :------------------------- | :------------------------------ | :-------------------------------------------------------------------------- |
-| `id`               | `uuid`                     | PK, DEFAULT `gen_random_uuid()` | Unique order identifier.                                                    |
-| `user_id`          | `uuid`                     | FK (`profiles.id`), NOT NULL    | The user who placed the order.                                              |
-| `total_amount`     | `numeric`                  | NOT NULL                        | Total amount of the order.                                                  |
-| `status`           | `text`                     | NOT NULL, DEFAULT 'pending'     | Order status: 'pending', 'processing', 'shipped', 'delivered', 'cancelled'. |
-| `shipping_address` | `text`                     | NOT NULL                        | Shipping address for the order.                                             |
-| `created_at`       | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of order creation.                                                |
-| `updated_at`       | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                                                      |
+| Column Name    | Data Type                  | Constraints                     | Description                                                                 |
+| :------------- | :------------------------- | :------------------------------ | :-------------------------------------------------------------------------- |
+| `id`           | `uuid`                     | PK, DEFAULT `gen_random_uuid()` | Unique order identifier.                                                    |
+| `user_id`      | `uuid`                     | FK (`profiles.id`), NOT NULL    | The user who placed the order.                                              |
+| `total_amount` | `numeric`                  | NOT NULL                        | Total amount of the order.                                                  |
+| `status`       | `text`                     | NOT NULL, DEFAULT 'pending'     | Order status: 'pending', 'processing', 'shipped', 'delivered', 'cancelled'. |
+| `created_at`   | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of order creation.                                                |
+| `updated_at`   | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                                                      |
 
 ### 2.7 `order_items` Table
 

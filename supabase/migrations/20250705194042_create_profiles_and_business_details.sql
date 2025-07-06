@@ -4,7 +4,7 @@ CREATE TABLE profiles (
   username TEXT UNIQUE NOT NULL,
   full_name TEXT,
   avatar_url TEXT,
-  role TEXT NOT NULL DEFAULT 'buyer', -- 'buyer', 'admin', 'seller_agent'
+  role TEXT NOT NULL DEFAULT 'customer', -- 'customer', 'admin', 'seller_agent'
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

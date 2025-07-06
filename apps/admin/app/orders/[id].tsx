@@ -122,7 +122,7 @@ export default function OrderDetailsScreen() {
             {new Date(order.order_date).toLocaleDateString()}
           </Text>
           <Text className="text-base text-gray-700">
-            <Text className="font-semibold">Buyer ID:</Text> {order.user_id}
+            <Text className="font-semibold">Cuyer ID:</Text> {order.user_id}
           </Text>
           {order.seller_agent_id && (
             <Text className="text-base text-gray-700">

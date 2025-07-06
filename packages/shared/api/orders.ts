@@ -296,11 +296,11 @@ export async function createOrderFromCart(
 }
 
 /**
- * Lists a buyer's order history.
- * @param {string} userId - The ID of the buyer.
+ * Lists a customer's order history.
+ * @param {string} userId - The ID of the customer.
  * @returns {Promise<Order[] | null>} A promise that resolves to an array of orders or null on error.
  */
-export async function getBuyerOrderHistory(
+export async function getCustomerOrderHistory(
   userId?: string, // Make userId optional
 ): Promise<Order[] | null> {
   let query = supabase.from('orders').select('*');
@@ -312,7 +312,7 @@ export async function getBuyerOrderHistory(
   const { data, error } = await query.order('order_date', { ascending: false });
 
   if (error) {
-    console.error('Error fetching buyer order history:', error.message);
+    console.error('Error fetching customer order history:', error.message);
     throw error;
   }
   return data;
@@ -362,14 +362,14 @@ export async function updateOrderStatus(
 }
 
 /**
- * Allows a seller agent to create an order on behalf of a buyer. (Seller Agent only)
- * @param {string} buyerId - The ID of the buyer for whom the order is created.
+ * Allows a seller agent to create an order on behalf of a customer. (Seller Agent only)
+ * @param {string} customerId - The ID of the customer for whom the order is created.
  * @param {string} sellerAgentId - The ID of the seller agent creating the order.
  * @param {Array<{productId: string, quantity: number, priceAtOrder: number}>} items - Array of items to include in the order.
  * @returns {Promise<Order | null>} A promise that resolves to the created order or null on error.
  */
-export async function createOrderForBuyer(
-  buyerId: string,
+export async function createOrderForCustomer(
+  customerId: string,
   sellerAgentId: string,
   items: Array<{ productId: string; quantity: number; priceAtOrder: number }>,
 ): Promise<Order | null> {
@@ -386,7 +386,7 @@ export async function createOrderForBuyer(
     .from('orders')
     .insert([
       {
-        user_id: buyerId,
+        user_id: customerId,
         seller_agent_id: sellerAgentId,
         total_amount: totalAmount,
         status: 'pending',
@@ -396,7 +396,7 @@ export async function createOrderForBuyer(
     .single();
 
   if (orderError || !newOrder) {
-    console.error('Error creating order for buyer:', orderError?.message);
+    console.error('Error creating order for customer:', orderError?.message);
     throw orderError;
   }
 
@@ -413,7 +413,7 @@ export async function createOrderForBuyer(
 
   if (orderItemsError) {
     console.error(
-      'Error creating order items for buyer-created order:',
+      'Error creating order items for customer-created order:',
       orderItemsError.message,
     );
     // Consider rolling back the order if order items fail to create

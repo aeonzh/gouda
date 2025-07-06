@@ -1,5 +1,5 @@
 import { Link, Stack } from 'expo-router';
-import { Order, getBuyerOrderHistory } from 'packages/shared/api/orders';
+import { Order, getCustomerOrderHistory } from 'packages/shared/api/orders';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,7 +19,7 @@ export default function OrderHistoryScreen() {
       try {
         setIsLoading(true);
         // TODO: Replace with actual user ID from authentication context
-        const fetchedOrders = await getBuyerOrderHistory('current_user_id');
+        const fetchedOrders = await getCustomerOrderHistory('current_user_id');
         setOrders(fetchedOrders || []);
       } catch (err) {
         setError(err as Error);

@@ -4,7 +4,7 @@ CREATE TABLE Users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL, -- 'buyer', 'agent', 'admin', or multiple roles
+    role VARCHAR(50) NOT NULL, -- 'customer', 'agent', 'admin', or multiple roles
     verified BOOLEAN DEFAULT FALSE,
     verification_token VARCHAR(255),
     reset_token VARCHAR(255),
@@ -37,14 +37,14 @@ CREATE TABLE StoreAgents (
     UNIQUE(user_id, store_id) -- Each user can have only one role per store
 );
 
--- Buyer profiles
-CREATE TABLE BuyerProfiles (
+-- Customer profiles
+CREATE TABLE CustomerProfiles (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES Users(id) ON DELETE CASCADE,
     shipping_address TEXT,
     preferred_payment_method VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id) -- One buyer profile per user
+    UNIQUE(user_id) -- One customer profile per user
 );
 
 -- ProductCategories table with nested structure
@@ -74,7 +74,7 @@ CREATE TABLE StoreProducts (
 -- Orders table
 CREATE TABLE Orders (
     id SERIAL PRIMARY KEY,
-    buyer_id INT REFERENCES BuyerProfiles(id) ON DELETE CASCADE,
+    Customer_id INT REFERENCES CustomerProfiles(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) NOT NULL, -- 'pending', 'processing', 'completed', 'cancelled'
     shipping_address TEXT,

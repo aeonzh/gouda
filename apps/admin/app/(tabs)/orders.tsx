@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Order, getBuyerOrderHistory } from 'shared/api/orders';
+import { Order, getCustomerOrderHistory } from 'shared/api/orders';
 
 export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -22,14 +22,14 @@ export default function OrdersScreen() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      // For admin, we might want to fetch all orders, not just for a specific buyer.
-      // The current getBuyerOrderHistory requires a userId.
+      // For admin, we might want to fetch all orders, not just for a specific customer.
+      // The current getCustomerOrderHistory requires a userId.
       // For now, we'll assume we fetch all orders if userId is not provided, or we'll need a new API function.
-      // Let's adapt getBuyerOrderHistory to fetch all orders if userId is null/undefined for admin view.
-      // This will require a modification to getBuyerOrderHistory in packages/shared/api/orders.ts
+      // Let's adapt getCustomerOrderHistory to fetch all orders if userId is null/undefined for admin view.
+      // This will require a modification to getCustomerOrderHistory in packages/shared/api/orders.ts
       // For now, I'll mock it or fetch a limited set.
       // TODO: Implement proper admin API for fetching all orders.
-      const ordersData = await getBuyerOrderHistory(null as any); // Temporarily pass null to fetch all orders (will modify API)
+      const ordersData = await getCustomerOrderHistory(null as any); // Temporarily pass null to fetch all orders (will modify API)
       setOrders(ordersData || []);
     } catch (error: any) {
       Alert.alert('Error', `Failed to fetch orders: ${error.message}`);
@@ -79,7 +79,7 @@ export default function OrdersScreen() {
         Date: {new Date(item.order_date).toLocaleDateString()}
       </Text>
       <Text className="text-xs text-gray-500 mt-1">
-        Buyer ID: {item.user_id.substring(0, 8)}
+        Customer ID: {item.customer_id.substring(0, 8)}
       </Text>
     </TouchableOpacity>
   );

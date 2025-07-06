@@ -24,7 +24,7 @@ CREATE TABLE cart_items (
 -- Create the orders table
 CREATE TABLE orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL, -- The buyer
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL, -- The customer
   seller_agent_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- Nullable, if created by a seller agent
   order_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   total_amount NUMERIC(10, 2) NOT NULL,
@@ -52,37 +52,37 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for carts
--- Buyers can SELECT, INSERT, UPDATE, DELETE their own carts
-CREATE POLICY "Buyers can view their own carts." ON carts FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Buyers can create their own carts." ON carts FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Buyers can update their own carts." ON carts FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Buyers can delete their own carts." ON carts FOR DELETE USING (auth.uid() = user_id);
+-- Customers can SELECT, INSERT, UPDATE, DELETE their own carts
+CREATE POLICY "Customers can view their own carts." ON carts FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Customers can create their own carts." ON carts FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Customers can update their own carts." ON carts FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Customers can delete their own carts." ON carts FOR DELETE USING (auth.uid() = user_id);
 -- Admins can SELECT all carts
 CREATE POLICY "Admins can view all carts." ON carts FOR SELECT USING (auth.role() = 'admin');
 
 -- RLS Policies for cart_items
--- Buyers can SELECT, INSERT, UPDATE, DELETE their own cart items
-CREATE POLICY "Buyers can view their own cart items." ON cart_items FOR SELECT USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
-CREATE POLICY "Buyers can add items to their carts." ON cart_items FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
-CREATE POLICY "Buyers can update items in their carts." ON cart_items FOR UPDATE USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
-CREATE POLICY "Buyers can remove items from their carts." ON cart_items FOR DELETE USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
+-- Customers can SELECT, INSERT, UPDATE, DELETE their own cart items
+CREATE POLICY "Customers can view their own cart items." ON cart_items FOR SELECT USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
+CREATE POLICY "Customers can add items to their carts." ON cart_items FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
+CREATE POLICY "Customers can update items in their carts." ON cart_items FOR UPDATE USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
+CREATE POLICY "Customers can remove items from their carts." ON cart_items FOR DELETE USING (EXISTS (SELECT 1 FROM carts WHERE carts.id = cart_id AND carts.user_id = auth.uid()));
 -- Admins can SELECT all cart items
 CREATE POLICY "Admins can view all cart items." ON cart_items FOR SELECT USING (auth.role() = 'admin');
 
 -- RLS Policies for orders
--- Buyers can SELECT their own orders
-CREATE POLICY "Buyers can view their own orders." ON orders FOR SELECT USING (auth.uid() = user_id);
--- Admins can SELECT all orders, UPDATE order status, and INSERT orders (on behalf of buyers)
+-- Customers can SELECT their own orders
+CREATE POLICY "Customers can view their own orders." ON orders FOR SELECT USING (auth.uid() = user_id);
+-- Admins can SELECT all orders, UPDATE order status, and INSERT orders (on behalf of customers)
 CREATE POLICY "Admins can view all orders." ON orders FOR SELECT USING (auth.role() = 'admin');
 CREATE POLICY "Admins can update order status." ON orders FOR UPDATE USING (auth.role() = 'admin');
-CREATE POLICY "Admins can create orders on behalf of buyers." ON orders FOR INSERT WITH CHECK (auth.role() = 'admin');
--- Seller agents can SELECT all orders and INSERT orders on behalf of buyers
+CREATE POLICY "Admins can create orders on behalf of customers." ON orders FOR INSERT WITH CHECK (auth.role() = 'admin');
+-- Seller agents can SELECT all orders and INSERT orders on behalf of customers
 CREATE POLICY "Seller agents can view all orders." ON orders FOR SELECT USING (auth.role() = 'seller_agent');
-CREATE POLICY "Seller agents can create orders on behalf of buyers." ON orders FOR INSERT WITH CHECK (auth.role() = 'seller_agent');
+CREATE POLICY "Seller agents can create orders on behalf of customers." ON orders FOR INSERT WITH CHECK (auth.role() = 'seller_agent');
 
 -- RLS Policies for order_items
--- Buyers can SELECT their own order items
-CREATE POLICY "Buyers can view their own order items." ON order_items FOR SELECT USING (EXISTS (SELECT 1 FROM orders WHERE orders.id = order_id AND orders.user_id = auth.uid()));
+-- Customers can SELECT their own order items
+CREATE POLICY "Customers can view their own order items." ON order_items FOR SELECT USING (EXISTS (SELECT 1 FROM orders WHERE orders.id = order_id AND orders.user_id = auth.uid()));
 -- Admins can SELECT all order items
 CREATE POLICY "Admins can view all order items." ON order_items FOR SELECT USING (auth.role() = 'admin');
 -- Seller agents can SELECT all order items

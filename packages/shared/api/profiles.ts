@@ -5,7 +5,7 @@ export interface Profile {
   username: string;
   full_name?: string;
   avatar_url?: string;
-  role: 'buyer' | 'admin' | 'seller_agent';
+  role: 'customer' | 'admin' | 'seller_agent';
   created_at: string;
   updated_at: string;
 }
@@ -158,81 +158,83 @@ export async function deleteBusinessDetails(
 }
 
 /**
- * Fetches a list of all buyer profiles. (Admin only)
- * @returns {Promise<Profile[] | null>} A promise that resolves to an array of buyer profiles or null on error.
+ * Fetches a list of all customer profiles. (Admin only)
+ * @returns {Promise<Profile[] | null>} A promise that resolves to an array of customer profiles or null on error.
  */
-export async function getAllBuyers(): Promise<Profile[] | null> {
+export async function getAllCustomers(): Promise<Profile[] | null> {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('role', 'buyer');
+    .eq('role', 'customer');
 
   if (error) {
-    console.error('Error fetching all buyers:', error.message);
+    console.error('Error fetching all customers:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Fetches details for a specific buyer by their ID. (Admin only)
- * @param {string} buyerId - The ID of the buyer to fetch.
- * @returns {Promise<Profile | null>} A promise that resolves to the buyer profile object or null if not found/error.
+ * Fetches details for a specific customer by their ID. (Admin only)
+ * @param {string} customerId - The ID of the customer to fetch.
+ * @returns {Promise<Profile | null>} A promise that resolves to the customer profile object or null if not found/error.
  */
-export async function getBuyerById(buyerId: string): Promise<Profile | null> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', buyerId)
-    .single();
-
-  if (error) {
-    console.error('Error fetching buyer by ID:', error.message);
-    throw error;
-  }
-  return data;
-}
-
-/**
- * Adds a new buyer account. (Admin only)
- * @param {Omit<Profile, 'id' | 'created_at' | 'updated_at'>} buyerData - The buyer data to insert.
- * @returns {Promise<Profile | null>} A promise that resolves to the created buyer profile or null on error.
- */
-export async function createBuyer(
-  buyerData: Omit<Profile, 'id' | 'created_at' | 'updated_at'>,
+export async function getcustomerById(
+  customerId: string,
 ): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .insert([{ ...buyerData, role: 'buyer' }]) // Ensure role is 'buyer'
+    .select('*')
+    .eq('id', customerId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching customer by ID:', error.message);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Adds a new customer account. (Admin only)
+ * @param {Omit<Profile, 'id' | 'created_at' | 'updated_at'>} customerData - The customer data to insert.
+ * @returns {Promise<Profile | null>} A promise that resolves to the created customer profile or null on error.
+ */
+export async function createCustomer(
+  customerData: Omit<Profile, 'id' | 'created_at' | 'updated_at'>,
+): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert([{ ...customerData, role: 'customer' }]) // Ensure role is 'customer'
     .select()
     .single();
 
   if (error) {
-    console.error('Error creating buyer:', error.message);
+    console.error('Error creating customer:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Updates an existing buyer account. (Admin only)
- * @param {string} buyerId - The ID of the buyer to update.
- * @param {Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>} buyerData - The partial buyer data to update.
- * @returns {Promise<Profile | null>} A promise that resolves to the updated buyer profile or null on error.
+ * Updates an existing customer account. (Admin only)
+ * @param {string} customerId - The ID of the customer to update.
+ * @param {Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>} customerData - The partial customer data to update.
+ * @returns {Promise<Profile | null>} A promise that resolves to the updated customer profile or null on error.
  */
-export async function updateBuyer(
-  buyerId: string,
-  buyerData: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>,
+export async function updateCustomer(
+  customerId: string,
+  customerData: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>,
 ): Promise<Profile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .update(buyerData)
-    .eq('id', buyerId)
+    .update(customerData)
+    .eq('id', customerId)
     .select()
     .single();
 
   if (error) {
-    console.error('Error updating buyer:', error.message);
+    console.error('Error updating customer:', error.message);
     throw error;
   }
   return data;

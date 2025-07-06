@@ -11,15 +11,15 @@ import {
 } from 'react-native';
 import {
   Profile,
-  createBuyer,
-  getBuyerById,
-  updateBuyer,
+  createCustomer,
+  getCustomerById,
+  updateCustomer,
 } from 'shared/api/profiles';
 import { Button } from 'shared/components/Button';
 import { Input } from 'shared/components/Input';
 import { TabBarIcon } from 'shared/components/TabBarIcon';
 
-export default function ManageBuyerScreen() {
+export default function ManageCustomerScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const isEditing = !!id;
@@ -32,30 +32,30 @@ export default function ManageBuyerScreen() {
 
   useEffect(() => {
     if (isEditing) {
-      fetchBuyerDetails(id as string);
+      fetchCustomerDetails(id as string);
     }
   }, [id]);
 
-  const fetchBuyerDetails = async (buyerId: string) => {
+  const fetchCustomerDetails = async (customerId: string) => {
     try {
       setInitialLoadLoading(true);
-      const data = await getBuyerById(buyerId);
+      const data = await getCustomerById(customerId);
       if (data) {
         setUsername(data.username);
         setFullName(data.full_name || '');
       } else {
-        Alert.alert('Error', 'Buyer not found.');
+        Alert.alert('Error', 'Customer not found.');
         router.back();
       }
     } catch (err: any) {
-      Alert.alert('Error', err.message || 'Failed to load buyer details.');
+      Alert.alert('Error', err.message || 'Failed to load customer details.');
       router.back();
     } finally {
       setInitialLoadLoading(false);
     }
   };
 
-  const handleSaveBuyer = async () => {
+  const handleSaveCustomer = async () => {
     setError(null);
     if (!username.trim()) {
       setError('Username is required.');
@@ -64,27 +64,27 @@ export default function ManageBuyerScreen() {
 
     setLoading(true);
     try {
-      const buyerData: Partial<Profile> = {
+      const customerData: Partial<Profile> = {
         username: username.trim(),
         full_name: fullName.trim() || undefined,
       };
 
       if (isEditing) {
-        await updateBuyer(id as string, buyerData);
-        Alert.alert('Success', 'Buyer updated successfully!');
+        await updateCustomer(id as string, customerData);
+        Alert.alert('Success', 'Customer updated successfully!');
       } else {
-        // For new buyers, we need to ensure the role is 'buyer'
-        // The createBuyer function already sets the role to 'buyer'
-        await createBuyer({ ...buyerData, role: 'buyer' } as Omit<
+        // For new customers, we need to ensure the role is 'customer'
+        // The createCustomer function already sets the role to 'customer'
+        await createCustomer({ ...customerData, role: 'customer' } as Omit<
           Profile,
           'id' | 'created_at' | 'updated_at'
         >);
-        Alert.alert('Success', 'Buyer created successfully!');
+        Alert.alert('Success', 'Customer created successfully!');
       }
       router.back();
     } catch (err: any) {
       setError(
-        err.message || `Failed to ${isEditing ? 'update' : 'create'} buyer.`,
+        err.message || `Failed to ${isEditing ? 'update' : 'create'} customer.`,
       );
     } finally {
       setLoading(false);
@@ -102,7 +102,7 @@ export default function ManageBuyerScreen() {
   return (
     <View className="flex-1 bg-white p-4">
       <Stack.Screen
-        options={{ title: isEditing ? 'Edit Buyer' : 'Add Buyer' }}
+        options={{ title: isEditing ? 'Edit Customer' : 'Add Customer' }}
       />
       <ScrollView className="flex-1">
         <View className="mb-4">
@@ -130,9 +130,9 @@ export default function ManageBuyerScreen() {
 
         {error && <Text className="text-red-500 mb-4">{error}</Text>}
 
-        <Button onPress={handleSaveBuyer} isLoading={loading}>
+        <Button onPress={handleSaveCustomer} isLoading={loading}>
           <Text className="text-white text-lg font-semibold">
-            {isEditing ? 'Save Changes' : 'Add Buyer'}
+            {isEditing ? 'Save Changes' : 'Add Customer'}
           </Text>
         </Button>
       </ScrollView>

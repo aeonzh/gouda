@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import { useRouter } from "expo-router";
-import { signUpWithEmail } from "packages/shared/api/supabase"; // Adjust path as needed
-import { Stack } from "expo-router";
+import { useRouter } from 'expo-router';
+// Adjust path as needed
+import { Stack } from 'expo-router';
+import { signUpWithEmail } from 'packages/shared/api/supabase';
+import React, { useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SignUpScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -16,12 +17,12 @@ export default function SignUpScreen() {
     try {
       await signUpWithEmail(email, password, fullName);
       Alert.alert(
-        "Success",
-        "Account created! Please check your email to verify."
+        'Success',
+        'Account created! Please check your email to verify.',
       );
-      navigation.navigate("login"); // Navigate to login after successful registration
+      router.replace('/login'); // Navigate to login after successful registration
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -59,19 +60,19 @@ export default function SignUpScreen() {
 
       <TouchableOpacity
         className={`w-full p-4 rounded-xl ${
-          loading ? "bg-green-300" : "bg-green-600"
+          loading ? 'bg-green-300' : 'bg-green-600'
         }`}
         onPress={handleSignUp}
         disabled={loading}
       >
         <Text className="text-white text-center text-lg font-semibold">
-          {loading ? "Registering..." : "Sign Up"}
+          {loading ? 'Registering...' : 'Sign Up'}
         </Text>
       </TouchableOpacity>
 
       <View className="flex-row mt-8">
         <Text className="text-gray-700 text-lg">Already have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/login")}>
+        <TouchableOpacity onPress={() => router.push('/login')}>
           <Text className="text-blue-600 text-lg font-semibold">Login</Text>
         </TouchableOpacity>
       </View>

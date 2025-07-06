@@ -128,23 +128,23 @@ Items within an order.
 | `price_at_time_of_order` | `numeric`                  | NOT NULL                        | Price of product when order was placed. |
 | `created_at`             | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of item addition to order.    |
 
-### 2.8 `addresses` Table
+### 2.8 `business_details` Table
 
-Stores user shipping addresses.
+Stores business details, including addresses, for users with 'admin' or 'seller_agent' roles.
 
-| Column Name     | Data Type                  | Constraints                     | Description                                 |
-| :-------------- | :------------------------- | :------------------------------ | :------------------------------------------ |
-| `id`            | `uuid`                     | PK, DEFAULT `gen_random_uuid()` | Unique address identifier.                  |
-| `user_id`       | `uuid`                     | FK (`profiles.id`), NOT NULL    | The user who owns this address.             |
-| `address_line1` | `text`                     | NOT NULL                        | Street address line 1.                      |
-| `address_line2` | `text`                     | NULLABLE                        | Street address line 2.                      |
-| `city`          | `text`                     | NOT NULL                        | City.                                       |
-| `state`         | `text`                     | NOT NULL                        | State/Province.                             |
-| `postal_code`   | `text`                     | NOT NULL                        | Postal code.                                |
-| `country`       | `text`                     | NOT NULL                        | Country.                                    |
-| `is_default`    | `boolean`                  | DEFAULT FALSE                   | Whether this is the user's default address. |
-| `created_at`    | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of address creation.              |
-| `updated_at`    | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                      |
+| Column Name     | Data Type                  | Constraints                     | Description                                  |
+| :-------------- | :------------------------- | :------------------------------ | :------------------------------------------- |
+| `id`            | `uuid`                     | PK, DEFAULT `gen_random_uuid()` | Unique business detail identifier.           |
+| `profile_id`    | `uuid`                     | FK (`profiles.id`), NOT NULL    | The profile this business detail belongs to. |
+| `business_name` | `text`                     | NOT NULL                        | Name of the business.                        |
+| `address_line1` | `text`                     | NOT NULL                        | Street address line 1.                       |
+| `address_line2` | `text`                     | NULLABLE                        | Street address line 2.                       |
+| `city`          | `text`                     | NOT NULL                        | City.                                        |
+| `state`         | `text`                     | NOT NULL                        | State/Province.                              |
+| `postal_code`   | `text`                     | NOT NULL                        | Postal code.                                 |
+| `country`       | `text`                     | NOT NULL                        | Country.                                     |
+| `created_at`    | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of business detail creation.       |
+| `updated_at`    | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                       |
 
 ## 3. Supabase Authentication and User Management
 
@@ -168,53 +168,46 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 ### 4.2 Example RLS Policies
 
 - **`profiles` table**:
-
   - **SELECT**: `(auth.uid() = id)` (Users can view their own profile) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all profiles).
   - **INSERT**: `(auth.uid() = id)` (Users can create their own profile upon registration).
   - **UPDATE**: `(auth.uid() = id)` (Users can update their own profile) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any profile).
   - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can delete profiles).
 
 - **`products` table**:
-
   - **SELECT**: `true` (All users can view products).
   - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can add products).
   - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can update products).
   - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can delete products).
 
 - **`categories` table**:
-
   - **SELECT**: `true` (All users can view categories).
   - **INSERT/UPDATE/DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can manage categories).
 
 - **`carts` table**:
-
   - **SELECT**: `(auth.uid() = user_id)` (Users can view their own cart).
   - **INSERT**: `(auth.uid() = user_id)` (Users can create their own cart).
   - **UPDATE**: `(auth.uid() = user_id)` (Users can update their own cart).
   - **DELETE**: `(auth.uid() = user_id)` (Users can delete their own cart).
 
 - **`cart_items` table**:
-
   - **SELECT**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can view items in their own cart).
   - **INSERT/UPDATE/DELETE**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can manage items in their own cart).
 
 - **`orders` table**:
-
   - **SELECT**: `(auth.uid() = user_id)` (Buyers can view their own orders) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'seller_agent')` (Admins/Seller Agents can view all orders).
   - **INSERT**: `(auth.uid() = user_id)` (Buyers can create their own orders) OR `(auth.jwt() ->> 'user_role' = 'seller_agent')` (Seller agents can create orders for buyers).
   - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'seller_agent')` (Only admins/seller agents can update order status).
   - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can delete orders).
 
 - **`order_items` table**:
-
   - **SELECT**: `(EXISTS (SELECT 1 FROM public.orders WHERE id = order_id AND user_id = auth.uid()))` (Users can view items in their own orders) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'seller_agent')` (Admins/Seller Agents can view all order items).
   - **INSERT/UPDATE/DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'seller_agent')` (Only admins/seller agents can manage order items).
 
-- **`addresses` table**:
-  - **SELECT**: `(auth.uid() = user_id)` (Users can view their own addresses) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all addresses).
-  - **INSERT**: `(auth.uid() = user_id)` (Users can add their own addresses).
-  - **UPDATE**: `(auth.uid() = user_id)` (Users can update their own addresses).
-  - **DELETE**: `(auth.uid() = user_id)` (Users can delete their own addresses).
+- **`business_details` table**:
+  - **SELECT**: `(EXISTS (SELECT 1 FROM public.profiles WHERE id = profile_id AND id = auth.uid()))` (Users can view their own business details) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all business details).
+  - **INSERT**: `(EXISTS (SELECT 1 FROM public.profiles WHERE id = profile_id AND id = auth.uid()))` (Users can add their own business details).
+  - **UPDATE**: `(EXISTS (SELECT 1 FROM public.profiles WHERE id = profile_id AND id = auth.uid()))` (Users can update their own business details).
+  - **DELETE**: `(EXISTS (SELECT 1 FROM public.profiles WHERE id = profile_id AND id = auth.uid()))` (Users can delete their own business details).
 
 ## 5. Supabase Auto-Generated APIs (PostgREST)
 
@@ -307,11 +300,11 @@ The following outlines the conceptual API endpoints and their corresponding Supa
   - **Path**: `/profiles?id=eq.{user_id}`
   - **Supabase Operation**: `supabase.from('profiles').update({...}).eq('id', auth.uid())`
   - **Description**: Updates the current user's profile information.
-- **Manage Shipping Addresses (CRUD)**:
+- **Manage Business Details (CRUD)**:
   - **Method**: `GET`, `POST`, `PATCH`, `DELETE`
-  - **Path**: `/addresses` (for list/add), `/addresses?id=eq.{id}` (for update/delete)
-  - **Supabase Operation**: `supabase.from('addresses').select('*').eq('user_id', auth.uid())`, `supabase.from('addresses').insert({...})`, etc.
-  - **Description**: Allows users to manage their saved shipping addresses.
+  - **Path**: `/business_details` (for list/add), `/business_details?id=eq.{id}` (for update/delete)
+  - **Supabase Operation**: `supabase.from('business_details').select('*').eq('profile_id', auth.uid())`, `supabase.from('business_details').insert({...})`, etc.
+  - **Description**: Allows users to manage their associated business details.
 - **List All Buyers (Admin)**:
   - **Method**: `GET`
   - **Path**: `/profiles?role=eq.buyer`

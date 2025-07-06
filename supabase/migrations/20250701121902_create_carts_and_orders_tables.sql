@@ -29,8 +29,6 @@ CREATE TABLE orders (
   order_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   total_amount NUMERIC(10, 2) NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending', -- e.g., 'pending', 'processing', 'shipped', 'delivered', 'cancelled'
-  shipping_address JSONB, -- Store as JSONB for flexibility
-  billing_address JSONB, -- Store as JSONB for flexibility
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

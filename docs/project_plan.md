@@ -289,13 +289,13 @@ graph TD
 
 ### 5. User/Customer & Inventory Management (MVP)
 
-- [ ] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
+- [x] **Task 5.1: Implement Backend User/Customer & Inventory Management (Supabase) (MVP)**
   - **Description**: Develop backend API endpoints for managing buyer profiles, shipping addresses, and administrative user accounts, as well as inventory levels.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
+    - [x] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
     - [ ] 5.1.2: Implement Supabase queries to get/update buyer profile. (MVP)
-    - [ ] 5.1.3: Implement Supabase queries for managing buyer shipping addresses (add, edit, delete). (MVP)
+    - [x] 5.1.3: Implement Supabase queries for managing business details (add, edit, delete). (MVP)
     - [ ] 5.1.4: Implement Supabase queries to list all buyers (Admin only). (MVP)
     - [ ] 5.1.5: Implement Supabase queries for adding/editing buyer accounts (Admin only). (MVP)
     - [ ] 5.1.6: Implement Supabase queries to list inventory levels. (MVP)

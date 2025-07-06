@@ -10,16 +10,16 @@ export interface Profile {
   updated_at: string;
 }
 
-export interface Address {
+export interface BusinessDetails {
   id: string;
-  user_id: string;
+  profile_id: string;
+  business_name: string;
   address_line1: string;
   address_line2: string | null;
   city: string;
   state: string;
   postal_code: string;
   country: string;
-  is_default: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -68,81 +68,91 @@ export async function updateProfile(
 }
 
 /**
- * Fetches all shipping addresses for a user.
- * @param {string} userId - The ID of the user.
- * @returns {Promise<Address[] | null>} A promise that resolves to an array of addresses or null on error.
+ * Fetches business details for a profile.
+ * @param {string} profileId - The ID of the profile.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the business details object or null if not found/error.
  */
-export async function getAddresses(userId: string): Promise<Address[] | null> {
+export async function getBusinessDetails(
+  profileId: string,
+): Promise<BusinessDetails | null> {
   const { data, error } = await supabase
-    .from('addresses')
+    .from('business_details')
     .select('*')
-    .eq('user_id', userId);
+    .eq('profile_id', profileId)
+    .single();
 
   if (error) {
-    console.error('Error fetching addresses:', error.message);
+    console.error('Error fetching business details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Adds a new shipping address for a user.
- * @param {Omit<Address, 'id' | 'created_at' | 'updated_at'>} addressData - The address data to insert.
- * @returns {Promise<Address | null>} A promise that resolves to the created address or null on error.
+ * Adds new business details for a profile.
+ * @param {Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>} businessDetailsData - The business details data to insert.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the created business details or null on error.
  */
-export async function addAddress(
-  addressData: Omit<Address, 'id' | 'created_at' | 'updated_at'>,
-): Promise<Address | null> {
+export async function addBusinessDetails(
+  businessDetailsData: Omit<
+    BusinessDetails,
+    'id' | 'created_at' | 'updated_at'
+  >,
+): Promise<BusinessDetails | null> {
   const { data, error } = await supabase
-    .from('addresses')
-    .insert([addressData])
+    .from('business_details')
+    .insert([businessDetailsData])
     .select()
     .single();
 
   if (error) {
-    console.error('Error adding address:', error.message);
+    console.error('Error adding business details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Updates an existing shipping address.
- * @param {string} addressId - The ID of the address to update.
- * @param {Partial<Omit<Address, 'id' | 'created_at' | 'updated_at'>>} addressData - The partial address data to update.
- * @returns {Promise<Address | null>} A promise that resolves to the updated address or null on error.
+ * Updates existing business details.
+ * @param {string} businessDetailsId - The ID of the business details to update.
+ * @param {Partial<Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>>} businessDetailsData - The partial business details data to update.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the updated business details or null on error.
  */
-export async function updateAddress(
-  addressId: string,
-  addressData: Partial<Omit<Address, 'id' | 'created_at' | 'updated_at'>>,
-): Promise<Address | null> {
+export async function updateBusinessDetails(
+  businessDetailsId: string,
+  businessDetailsData: Partial<
+    Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>
+  >,
+): Promise<BusinessDetails | null> {
   const { data, error } = await supabase
-    .from('addresses')
-    .update(addressData)
-    .eq('id', addressId)
+    .from('business_details')
+    .update(businessDetailsData)
+    .eq('id', businessDetailsId)
     .select()
     .single();
 
   if (error) {
-    console.error('Error updating address:', error.message);
+    console.error('Error updating business details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Deletes a shipping address.
- * @param {string} addressId - The ID of the address to delete.
- * @returns {Promise<void>} A promise that resolves when the address is deleted or rejects on error.
+ * Deletes business details.
+ * @param {string} businessDetailsId - The ID of the business details to delete.
+ * @returns {Promise<void>} A promise that resolves when the business details are deleted or rejects on error.
  */
-export async function deleteAddress(addressId: string): Promise<void> {
+export async function deleteBusinessDetails(
+  businessDetailsId: string,
+): Promise<void> {
   const { error } = await supabase
-    .from('addresses')
+    .from('business_details')
     .delete()
-    .eq('id', addressId);
+    .eq('id', businessDetailsId);
 
   if (error) {
-    console.error('Error deleting address:', error.message);
+    console.error('Error deleting business details:', error.message);
     throw error;
   }
 }

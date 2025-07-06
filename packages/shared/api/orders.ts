@@ -26,19 +26,9 @@ export interface Order {
   order_date: string;
   total_amount: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shipping_address: Address; // JSONB type in Supabase
-  billing_address: Address; // JSONB type in Supabase
   created_at: string;
   updated_at: string;
   order_items?: OrderItem[]; // Optional: to include order item details when fetching order
-}
-
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  country: string;
 }
 
 export interface OrderItem {
@@ -112,7 +102,6 @@ export async function addOrUpdateCartItem(
     console.error('Error fetching existing cart item:', fetchError.message);
     throw fetchError;
   }
-
   if (existingItem) {
     // Update quantity if item exists
     const newQuantity = existingItem.quantity + quantity;
@@ -218,14 +207,10 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
 /**
  * Creates a new order from a user's cart.
  * @param {string} userId - The ID of the user creating the order.
- * @param {object} shippingAddress - The shipping address for the order.
- * @param {object} billingAddress - The billing address for the order.
  * @returns {Promise<Order | null>} A promise that resolves to the created order or null on error.
  */
 export async function createOrderFromCart(
   userId: string,
-  shippingAddress: object,
-  billingAddress: object,
 ): Promise<Order | null> {
   const { data: cart, error: cartError } = await supabase
     .from('carts')
@@ -266,8 +251,6 @@ export async function createOrderFromCart(
         user_id: userId,
         total_amount: totalAmount,
         status: 'pending',
-        shipping_address: shippingAddress,
-        billing_address: billingAddress,
       },
     ])
     .select()
@@ -383,16 +366,12 @@ export async function updateOrderStatus(
  * @param {string} buyerId - The ID of the buyer for whom the order is created.
  * @param {string} sellerAgentId - The ID of the seller agent creating the order.
  * @param {Array<{productId: string, quantity: number, priceAtOrder: number}>} items - Array of items to include in the order.
- * @param {object} shippingAddress - The shipping address for the order.
- * @param {object} billingAddress - The billing address for the order.
  * @returns {Promise<Order | null>} A promise that resolves to the created order or null on error.
  */
 export async function createOrderForBuyer(
   buyerId: string,
   sellerAgentId: string,
   items: Array<{ productId: string; quantity: number; priceAtOrder: number }>,
-  shippingAddress: object,
-  billingAddress: object,
 ): Promise<Order | null> {
   if (!items || items.length === 0) {
     throw new Error('Order must contain at least one item.');
@@ -411,8 +390,6 @@ export async function createOrderForBuyer(
         seller_agent_id: sellerAgentId,
         total_amount: totalAmount,
         status: 'pending',
-        shipping_address: shippingAddress,
-        billing_address: billingAddress,
       },
     ])
     .select()

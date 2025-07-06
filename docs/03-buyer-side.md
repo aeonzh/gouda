@@ -10,7 +10,7 @@ This document outlines the requirements for the Buyer application, a mobile appl
 - Provide a clear and intuitive way for buyers to discover and view products.
 - Allow buyers to add products to a shopping cart and create an order from it.
 - Provide access to past order history and status updates.
-- Allow buyers to manage their profile information and shipping addresses.
+- Allow buyers to manage their profile information.
 
 ## 3. Core Features
 
@@ -29,7 +29,7 @@ This document outlines the requirements for the Buyer application, a mobile appl
 - Shopping cart interface
 - Order creation confirmation
 - Order history list and detail views
-- User profile forms for editing personal information and managing shipping addresses.
+- User profile forms for editing personal information.
 
 ## 5. App/User Flow
 
@@ -42,7 +42,7 @@ A typical user flow would involve:
 5. User creates an order directly from the shopping cart.
 6. User receives an order confirmation.
 7. User can view the order status in their order history.
-8. User can access their profile to update personal information or manage shipping addresses.
+8. User can access their profile to update personal information.
 
 ## 6. Tech Stack
 
@@ -61,13 +61,14 @@ The implementation will follow an iterative approach, starting with core functio
 3. Developing the core product browsing and viewing features.
 4. Building the shopping cart functionality.
 5. Implementing the simplified order creation process directly from the shopping cart.
-6. Developing the order history and user profile screens, including the ability to manage shipping addresses.
+6. Developing the order history and user profile screens.
 7. Integrating with the backend API for data fetching and submission.
 8. Thorough testing and debugging.
 
 Subsequent iterations will focus on adding features like payment method management (if introduced later), wishlists, notifications, and potentially more advanced search and filtering options.
 
 ---
+
 Buyer Application Screens:
 
 Authentication Screens:
@@ -93,7 +94,7 @@ Account Management:
 
 - My Account/Profile: To view and edit personal information.
 - Order History: To view past orders and their status.
-- Saved Addresses: To manage multiple shipping addresses.
+- Saved Addresses: (Removed as per user's request for no buyer shipping addresses)
 - Payment Methods: To manage saved payment information (if applicable).
 
 Other potentially useful screens:

@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "admin": "pnpm --filter admin start",
-    "buyer": "pnpm --filter buyer start",
+    "b2b": "pnpm --filter b2b start",
+    "b2c": "pnpm --filter b2c start",
     "build-shared": "pnpm --filter shared build",
     "lint": "eslint . --fix"
   },

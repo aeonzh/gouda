@@ -42,35 +42,35 @@ The following core entities and their relationships will form the initial databa
 
 This table will store additional user profile information, linked to Supabase's built-in `auth.users` table.
 
-| Column Name   | Data Type                  | Constraints                       | Description                                                                         |
-| :------------ | :------------------------- | :-------------------------------- | :---------------------------------------------------------------------------------- |
-| `id`          | `uuid`                     | PK, FK (`auth.users.id`)          | Primary key, links to Supabase Auth user ID.                                        |
-| `username`    | `text`                     | UNIQUE, NOT NULL                  | User's chosen username.                                                             |
-| `full_name`   | `text`                     | NULLABLE                          | User's full name.                                                                   |
-| `avatar_url`  | `text`                     | NULLABLE                          | URL to user's avatar image.                                                         |
-| `role`        | `text`                     | NOT NULL, DEFAULT 'customer'      | User role: 'admin', 'owner', 'sales_agent', 'customer'.                             |
-| `business_id` | `uuid`                     | NULLABLE, FK (`organisations.id`) | The organisation associated with the profile (for 'owner' and 'sales_agent' roles). |
-| `created_at`  | `timestamp with time zone` | DEFAULT `now()`                   | Timestamp of profile creation.                                                      |
-| `deleted_at`  | `timestamp with time zone` | NULLABLE                          | Timestamp when the profile was soft-deleted.                                        |
+| Column Name  | Data Type                  | Constraints                  | Description                                                                                        |
+| :----------- | :------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------- |
+| `id`         | `uuid`                     | PK, FK (`auth.users.id`)     | Primary key, links to Supabase Auth user ID.                                                       |
+| `username`   | `text`                     | UNIQUE, NOT NULL             | User's chosen username.                                                                            |
+| `full_name`  | `text`                     | NULLABLE                     | User's full name.                                                                                  |
+| `avatar_url` | `text`                     | NULLABLE                     | URL to user's avatar image.                                                                        |
+| `role`       | `text`                     | NOT NULL, DEFAULT 'customer' | Global user role: 'admin', 'customer'. Business-specific roles are managed in the `members` table. |
+| `created_at` | `timestamp with time zone` | DEFAULT `now()`              | Timestamp of profile creation.                                                                     |
+| `updated_at` | `timestamp with time zone` | DEFAULT `now()`              | Last update timestamp.                                                                             |
+| `deleted_at` | `timestamp with time zone` | NULLABLE                     | Timestamp when the profile was soft-deleted.                                                       |
 
 ### 2.2 `products` Table
 
 Stores information about products available in the catalog.
 
-| Column Name      | Data Type                  | Constraints                         | Description                                                         |
-| :--------------- | :------------------------- | :---------------------------------- | :------------------------------------------------------------------ |
-| `id`             | `uuid`                     | PK, DEFAULT `gen_random_uuid()`     | Unique product identifier.                                          |
-| `business_id`    | `uuid`                     | FK (`organisations.id`)             | The business associated with the product.                           |
-| `name`           | `text`                     | NOT NULL                            | Product name.                                                       |
-| `description`    | `text`                     | NULLABLE                            | Detailed product description.                                       |
-| `status`         | `text`                     | NOT NULL, DEFAULT 'draft'           | Product status: 'draft', 'pending_review', 'published', 'rejected'. |
-| `price`          | `numeric`                  | NOT NULL                            | Unit price of the product.                                          |
-| `image_url`      | `text`                     | NULLABLE                            | URL to product image.                                               |
-| `category_id`    | `uuid`                     | FK (`categories.id`, `business_id`) | Category the product belongs to.                                    |
-| `stock_quantity` | `integer`                  | NOT NULL, DEFAULT 0                 | Current stock level.                                                |
-| `created_at`     | `timestamp with time zone` | DEFAULT `now()`                     | Timestamp of product creation.                                      |
-| `updated_at`     | `timestamp with time zone` | DEFAULT `now()`                     | Last update timestamp.                                              |
-| `deleted_at`     | `timestamp with time zone` | NULLABLE                            | Timestamp when the product was soft-deleted.                        |
+| Column Name      | Data Type                  | Constraints                         | Description                                       |
+| :--------------- | :------------------------- | :---------------------------------- | :------------------------------------------------ |
+| `id`             | `uuid`                     | PK, DEFAULT `gen_random_uuid()`     | Unique product identifier.                        |
+| `business_id`    | `uuid`                     | FK (`organisations.id`)             | The business associated with the product.         |
+| `name`           | `text`                     | NOT NULL                            | Product name.                                     |
+| `description`    | `text`                     | NULLABLE                            | Detailed product description.                     |
+| `status`         | `text`                     | NOT NULL, DEFAULT 'draft'           | Product status: 'draft', 'published', 'rejected'. |
+| `price`          | `numeric`                  | NOT NULL                            | Unit price of the product.                        |
+| `image_url`      | `text`                     | NULLABLE                            | URL to product image.                             |
+| `category_id`    | `uuid`                     | FK (`categories.id`, `business_id`) | Category the product belongs to.                  |
+| `stock_quantity` | `integer`                  | NOT NULL, DEFAULT 0                 | Current stock level.                              |
+| `created_at`     | `timestamp with time zone` | DEFAULT `now()`                     | Timestamp of product creation.                    |
+| `updated_at`     | `timestamp with time zone` | DEFAULT `now()`                     | Last update timestamp.                            |
+| `deleted_at`     | `timestamp with time zone` | NULLABLE                            | Timestamp when the product was soft-deleted.      |
 
 ### 2.3 `categories` Table
 
@@ -82,6 +82,7 @@ Stores product categories.
 | `business_id` | `uuid`                     | FK (`organisations.id`)         | The business associated with the category.                           |
 | `name`        | `text`                     | NOT NULL                        | Category name (e.g., 'Dairy', 'Produce'). Unique with `business_id`. |
 | `created_at`  | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of category creation.                                      |
+| `updated_at`  | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                                               |
 | `deleted_at`  | `timestamp with time zone` | NULLABLE                        | Timestamp when the category was soft-deleted.                        |
 
 ### 2.4 `carts` Table
@@ -109,6 +110,7 @@ Items within a shopping cart.
 | `quantity`             | `integer`                  | NOT NULL, DEFAULT 1             | Quantity of the product.                       |
 | `price_at_time_of_add` | `numeric`                  | NOT NULL                        | Price of product when added to cart.           |
 | `created_at`           | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of item addition.                    |
+| `updated_at`           | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                         |
 | `deleted_at`           | `timestamp with time zone` | NULLABLE                        | Timestamp when the cart item was soft-deleted. |
 
 ### 2.6 `orders` Table
@@ -138,6 +140,7 @@ Items within an order.
 | `quantity`               | `integer`                  | NOT NULL                        | Quantity of the product.                        |
 | `price_at_time_of_order` | `numeric`                  | NOT NULL                        | Price of product when order was placed.         |
 | `created_at`             | `timestamp with time zone` | DEFAULT `now()`                 | Timestamp of item addition to order.            |
+| `updated_at`             | `timestamp with time zone` | DEFAULT `now()`                 | Last update timestamp.                          |
 | `deleted_at`             | `timestamp with time zone` | NULLABLE                        | Timestamp when the order item was soft-deleted. |
 
 ### 2.8 `organisations` Table
@@ -198,61 +201,64 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
   - **SELECT**: `(deleted_at IS NULL AND (auth.uid() = id OR auth.jwt() ->> 'user_role' = 'admin'))` (Users can view their own non-deleted profile. Admins can view all profiles, including deleted ones).
   - **INSERT**: `(auth.uid() = id)` (Users can create their own profile upon registration).
   - **UPDATE**: `(auth.uid() = id)` (Users can update their own profile) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any profile).
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
   - **SOFT DELETE**: `(auth.uid() = id)` (Users can soft-delete their own profile). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
 
 - **`products` table**:
   - **SELECT**: `(products.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND products.status = 'published') OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all products. Customers can view only published products. Owners/Sales Agents can view products associated with their business, regardless of status. All non-admin views exclude soft-deleted products).
-  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can add products. Owners can add products to their business, defaulting to 'draft' or 'pending_review' status).
-  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any product, including changing status to 'published') OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()) AND NEW.status IN ('draft', 'pending_review', 'rejected'))` (Owners can update products in their business, but cannot set status to 'published').
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete products).
+  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can add products. Owners can add products to their business, defaulting to 'draft' status, and can set to 'published').
+  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any product, including changing status to 'published') OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()) AND NEW.status IN ('draft', 'published', 'rejected'))` (Owners can update products in their business, including changing status to 'published').
   - **SOFT DELETE**: `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete products).
 
 - **`categories` table**:
   - **SELECT**: `(categories.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND business_id IS NULL) OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all categories. Customers can view global categories. Owners/Sales Agents can view categories associated with their business. All non-admin views exclude soft-deleted categories).
-  - **INSERT/UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can manage categories. Owners can manage categories in their business.)
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete categories).
+  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can add categories. Owners can add categories in their business.)
+  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can manage categories. Owners can manage categories in their business.)
   - **SOFT DELETE**: `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete categories).
 
 - **`carts` table**:
   - **SELECT**: `(carts.deleted_at IS NULL AND (auth.uid() = user_id OR auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Users can view their own non-deleted cart. Admins can view all carts. Owners/Sales Agents can view carts associated with their business. All non-admin views exclude soft-deleted carts).
   - **INSERT**: `(auth.uid() = user_id)` (Users can create their own cart) OR `(auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners/Sales Agents can create carts for their business.)
   - **UPDATE**: `(auth.uid() = user_id)` (Users can update their own cart) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can update all carts. Owners/Sales Agents can update carts associated with their business.)
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete carts).
   - **SOFT DELETE**: `(auth.uid() = user_id)` (Users can soft-delete their own cart) OR `(auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners/Sales Agents can soft-delete carts associated with their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete carts).
 
 - **`cart_items` table**:
   - **SELECT**: `(cart_items.deleted_at IS NULL AND (EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid())) OR auth.jwt() ->> 'user_role' = 'admin' OR (EXISTS (SELECT 1 FROM public.carts c JOIN public.profiles p ON c.user_id = p.id WHERE c.id = cart_id AND p.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Users can view items in their own non-deleted cart. Admins can view all cart items. Owners/Sales Agents can view cart items for carts associated with their business. All non-admin views exclude soft-deleted cart items).
-  - **INSERT/UPDATE**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can manage items in their own cart) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.carts c JOIN public.profiles p ON c.user_id = p.id WHERE c.id = cart_id AND p.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid())))` (Admins can manage all cart items. Owners/Sales Agents can manage cart items for carts associated with their business.)
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete cart items).
+  - **INSERT**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can manage items in their own cart) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.carts c JOIN public.profiles p ON c.user_id = p.id WHERE c.id = cart_id AND p.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid())))` (Admins can manage all cart items. Owners/Sales Agents can manage cart items for carts associated with their business.)
+  - **UPDATE**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can manage items in their own cart) OR `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.carts c JOIN public.profiles p ON c.user_id = p.id WHERE c.id = cart_id AND p.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid())))` (Admins can manage all cart items. Owners/Sales Agents can manage cart items for carts associated with their business.)
   - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.carts WHERE id = cart_id AND user_id = auth.uid()))` (Users can soft-delete items in their own cart) OR `(EXISTS (SELECT 1 FROM public.carts c JOIN public.profiles p ON c.user_id = p.id WHERE c.id = cart_id AND p.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid())))` (Owners/Sales Agents can soft-delete cart items for carts associated with their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete cart items).
 
 - **`orders` table**:
   - **SELECT**: `(orders.deleted_at IS NULL AND ((auth.uid() = user_id) OR (auth.jwt() ->> 'user_role' = 'admin') OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND orders.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Users can view their own non-deleted orders. Admins can view all orders. Owners/Sales Agents can view orders associated with their business. All non-admin views exclude soft-deleted orders).
   - **INSERT**: `(auth.uid() = user_id)` (Customers can create their own orders).
   - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any order) OR `(auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND orders.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners/Sales Agents can update orders associated with their business).
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete orders).
   - **SOFT DELETE**: `(auth.uid() = user_id)` (Users can soft-delete their own orders) OR `(auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND orders.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners/Sales Agents can soft-delete orders associated with their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete orders).
 
 - **`order_items` table**:
   - **SELECT**: `(order_items.deleted_at IS NULL AND ((EXISTS (SELECT 1 FROM public.orders WHERE id = order_id AND user_id = auth.uid())) OR auth.jwt() ->> 'user_role' = 'admin' OR (EXISTS (SELECT 1 FROM public.orders o JOIN public.profiles p ON o.business_id = p.business_id WHERE o.id = order_items.order_id AND p.id = auth.uid()))))` (Users can view items in their own non-deleted orders. Admins can view all order items. Owners/Sales Agents can view order items for orders associated with their business. All non-admin views exclude soft-deleted order items).
-  - **INSERT/UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.orders o JOIN public.profiles p ON o.business_id = p.business_id WHERE o.id = order_items.order_id AND p.id = auth.uid()))` (Admins can manage all order items. Owners/Sales Agents can manage order items for orders associated with their business.)
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete order items).
+  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.orders o JOIN public.profiles p ON o.business_id = p.business_id WHERE o.id = order_items.order_id AND p.id = auth.uid()))` (Admins can manage all order items. Owners/Sales Agents can manage order items for orders associated with their business.)
+  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(EXISTS (SELECT 1 FROM public.orders o JOIN public.profiles p ON o.business_id = p.business_id WHERE o.id = order_items.order_id AND p.id = auth.uid()))` (Admins can manage all order items. Owners/Sales Agents can manage order items for orders associated with their business.)
   - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.orders o JOIN public.profiles p ON o.business_id = p.business_id WHERE o.id = order_items.order_id AND p.id = auth.uid()))` (Owners/Sales Agents can soft-delete order items for orders associated with their business). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete order items).
 
 - **`organisations` table**:
   - **SELECT**: `(organisations.deleted_at IS NULL AND (EXISTS (SELECT 1 FROM public.members WHERE business_id = id AND profile_id = auth.uid())) OR auth.jwt() ->> 'user_role' = 'admin')` (Business members can view their associated non-deleted organisation information. Admins can view all organisation information, including deleted ones).
   - **INSERT**: `(EXISTS (SELECT 1 FROM public.members WHERE business_id = id AND profile_id = auth.uid() AND role_in_business = 'owner'))` (Only organisation owners can create organisation information).
   - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members WHERE business_id = id AND profile_id = auth.uid() AND (role_in_business = 'owner')))` (Only organisation owners can update organisation information).
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete organisation information).
   - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members WHERE business_id = id AND profile_id = auth.uid() AND role_in_business = 'owner'))` (Only organisation owners can soft-delete organisation information). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete organisation information).
 
 - **`members` table**:
   - **SELECT**: `(members.deleted_at IS NULL AND (auth.uid() = profile_id OR (EXISTS (SELECT 1 FROM public.members bm JOIN public.profiles p ON bm.profile_id = p.id WHERE bm.business_id = business_id AND p.id = auth.uid() AND (bm.role_in_business = 'owner'))) OR auth.jwt() ->> 'user_role' = 'admin'))` (Users can view their own non-deleted organisation memberships. Business owners can view all non-deleted members of their organisation. Admins can view all organisation memberships, including deleted ones).
   - **INSERT**: `(EXISTS (SELECT 1 FROM public.members bm JOIN public.profiles p ON bm.profile_id = p.id WHERE bm.business_id = business_id AND p.id = auth.uid() AND (bm.role_in_business = 'owner')))` (Business owners can add members to their organisation) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can add organisation members).
   - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members bm JOIN public.profiles p ON bm.profile_id = p.id WHERE bm.business_id = business_id AND p.id = auth.uid() AND (bm.role_in_business = 'owner')))` (Business owners can update roles of members in their organisation) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update organisation members).
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete organisation members).
   - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members bm JOIN public.profiles p ON bm.profile_id = p.id WHERE bm.business_id = business_id AND p.id = auth.uid() AND bm.role_in_business = 'owner'))` (Only organisation owners can soft-delete members from their organisation). This will be an UPDATE operation setting `deleted_at`.
+  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete organisation members).
 
 ## 5. Supabase Auto-Generated APIs (PostgREST)
 

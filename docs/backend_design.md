@@ -198,11 +198,15 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 ### 4.2 Example RLS Policies
 
 - **`profiles` table**:
-  - **SELECT**: `(deleted_at IS NULL AND (auth.uid() = id OR auth.jwt() ->> 'user_role' = 'admin'))` (Users can view their own non-deleted profile. Admins can view all profiles, including deleted ones).
+  - **SELECT**: `(deleted_at IS NULL AND (auth.uid() = id))` (Users can view their own non-deleted profile).
   - **INSERT**: `(auth.uid() = id)` (Users can create their own profile upon registration).
-  - **UPDATE**: `(auth.uid() = id)` (Users can update their own profile) OR `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any profile).
+  - **UPDATE**: `(auth.uid() = id)` (Users can update their own profile).
   - **SOFT DELETE**: `(auth.uid() = id)` (Users can soft-delete their own profile). This will be an UPDATE operation setting `deleted_at`.
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
+
+  - **Admin RLS for `profiles` table**:
+    - **SELECT (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all profiles, including deleted ones).
+    - **UPDATE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any profile).
+    - **DELETE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
 
 - **`products` table**:
   - **SELECT**: `(products.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND products.status = 'published') OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all products. Customers can view only published products. Owners/Sales Agents can view products associated with their business, regardless of status. All non-admin views exclude soft-deleted products).

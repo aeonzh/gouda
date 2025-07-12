@@ -227,11 +227,19 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **DELETE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete products).
 
 - **`categories` table**:
-  - **SELECT**: `(categories.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND business_id IS NULL) OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all categories. Customers can view global categories. Owners/Sales Agents can view categories associated with their business. All non-admin views exclude soft-deleted categories).
-  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can add categories. Owners can add categories in their business.)
-  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can manage categories. Owners can manage categories in their business.)
-  - **SOFT DELETE**: `(auth.jwt() ->> 'user_role' = 'owner' AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete categories).
+  - **SELECT**: `(categories.deleted_at IS NULL)` (All non-admin views exclude soft-deleted categories).
+
+  - **Business RLS for `categories` table**:
+    - **SELECT (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can view categories associated with their business).
+    - **INSERT (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Owners can add categories in their business.)
+    - **UPDATE (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Owners can manage categories in their business.)
+    - **SOFT DELETE (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Owners can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
+
+  - **Admin RLS for `categories` table**:
+    - **SELECT (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all categories).
+    - **INSERT (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can add categories).
+    - **UPDATE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can manage categories).
+    - **DELETE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete categories).
 
 - **`carts` table**:
   - **SELECT**: `(carts.deleted_at IS NULL AND (auth.uid() = user_id OR auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Users can view their own non-deleted cart. Admins can view all carts. Owners/Sales Agents can view carts associated with their business. All non-admin views exclude soft-deleted carts).

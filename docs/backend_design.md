@@ -209,11 +209,22 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **DELETE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
 
 - **`products` table**:
-  - **SELECT**: `(products.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND products.status = 'published') OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all products. Customers can view only published products. Owners/Sales Agents can view products associated with their business, regardless of status. All non-admin views exclude soft-deleted products).
-  - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Admins can add products. Owners can add products to their business, defaulting to 'draft' status, and can set to 'published').
-  - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any product, including changing status to 'published') OR `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()) AND NEW.status IN ('draft', 'published', 'rejected'))` (Owners can update products in their business, including changing status to 'published').
-  - **SOFT DELETE**: `(auth.jwt() ->> 'user_role' = 'owner' AND products.business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))` (Owners can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
-  - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete products).
+  - **SELECT**: `(products.deleted_at IS NULL)` (All non-admin views exclude soft-deleted products).
+
+  - **Customer RLS for `products` table**:
+    - **SELECT (Customer)**: `(auth.jwt() ->> 'user_role' = 'customer' AND products.status = 'published')` (Customers can view only published products).
+
+  - **Business RLS for `products` table**:
+    - **SELECT (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can view products associated with their business, regardless of status).
+    - **INSERT (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'owner'))` (Owners can add products to their business, defaulting to 'draft' status, and can set to 'published').
+    - **UPDATE (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'owner') AND NEW.status IN ('draft', 'published', 'rejected'))` (Owners can update products in their business, including changing status to 'published').
+    - **SOFT DELETE (Owner)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'owner'))` (Owners can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
+
+  - **Admin RLS for `products` table**:
+    - **SELECT (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all products, including deleted ones).
+    - **INSERT (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can add products).
+    - **UPDATE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any product, including changing status to 'published').
+    - **DELETE (Admin)**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete products).
 
 - **`categories` table**:
   - **SELECT**: `(categories.deleted_at IS NULL AND (auth.jwt() ->> 'user_role' = 'admin' OR (auth.jwt() ->> 'user_role' = 'customer' AND business_id IS NULL) OR (auth.jwt() ->> 'user_role' IN ('owner', 'sales_agent') AND business_id = (SELECT business_id FROM profiles WHERE id = auth.uid()))))` (Admins can view all categories. Customers can view global categories. Owners/Sales Agents can view categories associated with their business. All non-admin views exclude soft-deleted categories).

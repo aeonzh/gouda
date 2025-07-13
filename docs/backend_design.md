@@ -194,6 +194,8 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 - **`auth.jwt()`**: Used to access claims from the user's JWT, such as `user_role` (if custom claims are added).
 - **`public` schema**: All application tables will reside in the `public` schema.
 
+**Note on Admin RLS**: The admin policies rely on a custom JWT claim `user_role`. This requires a database function to be created that adds the `role` from the `profiles` table to the user's JWT upon login.
+
 ### 4.2 Example RLS Policies
 
 - **`profiles` table**:
@@ -223,7 +225,7 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
 
   - **Customer RLS**:
-    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'customer')) AND deleted_at IS NULL` (Customers can view non-deleted products that belong to the businesses they are a member of).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'customer') AND status = 'published') AND deleted_at IS NULL` (Customers can view non-deleted, published products that belong to the businesses they are a member of).
 
 - **`categories` table**:
   - **Admin RLS**:
@@ -277,7 +279,7 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
   - **Customer RLS**:
     - **SELECT**: `(auth.uid() = user_id AND deleted_at IS NULL)` (Customers can view their own non-deleted orders).
     - **INSERT**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id))` (Customers can create orders for businesses they are a member of).
-    - **UPDATE**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id))` (Customers can update their own orders).
+    - **UPDATE**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id) AND (SELECT status FROM public.orders WHERE id = orders.id) = 'pending')` (Customers can update their own orders only when the order is in 'pending' status).
 
 - **`order_items` table**:
   - **Admin RLS**:
@@ -310,7 +312,7 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 
   - **Owner RLS**:
     - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner')) AND deleted_at IS NULL` (Owners can view non-deleted members within their business).
-    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can create members within their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners and Sales Agents can create members within their business).
     - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can update members within their business).
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can soft-delete members within their business).
 

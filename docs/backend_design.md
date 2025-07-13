@@ -42,16 +42,16 @@ The following core entities and their relationships will form the initial databa
 
 This table will store additional user profile information, linked to Supabase's built-in `auth.users` table.
 
-| Column Name  | Data Type                  | Constraints                  | Description                                                                                        |
-| :----------- | :------------------------- | :--------------------------- | :------------------------------------------------------------------------------------------------- |
-| `id`         | `uuid`                     | PK, FK (`auth.users.id`)     | Primary key, links to Supabase Auth user ID.                                                       |
-| `username`   | `text`                     | UNIQUE, NOT NULL             | User's chosen username.                                                                            |
-| `full_name`  | `text`                     | NULLABLE                     | User's full name.                                                                                  |
-| `avatar_url` | `text`                     | NULLABLE                     | URL to user's avatar image.                                                                        |
-| `role`       | `text`                     | NOT NULL, DEFAULT 'customer' | Global user role: 'admin', 'customer'. Business-specific roles are managed in the `members` table. |
-| `created_at` | `timestamp with time zone` | DEFAULT `now()`              | Timestamp of profile creation.                                                                     |
-| `updated_at` | `timestamp with time zone` | DEFAULT `now()`              | Last update timestamp.                                                                             |
-| `deleted_at` | `timestamp with time zone` | NULLABLE                     | Timestamp when the profile was soft-deleted.                                                       |
+| Column Name  | Data Type                  | Constraints              | Description                                                                                    |
+| :----------- | :------------------------- | :----------------------- | :--------------------------------------------------------------------------------------------- |
+| `id`         | `uuid`                     | PK, FK (`auth.users.id`) | Primary key, links to Supabase Auth user ID.                                                   |
+| `username`   | `text`                     | UNIQUE, NOT NULL         | User's chosen username.                                                                        |
+| `full_name`  | `text`                     | NULLABLE                 | User's full name.                                                                              |
+| `avatar_url` | `text`                     | NULLABLE                 | URL to user's avatar image.                                                                    |
+| `role`       | `text`                     | NOT NULL, DEFAULT 'user' | Global user role: 'admin', 'user'. Business-specific roles are managed in the `members` table. |
+| `created_at` | `timestamp with time zone` | DEFAULT `now()`          | Timestamp of profile creation.                                                                 |
+| `updated_at` | `timestamp with time zone` | DEFAULT `now()`          | Last update timestamp.                                                                         |
+| `deleted_at` | `timestamp with time zone` | NULLABLE                 | Timestamp when the profile was soft-deleted.                                                   |
 
 ### 2.2 `products` Table
 
@@ -150,7 +150,6 @@ Stores business information, including addresses, for users with 'owner' or 'sal
 | Column Name     | Data Type                  | Constraints                     | Description                                                                         |
 | :-------------- | :------------------------- | :------------------------------ | :---------------------------------------------------------------------------------- |
 | `id`            | `uuid`                     | PK, DEFAULT `gen_random_uuid()` | Unique organisation identifier.                                                     |
-| `profile_id`    | `uuid`                     | FK (`profiles.id`), NOT NULL    | The profile of the business owner.                                                  |
 | `name`          | `text`                     | NOT NULL                        | Name of the business.                                                               |
 | `address_line1` | `text`                     | NOT NULL                        | Street address line 1.                                                              |
 | `address_line2` | `text`                     | NULLABLE                        | Street address line 2.                                                              |
@@ -167,14 +166,14 @@ Stores business information, including addresses, for users with 'owner' or 'sal
 
 This table will link profiles (users) to businesses, allowing multiple users to be associated with a single organisation and defining their specific role within that organisation.
 
-| Column Name        | Data Type                  | Constraints                           | Description                                              |
-| :----------------- | :------------------------- | :------------------------------------ | :------------------------------------------------------- |
-| `profile_id`       | `uuid`                     | PK, FK (`profiles.id`), NOT NULL      | The user's profile ID.                                   |
-| `business_id`      | `uuid`                     | PK, FK (`organisations.id`), NOT NULL | The organisation ID.                                     |
-| `role_in_business` | `text`                     | NOT NULL                              | Role within the business (e.g., 'owner', 'sales_agent'). |
-| `created_at`       | `timestamp with time zone` | DEFAULT `now()`                       | Timestamp of association creation.                       |
-| `updated_at`       | `timestamp with time zone` | DEFAULT `now()`                       | Last update timestamp.                                   |
-| `deleted_at`       | `timestamp with time zone` | NULLABLE                              | Timestamp when the member association was soft-deleted.  |
+| Column Name        | Data Type                  | Constraints                           | Description                                                          |
+| :----------------- | :------------------------- | :------------------------------------ | :------------------------------------------------------------------- |
+| `profile_id`       | `uuid`                     | PK, FK (`profiles.id`), NOT NULL      | The user's profile ID.                                               |
+| `business_id`      | `uuid`                     | PK, FK (`organisations.id`), NOT NULL | The organisation ID.                                                 |
+| `role_in_business` | `text`                     | NOT NULL                              | Role within the business (e.g., 'owner', 'sales_agent', 'customer'). |
+| `created_at`       | `timestamp with time zone` | DEFAULT `now()`                       | Timestamp of association creation.                                   |
+| `updated_at`       | `timestamp with time zone` | DEFAULT `now()`                       | Last update timestamp.                                               |
+| `deleted_at`       | `timestamp with time zone` | NULLABLE                              | Timestamp when the member association was soft-deleted.              |
 
 ## 3. Supabase Authentication and User Management
 
@@ -199,10 +198,7 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 
 - **`profiles` table**:
   - **Admin RLS**:
-    - **SELECT**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can view all profiles, including deleted ones).
-    - **INSERT**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can create profiles).
-    - **UPDATE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins can update any profile).
-    - **DELETE**: `(auth.jwt() ->> 'user_role' = 'admin')` (Only admins can hard delete profiles).
+    - **ALL**: `(auth.jwt() ->> 'user_role' = 'admin')` (Admins have full access to all profiles).
 
   - **User (Self) RLS**: (Applies to all authenticated users for their own profile)
     - **SELECT**: `(deleted_at IS NULL AND (auth.uid() = id))` (Users can view their own non-deleted profile).
@@ -227,7 +223,7 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
 
   - **Customer RLS**:
-    - **SELECT**: `(auth.jwt() ->> 'user_role' = 'customer') AND deleted_at IS NULL` (Customers can view all non-deleted products).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business = 'customer')) AND deleted_at IS NULL` (Customers can view non-deleted products that belong to the businesses they are a member of).
 
 - **`categories` table**:
   - **Admin RLS**:
@@ -240,18 +236,18 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Only owners can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
 
   - **Customer RLS**:
-    - **SELECT**: `(auth.jwt() ->> 'user_role' = 'customer') AND deleted_at IS NULL` (Customers can view all categories).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'customer')) AND deleted_at IS NULL` (Customers can view non-deleted categories that belong to the businesses they are a member of).
 
 - **`carts` table**:
   - **Customer RLS**:
     - **SELECT (Customer)**: `(auth.uid() = user_id AND carts.deleted_at IS NULL)` (Users can view their own non-deleted cart).
-    - **INSERT (Customer)**: `(auth.uid() = user_id AND carts.deleted_at IS NULL)` (Users can create their own cart).
-    - **UPDATE (Customer)**: `(auth.uid() = user_id AND carts.deleted_at IS NULL)` (Users can update their own cart).
+    - **INSERT (Customer)**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id))` (Users can create their own cart).
+    - **UPDATE (Customer)**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id))` (Users can update their own cart).
     - **SOFT DELETE (Customer)**: `(auth.uid() = user_id AND carts.deleted_at IS NULL)` (Users can soft-delete their own cart). This will be an UPDATE operation setting `deleted_at`.
 
   - **Owner/Sales Agent RLS**:
     - **SELECT (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id AND m.role_in_business IN ('owner', 'sales_agent')) AND carts.deleted_at IS NULL)` (Owners/Sales Agents can view carts associated with their business).
-    - **INSERT (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can create carts for their business.)
+    - **INSERT (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m_agent WHERE m_agent.profile_id = auth.uid() AND m_agent.role_in_business IN ('owner', 'sales_agent') AND m_agent.business_id = carts.business_id) AND EXISTS (SELECT 1 FROM public.members m_customer WHERE m_customer.profile_id = carts.user_id AND m_customer.role_in_business = 'customer' AND m_customer.business_id = carts.business_id))` (Owners/Sales Agents can create carts for a customer within their business.)
     - **UPDATE (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update carts associated with their business.)
     - **SOFT DELETE (Owner/Sales Agent)**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = carts.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete carts associated with their business). This will be an UPDATE operation setting `deleted_at`.
 
@@ -274,12 +270,14 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 
   - **Owner/Sales Agent RLS**:
     - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted orders associated with their business).
-    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can create orders associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m_agent WHERE m_agent.profile_id = auth.uid() AND m_agent.role_in_business IN ('owner', 'sales_agent') AND m_agent.business_id = orders.business_id) AND EXISTS (SELECT 1 FROM public.members m_customer WHERE m_customer.profile_id = orders.user_id AND m_customer.role_in_business = 'customer' AND m_customer.business_id = orders.business_id))` (Owners/Sales Agents can create orders associated with their business).
     - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update orders associated with their business).
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete orders associated with their business).
 
   - **Customer RLS**:
     - **SELECT**: `(auth.uid() = user_id AND deleted_at IS NULL)` (Customers can view their own non-deleted orders).
+    - **INSERT**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id))` (Customers can create orders for businesses they are a member of).
+    - **UPDATE**: `(auth.uid() = user_id AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id))` (Customers can update their own orders).
 
 - **`order_items` table**:
   - **Admin RLS**:
@@ -300,11 +298,11 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
 
   - **Owner/Sales Agent RLS**:
     - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view their own non-deleted organisation).
-    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner')))` (Only owners can update their own organisation).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business = 'owner'))` (Only owners can update their own organisation).
     - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business = 'owner'))` (Only owners can soft-delete their organisation).
 
   - **Customer RLS**:
-    - **SELECT**: `(auth.jwt() ->> 'user_role' = 'customer') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id AND deleted_at IS NULL` (Customers can view non-deleted organisations associated with their business_id).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business = 'customer')) AND deleted_at IS NULL` (Customers can view non-deleted organisations they are a member of).
 
 - **`members` table**:
   - **Admin RLS**:
@@ -380,6 +378,16 @@ The following outlines the conceptual API endpoints and their corresponding Supa
   - **Path**: `/rpc/create_customer_order_from_cart` (via a Supabase function)
   - **Supabase Operation**: `supabase.rpc('create_customer_order_from_cart', { cart_id: '...' })`
   - **Description**: Converts the current user's cart into a new order, deducting inventory.
+- **Create Cart (Sales Agent on behalf of Customer)**:
+  - **Method**: `POST`
+  - **Path**: `/rpc/create_cart_for_customer` (via a Supabase function)
+  - **Supabase Operation**: `supabase.rpc('create_cart_for_customer', { customer_user_id: '...', business_id: '...' })`
+  - **Description**: Allows a sales agent to create a new cart for a specified customer within their business.
+- **Create Order (Sales Agent on behalf of Customer)**:
+  - **Method**: `POST`
+  - **Path**: `/rpc/create_order_for_customer` (via a Supabase function)
+  - **Supabase Operation**: `supabase.rpc('create_order_for_customer', { customer_user_id: '...', business_id: '...', cart_id: '...' })`
+  - **Description**: Allows a sales agent to create a new order for a specified customer within their business, optionally from an existing cart.
 - **List User's Orders (History)**:
   - **Method**: `GET`
   - **Path**: `/orders?user_id=eq.{user_id}&select=*,order_items(*)`
@@ -406,7 +414,7 @@ The following outlines the conceptual API endpoints and their corresponding Supa
 - **Manage Business (CRUD)**:
   - **Method**: `GET`, `POST`, `PATCH`, `DELETE`
   - **Path**: `/organisations` (for list/add), `/organisations?id=eq.{id}` (for update/delete)
-  - **Supabase Operation**: `supabase.from('organisations').select('*').eq('profile_id', auth.uid())`, `supabase.from('organisations').insert({...})`, etc.
+  - **Supabase Operation**: `supabase.from('organisations').select('*').eq('id', (SELECT business_id FROM public.members WHERE profile_id = auth.uid() AND role_in_business = 'owner'))`, `supabase.from('organisations').insert({...})`, etc.
   - **Description**: Allows users to manage their associated organisation information.
 - **List All Customers (Admin)**:
   - **Method**: `GET`

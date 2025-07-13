@@ -321,13 +321,13 @@ graph TD
     - [ ] 5.3.5: Create Add/Edit Customer screen UI. (MVP)
     - [ ] 5.3.6: Implement add/edit customer API integration. (MVP)
 
-- [ ] **Task 5.4: Admin App Inventory Management UI & Logic (MVP)**
+- [x] **Task 5.4: Admin App Inventory Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for monitoring and adjusting inventory levels in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 5.1
   - **Subtasks**:
-    - [ ] 5.4.1: Create Inventory List screen UI. (MVP)
-    - [ ] 5.4.2: Implement inventory list API integration. (MVP)
-    - [ ] 5.4.3: Implement 'Adjust Inventory' functionality with API integration. (MVP)
+    - [x] 5.4.1: Create Inventory List screen UI. (MVP)
+    - [x] 5.4.2: Implement inventory list API integration. (MVP)
+    - [x] 5.4.3: Implement 'Adjust Inventory' functionality with API integration. (MVP)
     - [ ] 5.4.4: Implement Low Stock Alerts display (if applicable). (Future)
 - [ ] **Task 5.5: Admin App User Management UI & Logic (for higher-level admins) (Future)**
   - **Description**: Develop the UI and integrate logic for managing administrative user accounts and permissions.

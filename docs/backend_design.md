@@ -211,10 +211,10 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **SOFT DELETE**: `(auth.uid() = id)` (Users can soft-delete their own profile). This will be an UPDATE operation setting `deleted_at`.
 
   - **Owner/Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted profiles associated with their business_id).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can create profiles associated with their business_id).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can update profiles associated with their business_id).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can soft-delete profiles associated with their business_id).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m_auth WHERE m_auth.profile_id = auth.uid() AND m_auth.role_in_business IN ('owner', 'sales_agent') AND EXISTS (SELECT 1 FROM public.members m_target WHERE m_target.profile_id = profiles.id AND m_target.business_id = m_auth.business_id))) AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted profiles associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m_auth WHERE m_auth.profile_id = auth.uid() AND m_auth.role_in_business IN ('owner', 'sales_agent') AND EXISTS (SELECT 1 FROM public.members m_target WHERE m_target.profile_id = profiles.id AND m_target.business_id = m_auth.business_id)))` (Owners/Sales Agents can create profiles associated with their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m_auth WHERE m_auth.profile_id = auth.uid() AND m_auth.role_in_business IN ('owner', 'sales_agent') AND EXISTS (SELECT 1 FROM public.members m_target WHERE m_target.profile_id = profiles.id AND m_target.business_id = m_auth.business_id)))` (Owners/Sales Agents can update profiles associated with their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m_auth WHERE m_auth.profile_id = auth.uid() AND m_auth.role_in_business IN ('owner', 'sales_agent') AND EXISTS (SELECT 1 FROM public.members m_target WHERE m_target.profile_id = profiles.id AND m_target.business_id = m_auth.business_id)))` (Owners/Sales Agents can soft-delete profiles associated with their business).
 
 - **`products` table**:
   - **Admin RLS**:
@@ -224,10 +224,10 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'` (Only admins can hard delete products).
 
   - **Owner/Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted products associated with their business).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can add products to their business).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can update products in their business).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted products associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can add products to their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update products in their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete products from their business). This will be an UPDATE operation setting `deleted_at`.
 
   - **Customer RLS**:
     - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'customer' AND deleted_at IS NULL` (Customers can view all non-deleted products).
@@ -240,10 +240,10 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'` (Only admins can hard delete categories).
 
   - **Owner/Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Owners/Sales Agents can view categories associated with their business).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can add categories to their business).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can update categories in their business).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view categories associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can add categories to their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update categories in their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete categories from their business). This will be an UPDATE operation setting `deleted_at`.
 
   - **Customer RLS**:
     - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'customer' AND deleted_at IS NULL` (Customers can view all categories).
@@ -279,10 +279,10 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **ALL**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'` (Admins have full access to all orders).
 
   - **Owner/Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted orders associated with their business_id).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can create orders associated with their business_id).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can update orders associated with their business_id).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners/Sales Agents can soft-delete orders associated with their business_id).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted orders associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can create orders associated with their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update orders associated with their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = orders.business_id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete orders associated with their business).
 
   - **Customer RLS**:
     - **SELECT**: `(auth.uid() = user_id AND deleted_at IS NULL)` (Customers can view their own non-deleted orders).
@@ -302,10 +302,10 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
   - **Admin RLS**:
     - **ALL**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'` (Admins have full access to all organisations).
   - **Owner/Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted organisations associated with their business_id).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id` (Owners/Sales Agents can create organisations associated with their business_id).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id` (Owners/Sales Agents can update organisations associated with their business_id).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) IN ('owner', 'sales_agent') AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id` (Owners/Sales Agents can soft-delete organisations associated with their business_id).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view non-deleted organisations associated with their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can create organisations associated with their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can update organisations associated with their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = organisations.id AND m.role_in_business IN ('owner', 'sales_agent')))` (Owners/Sales Agents can soft-delete organisations associated with their business).
   - **Customer RLS**:
     - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'customer' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = id AND deleted_at IS NULL` (Customers can view non-deleted organisations associated with their business_id).
 
@@ -313,12 +313,12 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
   - **Admin RLS**:
     - **ALL**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'admin'` (Admins have full access to all organisation memberships).
   - **Owner RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'owner' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Owners can view non-deleted members within their business).
-    - **INSERT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'owner' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners can create members within their business).
-    - **UPDATE**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'owner' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners can update members within their business).
-    - **SOFT DELETE**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'owner' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id` (Owners can soft-delete members within their business).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner')) AND deleted_at IS NULL` (Owners can view non-deleted members within their business).
+    - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can create members within their business).
+    - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can update members within their business).
+    - **SOFT DELETE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'owner'))` (Owners can soft-delete members within their business).
   - **Sales Agent RLS**:
-    - **SELECT**: `(SELECT role FROM profiles WHERE id = auth.uid()) = 'sales_agent' AND (SELECT business_id FROM profiles WHERE id = auth.uid()) = business_id AND deleted_at IS NULL` (Sales agents can view non-deleted members within their business).
+    - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = members.business_id AND m.role_in_business = 'sales_agent')) AND deleted_at IS NULL` (Sales agents can view non-deleted members within their business).
   - **Customer RLS**:
     - **SELECT**: `profile_id = auth.uid() AND deleted_at IS NULL` (Customers can view their own non-deleted membership record).
 
@@ -412,17 +412,17 @@ The following outlines the conceptual API endpoints and their corresponding Supa
   - **Method**: `GET`
   - **Path**: `/profiles?role=eq.customer`
   - **Supabase Operation**: `supabase.from('profiles').select('*').eq('role', 'customer')`
-  - **Description**: Retrieves a list of all customer profiles. (Requires Admin role via RLS).
+  - **Description**: Retrieves a list of all customer profiles. (Requires Admin, owner, or sales_agent role via RLS for data associated with their respective businesses).
 - **Get customer Details (Admin)**:
   - **Method**: `GET`
   - **Path**: `/profiles/{id}`
   - **Supabase Operation**: `supabase.from('profiles').select('*').eq('id', id).single()`
-  - **Description**: Retrieves details for a specific customer. (Requires Admin role via RLS).
+  - **Description**: Retrieves details for a specific customer. (Requires Admin, owner, or sales_agent role via RLS for data associated with their respective businesses).
 - **Add/Edit Customer Account (Admin)**:
   - **Method**: `POST`, `PATCH`
   - **Path**: `/profiles` (for add), `/profiles?id=eq.{id}` (for edit)
   - **Supabase Operation**: `supabase.from('profiles').insert({...})`, `supabase.from('profiles').update({...}).eq('id', id)`
-  - **Description**: Allows admins to add new customer accounts or edit existing ones. (Requires Admin role via RLS).
+  - **Description**: Allows admins, owners, or sales_agents to add new customer accounts or edit existing ones for data associated with their respective businesses. (Requires Admin, owner, or sales_agent role via RLS).
 
 ### 6.4 Reporting & Analytics Endpoints (Admin/Owner)
 
@@ -446,12 +446,12 @@ To address the reporting requirements from the B2B PRD, the following conceptual
   - **Method**: `GET`
   - **Path**: `/products?select=id,name,stock_quantity`
   - **Supabase Operation**: `supabase.from('products').select('id,name,stock_quantity')`
-  - **Description**: Retrieves current stock levels for all products. (Requires Admin role via RLS).
+  - **Description**: Retrieves current stock levels for all products. (Requires Admin, owner, or sales_agent role via RLS for data associated with their respective businesses).
 - **Adjust Inventory Levels (Admin)**:
   - **Method**: `PATCH`
   - **Path**: `/products?id=eq.{id}`
   - **Supabase Operation**: `supabase.from('products').update({stock_quantity: new_quantity}).eq('id', id)`
-  - **Description**: Allows admins to adjust the stock quantity of a product. (Requires Admin role via RLS).
+  - **Description**: Allows admins, owners, or sales_agents to adjust the stock quantity of a product for data associated with their respective businesses. (Requires Admin, owner, or sales_agent role via RLS).
 
 ### 6.5 Organisation Management Endpoints (Admin)
 

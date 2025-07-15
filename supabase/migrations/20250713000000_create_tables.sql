@@ -1,7 +1,7 @@
 
 -- Create profiles table
 CREATE TABLE profiles (
-    id uuid PRIMARY KEY REFERENCES auth.users(id),
+    id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     username text UNIQUE NOT NULL,
     full_name text,
     avatar_url text,

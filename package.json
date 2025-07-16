@@ -11,20 +11,39 @@
     "b2c": "pnpm --filter b2c start",
     "build-shared": "pnpm --filter shared build",
     "lint": "eslint .",
-    "format": "eslint. --fix"
+    "format": "eslint. --fix",
+    "db:reset": "supabase db reset",
+    "db:reset:seed": "pnpx tsx seed.ts",
+    "clean-install": "pnpm i --frozen-lockfile"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@react-native/eslint-config": "^0.74.83",
+    "@snaplet/copycat": "^6.0.0",
+    "@snaplet/seed": "0.98.0",
+    "@supabase/supabase-js": "^2.50.2",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/pg": "^8.15.4",
+    "dotenv": "^17.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.9.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-native": "^5.0.0",
+    "pg": "^8.16.3",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.5.11"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@prisma/engines",
+      "@prisma/engines"
+    ],
+    "onlyBuiltDependencies": [
+      "@snaplet/seed"
+    ]
   }
 }

@@ -23,15 +23,6 @@ export default function TabLayout() {
         options={{
           title: 'Orders',
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
-          headerShown: false, // Hide header for the tab screen itself, as individual screens will have their own headers
-        }}
-      />
-      <Tabs.Screen
-        name="customers"
-        options={{
-          title: 'Customers',
-          tabBarIcon: ({ color }) => <TabBarIcon name="people" color={color} />,
-          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -41,7 +32,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="archive" color={color} />
           ),
-          headerShown: false,
         }}
       />
     </Tabs>

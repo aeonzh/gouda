@@ -68,8 +68,11 @@ export default function InitialLayout() {
           }
 
           // Basic role-based redirection: Admins and sales agents go to tabs
+          const inTabsGroup = segments[0] === '(tabs)';
           if (profile?.role === 'admin' || profile?.role === 'sales_agent') {
-            router.replace('/(tabs)');
+            if (!inTabsGroup) {
+              router.replace('/(tabs)');
+            }
           } else {
             // If not an admin or sales_agent, log them out or redirect to a generic error page
             console.warn('Unauthorized role detected. Logging out.');
@@ -100,6 +103,7 @@ export default function InitialLayout() {
   // Render the main app stack once loading is complete
   return (
     <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="products/manage" options={{ headerShown: false }} />
       {/* Add other admin routes here if needed */}
     </Stack>

@@ -110,15 +110,7 @@ export default function InventoryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: 'Inventory Management',
-          headerLargeTitle: true,
-          headerTransparent: false,
-          headerBlurEffect: 'light',
-        }}
-      />
+      
       {inventory.length === 0 && !loading ? (
         <View className="flex-1 justify-center items-center p-4">
           <Feather name="box" size={60} color="#9CA3AF" />

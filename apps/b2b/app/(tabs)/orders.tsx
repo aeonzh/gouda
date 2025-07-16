@@ -95,23 +95,7 @@ export default function OrdersScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: 'Order Management',
-          headerLargeTitle: true,
-          headerTransparent: false,
-          headerBlurEffect: 'light',
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push('/orders/create')}
-              className="p-2 rounded-full bg-indigo-500"
-            >
-              <Feather name="plus" size={24} color="white" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      
       {orders.length === 0 && !loading ? (
         <View className="flex-1 justify-center items-center p-4">
           <Feather name="clipboard" size={60} color="#9CA3AF" />

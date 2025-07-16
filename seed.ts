@@ -4,18 +4,27 @@ import { createClient } from '@supabase/supabase-js';
 import 'dotenv/config';
 
 async function main() {
-  const seed = await createSeedClient();
+  const seed = await createSeedClient({
+    connect: true,
+  });
 
-  const supabase = createClient(
+  // Client for AUTH operations (will become authenticated as the last user)
+  const supabaseAuth = createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_KEY!,
+    process.env.SUPABASE_SERVICE_KEY!,
+  );
+
+  // A separate, CLEAN client for administrative DATA operations
+  const supabaseAdmin = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_KEY!,
   );
 
   faker.seed(123);
 
   await seed.$resetDatabase();
 
-  await supabase.auth.signUp({
+  await supabaseAuth.auth.signUp({
     email: 'admin@example.com',
     password: '123Abc',
     options: {
@@ -28,7 +37,7 @@ async function main() {
   });
 
   for (let i = 0; i < 5; i++) {
-    await supabase.auth.signUp({
+    await supabaseAuth.auth.signUp({
       email: faker.internet.email({ provider: 'example.com' }),
       password: '123Abc',
       options: {
@@ -43,7 +52,7 @@ async function main() {
     });
   }
 
-  const { data: profiles } = await supabase.from('profiles').select('id');
+  const { data: profiles } = await supabaseAdmin.from('profiles').select('id');
 
   // Create organisations and link profiles to organisations as members
   const { organisations, members } = await seed.organisations(
@@ -59,7 +68,7 @@ async function main() {
         status: 'approved',
         deleted_at: null,
         members: (x) =>
-          x(2, () => ({
+          x(3, () => ({
             role_in_business: faker.helpers.arrayElement([
               'owner',
               'sales_agent',
@@ -69,50 +78,45 @@ async function main() {
       })),
     { connect: { profiles } },
   );
-
   // Create categories for organisations
-  const categories = await seed.categories(
-    (x) =>
-      x(12, () => ({
-        name: faker.commerce.department(),
-        products: (x) =>
-          x(10, () => ({
-            name: faker.commerce.productName(),
-            description: faker.commerce.productDescription(),
-            status: faker.helpers.arrayElement([
-              'draft',
-              'published',
-              'rejected',
-            ]),
-            price: faker.number.float({ fractionDigits: 2 }),
-            image_url: faker.image.urlLoremFlickr(),
-            stock_quantity: faker.number.int({ min: 0, max: 100 }),
-          })),
-      })),
-    {
-      connect: { organisations },
-    },
+  const categories = await seed.categories((x) =>
+    x({ min: 2, max: 10 }, () => ({
+      name: faker.commerce.department(),
+      products: (x) =>
+        x({ min: 2, max: 10 }, () => ({
+          name: faker.commerce.productName(),
+          description: faker.commerce.productDescription(),
+          status: faker.helpers.arrayElement([
+            'draft',
+            'published',
+            'rejected',
+          ]),
+          price: faker.number.float({ fractionDigits: 2 }),
+          image_url: faker.image.urlLoremFlickr(),
+          stock_quantity: faker.number.int({ min: 0, max: 100 }),
+        })),
+    })),
   );
 
-  // Create orders
-  const orders = await seed.orders(
-    (x) =>
-      x(5, () => ({
-        total_amount: faker.number.float({ fractionDigits: 2 }),
-        status: faker.helpers.arrayElement([
-          'pending',
-          'processing',
-          'completed',
-          'cancelled',
-        ]),
-        order_items: (x) =>
-          x(15, () => ({
-            quantity: faker.number.int({ min: 1, max: 5 }),
-            price_at_time_of_order: faker.number.float({ fractionDigits: 2 }),
-          })),
-      })),
-    { connect: { profiles, organisations } },
-  );
+  // // Create orders
+  // const orders = await seed.orders(
+  //   (x) =>
+  //     x(5, () => ({
+  //       total_amount: faker.number.float({ fractionDigits: 2 }),
+  //       status: faker.helpers.arrayElement([
+  //         'pending',
+  //         'processing',
+  //         'completed',
+  //         'cancelled',
+  //       ]),
+  //       order_items: (x) =>
+  //         x(15, () => ({
+  //           quantity: faker.number.int({ min: 1, max: 5 }),
+  //           price_at_time_of_order: faker.number.float({ fractionDigits: 2 }),
+  //         })),
+  //     })),
+  //   { connect: { profiles, organisations } },
+  // );
 
   process.exit();
 }

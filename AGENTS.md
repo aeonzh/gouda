@@ -24,24 +24,38 @@ This document outlines essential commands and code style guidelines for agents w
 
 ## AI-Specific Rules
 
-- **Cursor Rules**: No `.cursor/rules/` or `.cursorrules` found.
-- **Copilot Instructions**: No `.github/copilot-instructions.md` found.
+- If present, include rules from:
+  - `.cursor/rules/`
+  - `.cursorrules`
+  - `.github/*-instructions.md`
+  - `.roo/rules/`
+  - `.kilocode/rules/`
+
+## Other instructions
+
+When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format.
 
 ## Memories
 
 Always save memories in this file.
 
-Make sure that before each session you check the current status in STATUS.md.
-Make sure that at the end of each session you save the progress status in STATUS.md.
+Make sure that before each session you check the current status in JOURNAL.md.
+Every time we make a decision or a change record that into JOURNAL.md explaining what changes have been made, or what decisions have been made along with the rationale that brought us there.
+Journal entries should be in a chronological order.
+The result at the end of each session should be a track record of our progress for future use.
 
-Project Overview:
+At the same time, keep this file updated with a summary of the end-state we reached. As a quick reference of the current state, this state does not require to have the rationale included with it
+
+## Project Details
+
+### Project Overview
 
 - Two mobile applications: Customer (B2C) and Administrative (B2B).
 - Both built with React Native, Expo, NativeWind.
 - Backend: Supabase (PostgreSQL, PostgREST, Auth, Storage).
 - Monorepo structure.
 
-Key Entities and Database Schema (Supabase):
+### Key Entities and Database Schema (Supabase)
 
 - `profiles`: Extends `auth.users`, stores `username`, `full_name`, `avatar_url`, `role` (`admin`, `user`).
 - `products`: `id`, `business_id`, `name`, `description`, `status` (`draft`, `published`, `rejected`), `price`, `image_url`, `category_id`, `stock_quantity`.
@@ -53,23 +67,87 @@ Key Entities and Database Schema (Supabase):
 - `organisations`: `id`, `name`, `address`, `status` (`pending`, `approved`, `suspended`, `rejected`).
 - `members`: `profile_id`, `business_id`, `role_in_business` (`owner`, `sales_agent`, `customer`).
 
-Authentication:
+### Authentication
 
 - Supabase built-in Email/Password authentication.
 - JWTs for authorization.
 
-Row Level Security (RLS):
+### Row Level Security (RLS)
 
 - Crucial for data access control.
 - Policies defined for each table based on `auth.uid()`, `auth.jwt()`, and `members` table.
 - Global `admin` role has full access.
 - `owner` role is the business-specific admin.
 
-API Interaction:
+### API Interaction
 
 - Supabase auto-generated APIs (PostgREST) for CRUD operations.
 - RPC for complex logic via PostgreSQL stored procedures.
 
-Project Plan:
+### Project Plan
 
 - Detailed plan already exists in `docs/project_plan.md` with phases, tasks, and subtasks. I should follow this plan.
+
+## Current State Summary
+
+This section provides a quick reference of the current end-state of the project, without detailed rationale.
+
+### apps/b2b/
+
+The `apps/b2b/` directory contains a React Native Expo application.
+It uses NativeWind for styling.
+The application has the following main screens/features:
+
+- **Authentication**: Login screen (`(auth)/login.tsx`) using `shared/api/supabase` for authentication. Admin login UI and API integration are implemented.
+- **Tabs**:
+  - **Dashboard**: `(tabs)/index.tsx` (currently a placeholder).
+  - **Products**: `(tabs)/products.tsx` for product management (list, edit, delete) using `shared/api/products`. It also has `products/manage.tsx` for adding/editing products. Admin product list, add/edit product, product category management, and product deletion functionalities are implemented.
+  - **Orders**: `(tabs)/orders.tsx` for order management (list) using `shared/api/orders`. It also has `orders/[id].tsx` for order details and `orders/create.tsx` for creating orders on behalf of customers. Admin order list, order details, update order status, and create order for customer functionalities are implemented.
+  - **Inventory**: `(tabs)/inventory.tsx` for inventory management (list, adjust stock) using `shared/api/products`. Inventory list and adjust inventory functionalities are implemented.
+- **Navigation**: Uses `expo-router` (updated to `5.1.3`) for navigation. The routing issue where clicking a tab redirected back to the main tab has been fixed by modifying `apps/b2b/app/_layout.tsx` to prevent constant redirection. Header configurations for tab screens have been refactored and the 'Customers' tab has been removed.
+- **Shared components**: Imports components and APIs from `shared/` package.
+- **Authentication Flow**: The `_layout.tsx` at the root of `apps/b2b/app/` handles session management and redirects based on user roles (`admin` or `sales_agent`).
+
+### apps/b2c/
+
+The `apps/b2c/` directory contains a React Native Expo application.
+It uses NativeWind for styling.
+The application has the following main screens/features:
+
+- **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented.
+- **Tabs**:
+  - **Home**: `(tabs)/index.tsx` (currently a placeholder).
+  - **Profile**: `(tabs)/profile.tsx` which includes `profile/index.tsx` for viewing profile, `profile/edit.tsx` for editing profile, and `profile/addresses.tsx` for managing addresses. Uses `packages/shared/api/profiles`. My Account/Profile screen, profile data fetching/update, and Saved Addresses screen are implemented.
+  - **Products**: `(tabs)/products.tsx` for product browsing, search, and filtering using `packages/shared/api/products`. Product details are shown in `products/[id].tsx`. Product listing/catalog, search/filtering, and product details are implemented.
+  - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details are shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details are implemented.
+  - **Cart**: `cart.tsx` for managing the shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen are implemented.
+- **Order Confirmation**: `order-confirmation.tsx` displays order confirmation after an order is placed.
+- **Navigation**: Uses `expo-router` for navigation.
+- **Shared components**: Imports components and APIs from `packages/shared/`.
+
+### packages/shared/
+
+The `packages/shared/` directory contains shared code, including API clients and UI components, used by both `b2b` and `b2c` applications.
+
+#### `api/`
+
+- **`orders.ts`**: Contains functions for managing carts and orders, including `getOrCreateCart`, `addOrUpdateCartItem`, `removeCartItem`, `updateCartItemQuantity`, `getCartItems`, `createOrderFromCart`, `getCustomerOrderHistory`, `getOrderDetails`, `updateOrderStatus`, and `createOrderForCustomer`.
+- **`products.ts`**: Contains functions for managing products and categories, including `getProducts`, `getProductById`, `createProduct`, `updateProduct`, `deleteProduct`, `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`, `getInventoryLevels`, and `adjustInventoryLevel`.
+- **`profiles.ts`**: Contains functions for managing user profiles and business details, including `getProfile`, `updateProfile`, `getBusinessDetails`, `addBusinessDetails`, `updateBusinessDetails`, `deleteBusinessDetails`, `getAllCustomers`, `getCustomerById`, `createCustomer`, and `updateCustomer`.
+- **`supabase.ts`**: Initializes the Supabase client and provides authentication functions like `signUpWithEmail`, `signInWithEmail`, `resetPasswordForEmail`, and `signOut`.
+
+#### `components/`
+
+- **`Button.tsx`**: A reusable button component with loading states and variants.
+- **`Input.tsx`**: A reusable input component with labels and various keyboard types.
+
+### Other
+
+- `index.ts`: Entry point for the shared package.
+- `nativewind-env.d.ts`: NativeWind type definitions.
+- `package.json`: Package metadata and dependencies.
+- `tsconfig.json`: TypeScript configuration for the shared package.
+
+### Supabase RLS Policies
+
+- All RLS policies for `public.profiles`, `public.products`, `public.categories`, `public.carts`, `public.cart_items`, `public.orders`, `public.order_items`, `public.organisations`, and `public.members` tables have been consolidated into a single migration file (`supabase/migrations/20250713000002_add_rls_policies.sql`) to improve performance and remove redundant policies.

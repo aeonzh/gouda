@@ -74,6 +74,7 @@ async function main() {
               'sales_agent',
               'customer',
             ]),
+            deleted_at: null,
           })),
       })),
     { connect: { profiles } },
@@ -94,7 +95,9 @@ async function main() {
           price: faker.number.float({ fractionDigits: 2 }),
           image_url: faker.image.urlLoremFlickr(),
           stock_quantity: faker.number.int({ min: 0, max: 100 }),
+          deleted_at: null,
         })),
+      deleted_at: null,
     })),
   );
 

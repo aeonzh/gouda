@@ -4,7 +4,9 @@ This document outlines essential commands and code style guidelines for agents w
 
 ## Build/Lint/Test Commands
 
-- **Start Development Server**: `pnpm start` or `expo start`
+- **Start Development Server**:
+  - For `apps/b2b`: `pnpm b2b` (runs on `http://localhost:8081`)
+  - For `apps/b2c`: `pnpm b2c` (runs on `http://localhost:8080`)
 - **Lint Code**: `pnpm run lint`
 - **Format Code**: `pnpm run format`
 - **Testing**: No explicit test command found in `package.json`. Testing framework and single test execution commands depend on the chosen testing setup (e.g., Jest).
@@ -40,7 +42,12 @@ When requested to commit a change, generate a commit message that is relevant to
 Always save memories in this file.
 
 Make sure that before each session you check the current status in JOURNAL.md.
-Every time we make a decision or a change record that into JOURNAL.md explaining what changes have been made, or what decisions have been made along with the rationale that brought us there.
+Every time we make a decision or a change or I say "Update journal" record that into JOURNAL.md explaining what changes have been made, or what decisions have been made along with the rationale that brought us there. Be concise, but also explain:
+
+- what root cause or reason of the change
+- how the change addresses the root cause
+- why the change addresses the root cause
+
 Journal entries should be in a chronological order.
 The result at the end of each session should be a track record of our progress for future use.
 
@@ -117,12 +124,12 @@ The application has the following main screens/features:
 - **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented.
 - **Tabs**:
   - **Home**: `(tabs)/index.tsx` (currently a placeholder).
-  - **Profile**: `(tabs)/profile.tsx` which includes `profile/index.tsx` for viewing profile, `profile/edit.tsx` for editing profile, and `profile/addresses.tsx` for managing addresses. Uses `packages/shared/api/profiles`. My Account/Profile screen, profile data fetching/update, and Saved Addresses screen are implemented.
   - **Products**: `(tabs)/products.tsx` for product browsing, search, and filtering using `packages/shared/api/products`. Product details are shown in `products/[id].tsx`. Product listing/catalog, search/filtering, and product details are implemented.
   - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details are shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details are implemented.
   - **Cart**: `cart.tsx` for managing the shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen are implemented.
+  - **Profile**: `(tabs)/profile.tsx` which includes `profile/index.tsx` for viewing profile, `profile/edit.tsx` for editing profile, and `profile/addresses.tsx` for managing addresses. Uses `packages/shared/api/profiles`. My Account/Profile screen, profile data fetching/update, and Saved Addresses screen are implemented.
 - **Order Confirmation**: `order-confirmation.tsx` displays order confirmation after an order is placed.
-- **Navigation**: Uses `expo-router` for navigation.
+- **Navigation**: Uses `expo-router` (updated to `5.1.3`) for navigation. The root `_layout.tsx` file has been created to handle session management and redirects. The 'Profile' tab has been reordered to be the last tab.
 - **Shared components**: Imports components and APIs from `packages/shared/`.
 
 ### packages/shared/

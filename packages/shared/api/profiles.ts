@@ -68,9 +68,9 @@ export async function updateProfile(
 }
 
 /**
- * Fetches business details for a profile.
+ * Fetches organisation details for a profile.
  * @param {string} profileId - The ID of the profile.
- * @returns {Promise<BusinessDetails | null>} A promise that resolves to the business details object or null if not found/error.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the organisation details object or null if not found/error.
  */
 export async function getBusinessDetails(
   profileId: string,
@@ -82,16 +82,16 @@ export async function getBusinessDetails(
     .single();
 
   if (error) {
-    console.error('Error fetching business details:', error.message);
+    console.error('Error fetching organisation details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Adds new business details for a profile.
- * @param {Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>} businessDetailsData - The business details data to insert.
- * @returns {Promise<BusinessDetails | null>} A promise that resolves to the created business details or null on error.
+ * Adds new organisation details for a profile.
+ * @param {Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>} businessDetailsData - The organisation details data to insert.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the created organisation details or null on error.
  */
 export async function addBusinessDetails(
   businessDetailsData: Omit<
@@ -106,17 +106,17 @@ export async function addBusinessDetails(
     .single();
 
   if (error) {
-    console.error('Error adding business details:', error.message);
+    console.error('Error adding organisation details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Updates existing business details.
- * @param {string} businessDetailsId - The ID of the business details to update.
- * @param {Partial<Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>>} businessDetailsData - The partial business details data to update.
- * @returns {Promise<BusinessDetails | null>} A promise that resolves to the updated business details or null on error.
+ * Updates existing organisation details.
+ * @param {string} businessDetailsId - The ID of the organisation details to update.
+ * @param {Partial<Omit<BusinessDetails, 'id' | 'created_at' | 'updated_at'>>} businessDetailsData - The partial organisation details data to update.
+ * @returns {Promise<BusinessDetails | null>} A promise that resolves to the updated organisation details or null on error.
  */
 export async function updateBusinessDetails(
   businessDetailsId: string,
@@ -132,16 +132,16 @@ export async function updateBusinessDetails(
     .single();
 
   if (error) {
-    console.error('Error updating business details:', error.message);
+    console.error('Error updating organisation details:', error.message);
     throw error;
   }
   return data;
 }
 
 /**
- * Deletes business details.
- * @param {string} businessDetailsId - The ID of the business details to delete.
- * @returns {Promise<void>} A promise that resolves when the business details are deleted or rejects on error.
+ * Deletes organisation details.
+ * @param {string} businessDetailsId - The ID of the organisation details to delete.
+ * @returns {Promise<void>} A promise that resolves when the organisation details are deleted or rejects on error.
  */
 export async function deleteBusinessDetails(
   businessDetailsId: string,
@@ -152,7 +152,7 @@ export async function deleteBusinessDetails(
     .eq('id', businessDetailsId);
 
   if (error) {
-    console.error('Error deleting business details:', error.message);
+    console.error('Error deleting organisation details:', error.message);
     throw error;
   }
 }
@@ -238,4 +238,71 @@ export async function updateCustomer(
     throw error;
   }
   return data;
+}
+
+/**
+ * Fetches the business ID for a given customer profile ID.
+ * @param {string} profileId - The ID of the customer profile.
+ * @returns {Promise<string | null>} A promise that resolves to the business ID or null if not found/error.
+ */
+export async function getCustomerBusinessId(
+  profileId: string,
+): Promise<string | null> {
+  console.log('getCustomerBusinessId called with profileId:', profileId);
+
+  // First, let's check if the user has any role in any business
+  const { data: allMemberships, error: allError } = await supabase
+    .from('members')
+    .select('*')
+    .eq('profile_id', profileId);
+
+  console.log('All memberships for profile:', allMemberships);
+
+  // Now check specifically for customer/sales_agent roles
+  const { data, error } = await supabase
+    .from('members')
+    .select('business_id')
+    .eq('profile_id', profileId)
+    .in('role_in_business', ['customer', 'sales_agent'])
+    .single();
+
+  if (error) {
+    console.error('Error in getCustomerBusinessId:', error.message);
+    console.error('Error details:', error);
+    if (error.code === 'PGRST116') {
+      // No rows found
+      console.log(
+        'No customer/sales_agent membership found for profile:',
+        profileId,
+      );
+      return null;
+    }
+    throw error;
+  }
+
+  console.log('getCustomerBusinessId result data:', data);
+  return data ? data.business_id : null;
+}
+
+/**
+ * Fetches the business ID for a given user ID.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<string | null>} A promise that resolves to the business ID or null if not found/error.
+ */
+export async function getBusinessIdForUser(
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('members')
+    .select('business_id')
+    .eq('profile_id', userId)
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error('Error fetching business ID for user:', error.message);
+    throw error;
+  }
+
+  return data ? data.business_id : null;
 }

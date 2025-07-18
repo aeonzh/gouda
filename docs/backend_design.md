@@ -232,7 +232,6 @@ RLS policies are crucial for securing data access in Supabase. They will be defi
     - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) AND deleted_at IS NULL` (Owners/Sales Agents can view categories associated with their business).
     - **INSERT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Only owners can add categories to their business).
     - **UPDATE**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'owner'))` (Only owners can update categories in their business).
-    
 
   - **Customer RLS**:
     - **SELECT**: `(EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = auth.uid() AND m.business_id = categories.business_id AND m.role_in_business = 'customer')) AND deleted_at IS NULL` (Customers can view non-deleted categories that belong to the businesses they are a member of).

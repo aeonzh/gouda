@@ -18,32 +18,30 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
-    "@react-native/eslint-config": "^0.74.89",
-    "@snaplet/copycat": "^6.0.0",
     "@snaplet/seed": "0.98.0",
-    "@supabase/supabase-js": "^2.50.2",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@supabase/supabase-js": "^2.52.0",
     "@types/pg": "^8.15.4",
     "dotenv": "^17.2.0",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "^6.9.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-react": "^7.35.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-native": "^5.0.0",
+    "eslint": "^9.31.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-perfectionist": "^4.15.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "pg": "^8.16.3",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.5.11"
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.5.14",
+    "typescript-eslint": "^8.37.0"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
-      "@prisma/engines",
       "@prisma/engines"
     ],
     "onlyBuiltDependencies": [
-      "@snaplet/seed"
+      "@snaplet/seed",
+      "unrs-resolver"
     ]
   }
 }

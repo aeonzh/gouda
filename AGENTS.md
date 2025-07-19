@@ -36,6 +36,7 @@ This document outlines essential commands and code style guidelines for agents w
 ## Other instructions
 
 When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format.
+This is a monorepo, so adding packages to the root will always require `-w`.
 
 ## Memories
 

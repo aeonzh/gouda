@@ -4,7 +4,7 @@ import importPlugin from 'eslint-plugin-import';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
 import reactPlugin from 'eslint-plugin-react';
-import * as reactHooks from 'eslint-plugin-react-hooks';
+import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config([
@@ -23,7 +23,7 @@ export default tseslint.config([
   jsxA11yPlugin.flatConfigs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
-  // reactHooks.configs['recommended-latest'],
+  reactHooks.configs['recommended-latest'],
   {
     ignores: [
       '**/.expo/**',

@@ -14,10 +14,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Category,
-  Product,
   createProduct,
   getCategories,
   getProductById,
+  Product,
   updateProduct,
 } from 'shared/api/products';
 
@@ -27,11 +27,11 @@ export default function ManageProductScreen() {
   const isEditing = !!id;
 
   const [product, setProduct] = useState<Partial<Product>>({
-    name: '',
-    description: '',
-    price: 0,
     category_id: undefined,
+    description: '',
     image_url: '',
+    name: '',
+    price: 0,
   });
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +66,7 @@ export default function ManageProductScreen() {
 
   const handleChange = (
     name: keyof Product,
-    value: string | number | undefined,
+    value: number | string | undefined,
   ) => {
     setProduct((prev) => ({ ...prev, [name]: value }));
   };
@@ -102,7 +102,7 @@ export default function ManageProductScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading product data...</Text>
       </View>
     );
@@ -112,16 +112,16 @@ export default function ManageProductScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: isEditing ? 'Edit Product' : 'Add Product',
-          headerLargeTitle: true,
-          headerTransparent: false,
           headerBlurEffect: 'light',
+          headerLargeTitle: true,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} className="p-2">
-              <Feather name="arrow-left" size={24} color="#6366F1" />
+            <TouchableOpacity className="p-2" onPress={() => router.back()}>
+              <Feather color="#6366F1" name="arrow-left" size={24} />
             </TouchableOpacity>
           ),
+          headerShown: true,
+          headerTransparent: false,
+          title: isEditing ? 'Edit Product' : 'Add Product',
         }}
       />
       <ScrollView className="p-4">
@@ -131,9 +131,9 @@ export default function ManageProductScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
+            onChangeText={(text) => handleChange('name', text)}
             placeholder="Enter product name"
             value={product.name}
-            onChangeText={(text) => handleChange('name', text)}
           />
         </View>
 
@@ -143,11 +143,11 @@ export default function ManageProductScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 h-24"
-            placeholder="Enter product description"
             multiline
+            onChangeText={(text) => handleChange('description', text)}
+            placeholder="Enter product description"
             textAlignVertical="top"
             value={product.description}
-            onChangeText={(text) => handleChange('description', text)}
           />
         </View>
 
@@ -157,12 +157,12 @@ export default function ManageProductScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
-            placeholder="Enter price"
             keyboardType="numeric"
-            value={product.price?.toString()}
             onChangeText={(text) =>
               handleChange('price', parseFloat(text) || 0)
             }
+            placeholder="Enter price"
+            value={product.price?.toString()}
           />
         </View>
 
@@ -172,14 +172,14 @@ export default function ManageProductScreen() {
           </Text>
           <View className="border border-gray-300 rounded-lg bg-white">
             <Picker
-              selectedValue={product.category_id || ''}
-              onValueChange={(itemValue: string | null) =>
+              className="w-full text-gray-800"
+              onValueChange={(itemValue: null | string) =>
                 handleChange(
                   'category_id',
                   itemValue === '' ? undefined : itemValue || undefined,
                 )
               }
-              className="w-full text-gray-800"
+              selectedValue={product.category_id || ''}
             >
               <Picker.Item label="Select a category" value={undefined} />
               {categories.map((cat) => (
@@ -195,18 +195,18 @@ export default function ManageProductScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
+            onChangeText={(text) => handleChange('image_url', text)}
             placeholder="Enter image URL"
             value={product.image_url}
-            onChangeText={(text) => handleChange('image_url', text)}
           />
         </View>
 
         <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={submitting}
           className={`w-full p-4 rounded-lg flex-row justify-center items-center ${
             submitting ? 'bg-indigo-300' : 'bg-indigo-600'
           }`}
+          disabled={submitting}
+          onPress={handleSubmit}
         >
           {submitting ? (
             <ActivityIndicator color="#fff" />

@@ -11,69 +11,69 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'home' : 'home-outline'}
               color={color}
+              name={focused ? 'home' : 'home-outline'}
             />
           ),
+          title: 'Home',
         }}
       />
       <Tabs.Screen
         name="products"
         options={{
-          title: 'Products',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'grid' : 'grid-outline'}
               color={color}
+              name={focused ? 'grid' : 'grid-outline'}
             />
           ),
+          title: 'Products',
         }}
       />
       <Tabs.Screen
         name="orders"
         options={{
-          title: 'Orders',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'list' : 'list-outline'}
               color={color}
+              name={focused ? 'list' : 'list-outline'}
             />
           ),
+          title: 'Orders',
         }}
       />
       <Tabs.Screen
         name="orders/[id]"
         options={{
-          href: null, // Hide this tab from the tab bar
           headerShown: true, // Show header for order details
+          href: null, // Hide this tab from the tab bar
           title: 'Order Details',
         }}
       />
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Cart',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'cart' : 'cart-outline'}
               color={color}
+              name={focused ? 'cart' : 'cart-outline'}
             />
           ),
+          title: 'Cart',
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'person' : 'person-outline'}
               color={color}
+              name={focused ? 'person' : 'person-outline'}
             />
           ),
+          title: 'Profile',
         }}
       />
     </Tabs>

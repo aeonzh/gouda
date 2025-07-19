@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Profile, getAllCustomers } from 'shared/api/profiles';
+import { getAllCustomers, Profile } from 'shared/api/profiles';
 import { TabBarIcon } from 'shared/components/TabBarIcon';
 
 export default function AdminCustomerListScreen() {
   const [customers, setCustomers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
     fetchCustomers();
@@ -36,8 +36,8 @@ export default function AdminCustomerListScreen() {
 
   const renderCustomerItem = ({ item }: { item: Profile }) => (
     <Link
-      href={{ pathname: '/customers/[id]' as any, params: { id: item.id } }}
       asChild
+      href={{ params: { id: item.id }, pathname: '/customers/[id]' as any }}
     >
       <TouchableOpacity className="p-4 border-b border-gray-200 flex-row justify-between items-center">
         <View>
@@ -46,7 +46,7 @@ export default function AdminCustomerListScreen() {
           </Text>
           <Text className="text-gray-600">@{item.username}</Text>
         </View>
-        <TabBarIcon name="chevron-forward" color="gray" />
+        <TabBarIcon color="gray" name="chevron-forward" />
       </TouchableOpacity>
     </Link>
   );
@@ -54,7 +54,7 @@ export default function AdminCustomerListScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
       </View>
     );
   }
@@ -64,8 +64,8 @@ export default function AdminCustomerListScreen() {
       <View className="flex-1 justify-center items-center p-4">
         <Text className="text-red-500 text-center">{error}</Text>
         <TouchableOpacity
-          onPress={fetchCustomers}
           className="mt-4 p-2 bg-blue-500 rounded"
+          onPress={fetchCustomers}
         >
           <Text className="text-white">Retry</Text>
         </TouchableOpacity>
@@ -77,20 +77,20 @@ export default function AdminCustomerListScreen() {
     <View className="flex-1 bg-white">
       <Stack.Screen
         options={{
-          title: 'Manage Customers',
           headerRight: () => (
-            <Link href={{ pathname: '/customers/manage' as any }} asChild>
+            <Link asChild href={{ pathname: '/customers/manage' as any }}>
               <TouchableOpacity className="p-2">
-                <TabBarIcon name="add" color="blue" />
+                <TabBarIcon color="blue" name="add" />
               </TouchableOpacity>
             </Link>
           ),
+          title: 'Manage Customers',
         }}
       />
       {customers.length === 0 ? (
         <View className="flex-1 justify-center items-center">
           <Text className="text-gray-500">No customers found.</Text>
-          <Link href={{ pathname: '/customers/manage' as any }} asChild>
+          <Link asChild href={{ pathname: '/customers/manage' as any }}>
             <TouchableOpacity className="mt-4 p-2 bg-blue-500 rounded">
               <Text className="text-white">Add New Customer</Text>
             </TouchableOpacity>
@@ -98,10 +98,10 @@ export default function AdminCustomerListScreen() {
         </View>
       ) : (
         <FlatList
+          contentContainerClassName="py-2"
           data={customers}
           keyExtractor={(item) => item.id}
           renderItem={renderCustomerItem}
-          contentContainerClassName="py-2"
         />
       )}
     </View>

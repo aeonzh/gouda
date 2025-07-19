@@ -1,9 +1,9 @@
 import { Link } from 'expo-router';
 import {
   Category,
-  Product,
   getCategories,
   getProducts,
+  Product,
 } from 'packages/shared/api/products';
 import { getBusinessIdForUser } from 'packages/shared/api/profiles';
 import { supabase } from 'packages/shared/api/supabase';
@@ -24,8 +24,8 @@ export default function ProductsScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [businessId, setBusinessId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<null | string>(null);
+  const [businessId, setBusinessId] = useState<null | string>(null);
 
   
 
@@ -61,8 +61,8 @@ export default function ProductsScreen() {
         const [fetchedProducts, fetchedCategories] = await Promise.all([
           getProducts({
             business_id: businessId,
-            search_query: searchQuery,
             category_id: selectedCategory || undefined,
+            search_query: searchQuery,
           }),
           getCategories({ business_id: businessId }),
         ]);
@@ -84,12 +84,12 @@ export default function ProductsScreen() {
   }, [businessId, searchQuery, selectedCategory]);
 
   const renderProductItem = ({ item }: { item: Product }) => (
-    <Link href={`/products/${item.id}`} asChild>
+    <Link asChild href={`/products/${item.id}`}>
       <TouchableOpacity className='p-4 border-b border-gray-200 flex-row items-center bg-white rounded-lg shadow-md mb-3 mx-4 active:bg-gray-50 transition-all duration-200'>
         {item.image_url && (
           <Image
-            source={{ uri: item.image_url }}
             className='w-24 h-24 rounded-lg mr-4 object-cover'
+            source={{ uri: item.image_url }}
           />
         )}
         <View className='flex-1'>
@@ -112,24 +112,24 @@ export default function ProductsScreen() {
       <View className='p-4 bg-white shadow-sm border-b border-gray-200'>
         <TextInput
           className='w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-800 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200'
+          clearButtonMode='while-editing'
+          onChangeText={setSearchQuery}
           placeholder='Search products...'
           placeholderTextColor='#6b7280'
           value={searchQuery}
-          onChangeText={setSearchQuery}
-          clearButtonMode='while-editing'
         />
         <ScrollView
+          className='mt-4 -mx-4 px-4'
           horizontal
           showsHorizontalScrollIndicator={false}
-          className='mt-4 -mx-4 px-4'
         >
           {categories.map((category) => (
             <TouchableOpacity
-              key={category.id || 'all'}
-              onPress={() => setSelectedCategory(category.id)}
               className={`px-5 py-2 rounded-full mr-3 shadow-sm transition-all duration-200 ${
                 selectedCategory === category.id ? 'bg-blue-600' : 'bg-gray-200'
               }`}
+              key={category.id || 'all'}
+              onPress={() => setSelectedCategory(category.id)}
             >
               <Text
                 className={`font-semibold ${
@@ -146,13 +146,12 @@ export default function ProductsScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator size='large' color='#0000ff' className='mt-10' />
+        <ActivityIndicator className='mt-10' color='#0000ff' size='large' />
       ) : (
         <FlatList
+          contentContainerClassName='py-4'
           data={products}
           keyExtractor={(item) => item.id}
-          renderItem={renderProductItem}
-          contentContainerClassName='py-4'
           ListEmptyComponent={
             <Text className='text-center text-gray-500 text-lg mt-10'>
               {businessId
@@ -160,6 +159,7 @@ export default function ProductsScreen() {
                 : 'No business associated with your account. Please contact support.'}
             </Text>
           }
+          renderItem={renderProductItem}
         />
       )}
     </View>

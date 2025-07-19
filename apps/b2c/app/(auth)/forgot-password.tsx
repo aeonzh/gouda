@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { resetPasswordForEmail } from 'packages/shared/api/supabase';
+import React, { useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -33,18 +33,18 @@ export default function ForgotPasswordScreen() {
       </Text>
 
       <TextInput
+        autoCapitalize='none'
         className='mb-6 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        keyboardType='email-address'
+        onChangeText={setEmail}
         placeholder='Email'
         value={email}
-        onChangeText={setEmail}
-        keyboardType='email-address'
-        autoCapitalize='none'
       />
 
       <TouchableOpacity
         className={`w-full rounded-xl p-4 ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
-        onPress={handleResetPassword}
         disabled={loading}
+        onPress={handleResetPassword}
       >
         <Text className='text-center text-lg font-semibold text-white'>
           {loading ? 'Sending Link...' : 'Send Reset Link'}

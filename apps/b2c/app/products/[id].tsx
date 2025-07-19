@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Product, getProductById } from 'packages/shared/api/products';
+import { getProductById, Product } from 'packages/shared/api/products';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -12,7 +12,7 @@ import {
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<null | Product>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function ProductDetailsScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-100">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
       </View>
     );
   }
@@ -52,12 +52,12 @@ export default function ProductDetailsScreen() {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <Stack.Screen options={{ title: product.name, headerShown: true }} />
+      <Stack.Screen options={{ headerShown: true, title: product.name }} />
       <ScrollView className="flex-1">
         {product.image_url && (
           <Image
-            source={{ uri: product.image_url }}
             className="w-full h-80 object-cover shadow-lg"
+            source={{ uri: product.image_url }}
           />
         )}
         <View className="p-6 bg-white rounded-t-3xl -mt-6 shadow-xl">

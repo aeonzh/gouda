@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Order, OrderItem, getOrderDetails } from 'packages/shared/api/orders';
+import { getOrderDetails, Order, OrderItem } from 'packages/shared/api/orders';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
@@ -7,7 +7,7 @@ export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const orderId = typeof id === 'string' ? id : undefined;
 
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<null | Order>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -34,7 +34,7 @@ export default function OrderDetailsScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-2 text-gray-600">Loading order details...</Text>
       </View>
     );
@@ -70,6 +70,16 @@ export default function OrderDetailsScreen() {
     <View className="flex-1 bg-gray-100">
       <Stack.Screen options={{ title: `Order #${order.id}` }} />
       <FlatList
+        contentContainerClassName="px-4 pb-4"
+        data={order.order_items}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={() => (
+          <View className="p-4 bg-white rounded-lg shadow-md mx-4">
+            <Text className="text-center text-gray-600">
+              No items in this order.
+            </Text>
+          </View>
+        )}
         ListHeaderComponent={() => (
           <View className="p-4 bg-white rounded-lg shadow-md mb-4 mx-4 mt-4">
             <Text className="text-2xl font-bold text-gray-900 mb-2">
@@ -131,9 +141,6 @@ export default function OrderDetailsScreen() {
             </Text>
           </View>
         )}
-        data={order.order_items}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerClassName="px-4 pb-4"
         renderItem={({ item }) => (
           <View className="bg-white rounded-lg shadow-sm p-3 mb-3 border border-gray-200">
             <Text className="text-base font-semibold text-gray-800">
@@ -147,13 +154,6 @@ export default function OrderDetailsScreen() {
             </Text>
             <Text className="text-sm text-gray-600">
               Subtotal: ${(item.quantity * item.price_at_order)?.toFixed(2)}
-            </Text>
-          </View>
-        )}
-        ListEmptyComponent={() => (
-          <View className="p-4 bg-white rounded-lg shadow-md mx-4">
-            <Text className="text-center text-gray-600">
-              No items in this order.
             </Text>
           </View>
         )}

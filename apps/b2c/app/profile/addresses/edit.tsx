@@ -83,15 +83,15 @@ export default function EditAddressScreen() {
     setLoading(true);
     try {
       const updatedAddress: Partial<
-        Omit<Address, 'id' | 'created_at' | 'updated_at'>
+        Omit<Address, 'created_at' | 'id' | 'updated_at'>
       > = {
         address_line1: addressLine1,
         address_line2: addressLine2 || null,
         city,
-        state,
-        postal_code: postalCode,
         country,
         is_default: isDefault,
+        postal_code: postalCode,
+        state,
       };
 
       await updateAddress(addressId, updatedAddress);
@@ -107,7 +107,7 @@ export default function EditAddressScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-4 text-lg text-gray-700">Loading address...</Text>
       </View>
     );
@@ -125,9 +125,9 @@ export default function EditAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={addressLine1}
           onChangeText={setAddressLine1}
           placeholder="Street address, P.O. Box, company name, c/o"
+          value={addressLine1}
         />
       </View>
 
@@ -137,9 +137,9 @@ export default function EditAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={addressLine2}
           onChangeText={setAddressLine2}
           placeholder="Apartment, suite, unit, building, floor, etc."
+          value={addressLine2}
         />
       </View>
 
@@ -147,9 +147,9 @@ export default function EditAddressScreen() {
         <Text className="text-lg font-semibold mb-2 text-gray-700">City</Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={city}
           onChangeText={setCity}
           placeholder="City"
+          value={city}
         />
       </View>
 
@@ -159,9 +159,9 @@ export default function EditAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={state}
           onChangeText={setState}
           placeholder="State/Province/Region"
+          value={state}
         />
       </View>
 
@@ -171,10 +171,10 @@ export default function EditAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={postalCode}
+          keyboardType="numeric"
           onChangeText={setPostalCode}
           placeholder="Postal Code"
-          keyboardType="numeric"
+          value={postalCode}
         />
       </View>
 
@@ -184,9 +184,9 @@ export default function EditAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={country}
           onChangeText={setCountry}
           placeholder="Country"
+          value={country}
         />
       </View>
 
@@ -195,18 +195,18 @@ export default function EditAddressScreen() {
           Set as Default Address
         </Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={isDefault ? '#f5dd4b' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={setIsDefault}
+          thumbColor={isDefault ? '#f5dd4b' : '#f4f3f4'}
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
           value={isDefault}
         />
       </View>
 
       <TouchableOpacity
-        onPress={handleUpdateAddress}
-        disabled={loading}
         className="bg-blue-600 py-3 px-5 rounded-lg self-center shadow-sm mb-8"
+        disabled={loading}
+        onPress={handleUpdateAddress}
       >
         <Text className="text-white font-semibold text-base">Save Changes</Text>
       </TouchableOpacity>

@@ -24,14 +24,14 @@ export default function OrderConfirmationScreen() {
           Total amount: <Text className="font-bold">${total}</Text>
         </Text>
         <Button
+          className="bg-blue-600 py-3 px-6 rounded-lg mb-4"
           onPress={() => router.replace('/orders')}
           title="View My Orders"
-          className="bg-blue-600 py-3 px-6 rounded-lg mb-4"
         />
         <Button
+          className="bg-gray-300 py-3 px-6 rounded-lg text-gray-800"
           onPress={() => router.replace('/products')}
           title="Continue Shopping"
-          className="bg-gray-300 py-3 px-6 rounded-lg text-gray-800"
         />
       </View>
     </SafeAreaView>

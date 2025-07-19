@@ -29,32 +29,32 @@ export default function SignUpScreen() {
       <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Join Gouda!</Text>
 
       <TextInput
+        autoCapitalize='words'
         className='mb-4 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        onChangeText={setFullName}
         placeholder='Full Name'
         value={fullName}
-        onChangeText={setFullName}
-        autoCapitalize='words'
       />
       <TextInput
+        autoCapitalize='none'
         className='mb-4 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        keyboardType='email-address'
+        onChangeText={setEmail}
         placeholder='Email'
         value={email}
-        onChangeText={setEmail}
-        keyboardType='email-address'
-        autoCapitalize='none'
       />
       <TextInput
         className='mb-6 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
-        placeholder='Password'
-        value={password}
         onChangeText={setPassword}
+        placeholder='Password'
         secureTextEntry
+        value={password}
       />
 
       <TouchableOpacity
         className={`w-full rounded-xl p-4 ${loading ? 'bg-green-300' : 'bg-green-600'}`}
-        onPress={handleSignUp}
         disabled={loading}
+        onPress={handleSignUp}
       >
         <Text className='text-center text-lg font-semibold text-white'>{loading ? 'Registering...' : 'Sign Up'}</Text>
       </TouchableOpacity>

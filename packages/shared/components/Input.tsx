@@ -1,29 +1,29 @@
 import { Text, TextInput, View } from 'react-native';
 
 interface InputProps {
-  label?: string;
-  placeholder?: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  autoCapitalize?: 'characters' | 'none' | 'sentences' | 'words';
   className?: string;
-  labelClassName?: string;
   inputClassName?: string;
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  label?: string;
+  labelClassName?: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  secureTextEntry?: boolean;
+  value: string;
 }
 
 export const Input = ({
-  label,
-  placeholder,
-  value,
-  onChangeText,
-  secureTextEntry = false,
-  keyboardType = 'default',
-  className = '',
-  labelClassName = '',
-  inputClassName = '',
   autoCapitalize = 'sentences', // Default to 'sentences' for general input
+  className = '',
+  inputClassName = '',
+  keyboardType = 'default',
+  label,
+  labelClassName = '',
+  onChangeText,
+  placeholder,
+  secureTextEntry = false,
+  value,
 }: InputProps) => {
   return (
     <View className={`w-full ${className}`}>
@@ -35,14 +35,14 @@ export const Input = ({
         </Text>
       )}
       <TextInput
-        className={`border border-gray-300 rounded-md px-4 py-2 text-base text-gray-800 focus:border-blue-500 ${inputClassName}`}
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        placeholderTextColor="#9ca3af"
         autoCapitalize={autoCapitalize}
+        className={`border border-gray-300 rounded-md px-4 py-2 text-base text-gray-800 focus:border-blue-500 ${inputClassName}`}
+        keyboardType={keyboardType}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#9ca3af"
+        secureTextEntry={secureTextEntry}
+        value={value}
       />
     </View>
   );

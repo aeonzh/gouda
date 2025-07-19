@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import {
-  Profile,
   getProfile,
+  Profile,
   updateProfile,
 } from 'packages/shared/api/profiles';
 import { supabase } from 'packages/shared/api/supabase';
@@ -18,7 +18,7 @@ import {
 
 export default function EditProfileScreen() {
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<null | Profile>(null);
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const router = useRouter();
@@ -57,8 +57,8 @@ export default function EditProfileScreen() {
     setLoading(true);
     try {
       const updatedData: Partial<Profile> = {
-        username,
         full_name: fullName,
+        username,
       };
       await updateProfile(profile.id, updatedData);
       Alert.alert('Success', 'Profile updated successfully!');
@@ -73,7 +73,7 @@ export default function EditProfileScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-4 text-lg text-gray-700">
           Loading profile data...
         </Text>
@@ -93,9 +93,9 @@ export default function EditProfileScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={username}
           onChangeText={setUsername}
           placeholder="Enter username"
+          value={username}
         />
       </View>
 
@@ -105,16 +105,16 @@ export default function EditProfileScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={fullName}
           onChangeText={setFullName}
           placeholder="Enter full name"
+          value={fullName}
         />
       </View>
 
       <TouchableOpacity
-        onPress={handleUpdateProfile}
-        disabled={loading}
         className="bg-blue-600 py-3 px-5 rounded-lg self-center shadow-sm"
+        disabled={loading}
+        onPress={handleUpdateProfile}
       >
         <Text className="text-white font-semibold text-base">Save Changes</Text>
       </TouchableOpacity>

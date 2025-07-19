@@ -10,9 +10,9 @@ import {
   View,
 } from 'react-native';
 import {
-  Profile,
   createCustomer,
   getCustomerById,
+  Profile,
   updateCustomer,
 } from 'shared/api/profiles';
 import { Button } from 'shared/components/Button';
@@ -28,7 +28,7 @@ export default function ManageCustomerScreen() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoadLoading, setInitialLoadLoading] = useState(isEditing);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
     if (isEditing) {
@@ -65,8 +65,8 @@ export default function ManageCustomerScreen() {
     setLoading(true);
     try {
       const customerData: Partial<Profile> = {
-        username: username.trim(),
         full_name: fullName.trim() || undefined,
+        username: username.trim(),
       };
 
       if (isEditing) {
@@ -77,7 +77,7 @@ export default function ManageCustomerScreen() {
         // The createCustomer function already sets the role to 'customer'
         await createCustomer({ ...customerData, role: 'customer' } as Omit<
           Profile,
-          'id' | 'created_at' | 'updated_at'
+          'created_at' | 'id' | 'updated_at'
         >);
         Alert.alert('Success', 'Customer created successfully!');
       }
@@ -94,7 +94,7 @@ export default function ManageCustomerScreen() {
   if (initialLoadLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
       </View>
     );
   }
@@ -108,11 +108,11 @@ export default function ManageCustomerScreen() {
         <View className="mb-4">
           <Text className="text-lg font-semibold mb-2">Username</Text>
           <Input
+            autoCapitalize="none"
+            className="border border-gray-300 p-3 rounded-md"
+            onChangeText={setUsername}
             placeholder="Enter username"
             value={username}
-            onChangeText={setUsername}
-            className="border border-gray-300 p-3 rounded-md"
-            autoCapitalize="none"
           />
         </View>
 
@@ -121,16 +121,16 @@ export default function ManageCustomerScreen() {
             Full Name (Optional)
           </Text>
           <Input
+            className="border border-gray-300 p-3 rounded-md"
+            onChangeText={setFullName}
             placeholder="Enter full name"
             value={fullName}
-            onChangeText={setFullName}
-            className="border border-gray-300 p-3 rounded-md"
           />
         </View>
 
         {error && <Text className="text-red-500 mb-4">{error}</Text>}
 
-        <Button onPress={handleSaveCustomer} isLoading={loading}>
+        <Button isLoading={loading} onPress={handleSaveCustomer}>
           <Text className="text-white text-lg font-semibold">
             {isEditing ? 'Save Changes' : 'Add Customer'}
           </Text>

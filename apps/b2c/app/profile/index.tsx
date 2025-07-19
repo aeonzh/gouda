@@ -1,6 +1,6 @@
 import { Session } from '@supabase/supabase-js';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Profile, getProfile } from 'packages/shared/api/profiles';
+import { getProfile, Profile } from 'packages/shared/api/profiles';
 import { supabase } from 'packages/shared/api/supabase';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -13,8 +13,8 @@ import {
 } from 'react-native';
 
 export default function ProfileScreen() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [session, setSession] = useState<null | Session>(null);
+  const [profile, setProfile] = useState<null | Profile>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function ProfileScreen() {
   if (loading || profileLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-4 text-lg text-gray-700">
           {loading ? 'Loading session...' : 'Loading profile...'}
         </Text>
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-white p-4">
         <Text className="text-xl font-bold mb-4">Not Logged In</Text>
-        <Button title="Go to Login" onPress={() => router.push('/login')} />
+        <Button onPress={() => router.push('/login')} title="Go to Login" />
       </View>
     );
   }
@@ -113,8 +113,8 @@ export default function ProfileScreen() {
           {profile?.full_name || 'N/A'}
         </Text>
         <TouchableOpacity
-          onPress={() => router.push('/profile/edit')}
           className="bg-blue-600 py-3 px-5 rounded-lg self-start shadow-sm"
+          onPress={() => router.push('/profile/edit')}
         >
           <Text className="text-white font-semibold text-base">
             Edit Profile
@@ -127,8 +127,8 @@ export default function ProfileScreen() {
           Shipping Addresses
         </Text>
         <TouchableOpacity
-          onPress={() => router.push('/profile/addresses')}
           className="bg-blue-600 py-3 px-5 rounded-lg self-start shadow-sm"
+          onPress={() => router.push('/profile/addresses')}
         >
           <Text className="text-white font-semibold text-base">
             Manage Addresses
@@ -138,9 +138,9 @@ export default function ProfileScreen() {
 
       <View className="mt-auto border-t border-gray-200 pt-6">
         <TouchableOpacity
-          onPress={handleLogout}
-          disabled={loading}
           className="bg-red-500 py-3 px-5 rounded-lg self-center shadow-sm"
+          disabled={loading}
+          onPress={handleLogout}
         >
           <Text className="text-white font-semibold text-base">Logout</Text>
         </TouchableOpacity>

@@ -1,5 +1,5 @@
 import { Link, Stack } from 'expo-router';
-import { Order, getCustomerOrderHistory } from 'packages/shared/api/orders';
+import { getCustomerOrderHistory, Order } from 'packages/shared/api/orders';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -33,7 +33,7 @@ export default function OrderHistoryScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-2 text-gray-600">Loading orders...</Text>
       </View>
     );
@@ -69,11 +69,11 @@ export default function OrderHistoryScreen() {
     <View className="flex-1 bg-gray-100">
       <Stack.Screen options={{ title: 'Order History' }} />
       <FlatList
+        contentContainerClassName="p-4"
         data={orders}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerClassName="p-4"
         renderItem={({ item }) => (
-          <Link href={`/orders/${item.id}`} asChild>
+          <Link asChild href={`/orders/${item.id}`}>
             <TouchableOpacity className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200 active:bg-gray-50">
               <View className="flex-row justify-between items-center mb-2">
                 <Text className="text-lg font-bold text-gray-900">

@@ -32,29 +32,29 @@ export default function LoginScreen() {
           Admin Portal
         </Text>
         <Input
-          label="Email Address"
-          placeholder="admin@example.com"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
           className="mb-4"
           inputClassName="border-gray-300 focus:border-blue-500"
+          keyboardType="email-address"
+          label="Email Address"
+          onChangeText={setEmail}
+          placeholder="admin@example.com"
+          value={email}
         />
         <Input
-          label="Password"
-          placeholder="••••••••"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
           className="mb-6"
           inputClassName="border-gray-300 focus:border-blue-500"
+          label="Password"
+          onChangeText={setPassword}
+          placeholder="••••••••"
+          secureTextEntry
+          value={password}
         />
         <Button
-          title={loading ? 'Authenticating...' : 'Login Securely'}
-          onPress={handleLogin}
-          disabled={loading}
           className="w-full py-3"
+          disabled={loading}
+          onPress={handleLogin}
           size="lg"
+          title={loading ? 'Authenticating...' : 'Login Securely'}
         />
       </View>
     </View>

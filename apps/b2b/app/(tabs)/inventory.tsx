@@ -15,9 +15,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  InventoryProduct,
   adjustInventoryLevel,
   getInventoryLevels,
+  InventoryProduct,
 } from 'shared/api/products';
 
 export default function InventoryScreen() {
@@ -91,10 +91,10 @@ export default function InventoryScreen() {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => handleAdjustInventoryPress(item)}
         className="p-2 rounded-full bg-blue-100"
+        onPress={() => handleAdjustInventoryPress(item)}
       >
-        <Feather name="edit" size={20} color="#3B82F6" />
+        <Feather color="#3B82F6" name="edit" size={20} />
       </TouchableOpacity>
     </View>
   );
@@ -102,7 +102,7 @@ export default function InventoryScreen() {
   if (loading && !refreshing) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading inventory...</Text>
       </View>
     );
@@ -113,7 +113,7 @@ export default function InventoryScreen() {
       
       {inventory.length === 0 && !loading ? (
         <View className="flex-1 justify-center items-center p-4">
-          <Feather name="box" size={60} color="#9CA3AF" />
+          <Feather color="#9CA3AF" name="box" size={60} />
           <Text className="text-xl text-gray-600 mt-4 font-semibold">
             No Inventory Items Found
           </Text>
@@ -123,22 +123,22 @@ export default function InventoryScreen() {
         </View>
       ) : (
         <FlatList
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 20 }}
           data={inventory}
           keyExtractor={(item) => item.id}
-          renderItem={renderInventoryItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
           }
-          className="flex-1"
+          renderItem={renderInventoryItem}
         />
       )}
 
       <Modal
         animationType="slide"
+        onRequestClose={() => setModalVisible(!modalVisible)}
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}
       >
         <View className="flex-1 justify-center items-center bg-black/50">
           <View className="bg-white p-6 rounded-lg shadow-xl w-11/12 max-w-md">
@@ -148,20 +148,20 @@ export default function InventoryScreen() {
             <TextInput
               className="border border-gray-300 p-3 rounded-md text-lg mb-4"
               keyboardType="numeric"
+              onChangeText={setNewQuantity}
               placeholder="Enter new quantity"
               value={newQuantity}
-              onChangeText={setNewQuantity}
             />
             <View className="flex-row justify-end space-x-3">
               <TouchableOpacity
-                onPress={() => setModalVisible(false)}
                 className="px-5 py-3 rounded-md bg-gray-200"
+                onPress={() => setModalVisible(false)}
               >
                 <Text className="text-gray-700 font-semibold">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleSaveQuantity}
                 className="px-5 py-3 rounded-md bg-indigo-600"
+                onPress={handleSaveQuantity}
               >
                 <Text className="text-white font-semibold">Save</Text>
               </TouchableOpacity>

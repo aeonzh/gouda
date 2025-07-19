@@ -13,10 +13,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Category,
-  Product,
   deleteProduct,
   getCategories,
   getProducts,
+  Product,
 } from 'shared/api/products';
 
 export default function ProductsScreen() {
@@ -59,11 +59,10 @@ export default function ProductsScreen() {
       'Are you sure you want to delete this product?',
       [
         {
-          text: 'Cancel',
           style: 'cancel',
+          text: 'Cancel',
         },
         {
-          text: 'Delete',
           onPress: async () => {
             try {
               await deleteProduct(id);
@@ -78,6 +77,7 @@ export default function ProductsScreen() {
             }
           },
           style: 'destructive',
+          text: 'Delete',
         },
       ],
     );
@@ -102,16 +102,16 @@ export default function ProductsScreen() {
       </View>
       <View className="flex-row space-x-3">
         <TouchableOpacity
-          onPress={() => router.push(`/products/manage?id=${item.id}`)}
           className="p-2 rounded-full bg-blue-100"
+          onPress={() => router.push(`/products/manage?id=${item.id}`)}
         >
-          <Feather name="edit" size={20} color="#3B82F6" />
+          <Feather color="#3B82F6" name="edit" size={20} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleDeleteProduct(item.id)}
           className="p-2 rounded-full bg-red-100"
+          onPress={() => handleDeleteProduct(item.id)}
         >
-          <Feather name="trash-2" size={20} color="#EF4444" />
+          <Feather color="#EF4444" name="trash-2" size={20} />
         </TouchableOpacity>
       </View>
     </View>
@@ -120,7 +120,7 @@ export default function ProductsScreen() {
   if (loading && !refreshing) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading products...</Text>
       </View>
     );
@@ -131,7 +131,7 @@ export default function ProductsScreen() {
       
       {products.length === 0 && !loading ? (
         <View className="flex-1 justify-center items-center p-4">
-          <Feather name="box" size={60} color="#9CA3AF" />
+          <Feather color="#9CA3AF" name="box" size={60} />
           <Text className="text-xl text-gray-600 mt-4 font-semibold">
             No Products Found
           </Text>
@@ -142,14 +142,14 @@ export default function ProductsScreen() {
         </View>
       ) : (
         <FlatList
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 20 }}
           data={products}
           keyExtractor={(item) => item.id}
-          renderItem={renderProductItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
           }
-          className="flex-1"
+          renderItem={renderProductItem}
         />
       )}
     </SafeAreaView>

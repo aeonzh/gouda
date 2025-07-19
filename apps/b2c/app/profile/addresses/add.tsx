@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Address, addAddress } from 'packages/shared/api/profiles';
+import { addAddress, Address } from 'packages/shared/api/profiles';
 import { supabase } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
 import {
@@ -36,15 +36,15 @@ export default function AddAddressScreen() {
         return;
       }
 
-      const newAddress: Omit<Address, 'id' | 'created_at' | 'updated_at'> = {
-        user_id: user.id,
+      const newAddress: Omit<Address, 'created_at' | 'id' | 'updated_at'> = {
         address_line1: addressLine1,
         address_line2: addressLine2 || null, // Change undefined to null
         city,
-        state,
-        postal_code: postalCode,
         country,
         is_default: isDefault,
+        postal_code: postalCode,
+        state,
+        user_id: user.id,
       };
 
       await addAddress(newAddress);
@@ -69,9 +69,9 @@ export default function AddAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={addressLine1}
           onChangeText={setAddressLine1}
           placeholder="Street address, P.O. Box, company name, c/o"
+          value={addressLine1}
         />
       </View>
 
@@ -81,9 +81,9 @@ export default function AddAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={addressLine2}
           onChangeText={setAddressLine2}
           placeholder="Apartment, suite, unit, building, floor, etc."
+          value={addressLine2}
         />
       </View>
 
@@ -91,9 +91,9 @@ export default function AddAddressScreen() {
         <Text className="text-lg font-semibold mb-2 text-gray-700">City</Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={city}
           onChangeText={setCity}
           placeholder="City"
+          value={city}
         />
       </View>
 
@@ -103,9 +103,9 @@ export default function AddAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={state}
           onChangeText={setState}
           placeholder="State/Province/Region"
+          value={state}
         />
       </View>
 
@@ -115,10 +115,10 @@ export default function AddAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={postalCode}
+          keyboardType="numeric"
           onChangeText={setPostalCode}
           placeholder="Postal Code"
-          keyboardType="numeric"
+          value={postalCode}
         />
       </View>
 
@@ -128,9 +128,9 @@ export default function AddAddressScreen() {
         </Text>
         <TextInput
           className="border border-gray-300 p-3 rounded-lg text-lg"
-          value={country}
           onChangeText={setCountry}
           placeholder="Country"
+          value={country}
         />
       </View>
 
@@ -139,18 +139,18 @@ export default function AddAddressScreen() {
           Set as Default Address
         </Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={isDefault ? '#f5dd4b' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={setIsDefault}
+          thumbColor={isDefault ? '#f5dd4b' : '#f4f3f4'}
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
           value={isDefault}
         />
       </View>
 
       <TouchableOpacity
-        onPress={handleAddAddress}
-        disabled={loading}
         className="bg-blue-600 py-3 px-5 rounded-lg self-center shadow-sm mb-8"
+        disabled={loading}
+        onPress={handleAddAddress}
       >
         <Text className="text-white font-semibold text-base">Add Address</Text>
       </TouchableOpacity>

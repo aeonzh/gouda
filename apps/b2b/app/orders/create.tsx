@@ -13,21 +13,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createOrderForCustomer } from 'shared/api/orders';
-import { Product, getProducts } from 'shared/api/products';
+import { getProducts, Product } from 'shared/api/products';
 import { supabase } from 'shared/api/supabase';
 
 // Assuming profiles table is accessible via supabase client
 
 interface Customer {
-  id: string;
-  full_name: string;
   email: string;
+  full_name: string;
+  id: string;
 }
 
 interface OrderItemInput {
+  priceAtOrder: string; // Use string for TextInput, convert to number later
   productId: string;
   quantity: string; // Use string for TextInput, convert to number later
-  priceAtOrder: string; // Use string for TextInput, convert to number later
 }
 
 export default function CreateOrderScreen() {
@@ -38,21 +38,21 @@ export default function CreateOrderScreen() {
     string | undefined
   >(undefined);
   const [orderItems, setOrderItems] = useState<OrderItemInput[]>([
-    { productId: '', quantity: '', priceAtOrder: '' },
+    { priceAtOrder: '', productId: '', quantity: '' },
   ]);
   const [shippingAddress, setShippingAddress] = useState<Address>({
-    street: '',
     city: '',
-    state: '',
-    zipCode: '',
     country: '',
+    state: '',
+    street: '',
+    zipCode: '',
   });
   const [billingAddress, setBillingAddress] = useState<Address>({
-    street: '',
     city: '',
-    state: '',
-    zipCode: '',
     country: '',
+    state: '',
+    street: '',
+    zipCode: '',
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -69,9 +69,9 @@ export default function CreateOrderScreen() {
       if (profilesError) throw profilesError;
       setCustomers(
         profilesData.map((p) => ({
-          id: p.id,
-          full_name: p.full_name,
           email: p.username,
+          full_name: p.full_name,
+          id: p.id,
         })),
       );
 
@@ -93,7 +93,7 @@ export default function CreateOrderScreen() {
   const handleAddItem = () => {
     setOrderItems([
       ...orderItems,
-      { productId: '', quantity: '', priceAtOrder: '' },
+      { priceAtOrder: '', productId: '', quantity: '' },
     ]);
   };
 
@@ -114,7 +114,7 @@ export default function CreateOrderScreen() {
   };
 
   const handleAddressChange = (
-    addressType: 'shipping' | 'billing',
+    addressType: 'billing' | 'shipping',
     field: keyof Address,
     value: string,
   ) => {
@@ -151,9 +151,9 @@ export default function CreateOrderScreen() {
         throw new Error('Invalid quantity or price for an order item.');
       }
       return {
+        priceAtOrder,
         productId: item.productId,
         quantity,
-        priceAtOrder,
       };
     });
 
@@ -196,7 +196,7 @@ export default function CreateOrderScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading data...</Text>
       </View>
     );
@@ -206,16 +206,16 @@ export default function CreateOrderScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: 'Create Order',
-          headerLargeTitle: true,
-          headerTransparent: false,
           headerBlurEffect: 'light',
+          headerLargeTitle: true,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} className="p-2">
-              <Feather name="arrow-left" size={24} color="#6366F1" />
+            <TouchableOpacity className="p-2" onPress={() => router.back()}>
+              <Feather color="#6366F1" name="arrow-left" size={24} />
             </TouchableOpacity>
           ),
+          headerShown: true,
+          headerTransparent: false,
+          title: 'Create Order',
         }}
       />
       <ScrollView className="p-4">
@@ -226,11 +226,11 @@ export default function CreateOrderScreen() {
           </Text>
           <View className="border border-gray-300 rounded-lg bg-white">
             <Picker
-              selectedValue={selectedCustomerId}
+              className="w-full text-gray-800"
               onValueChange={(itemValue: string | undefined) =>
                 setSelectedCustomerId(itemValue)
               }
-              className="w-full text-gray-800"
+              selectedValue={selectedCustomerId}
             >
               <Picker.Item label="-- Select a Customer --" value={undefined} />
               {customers.map((customer) => (
@@ -251,8 +251,8 @@ export default function CreateOrderScreen() {
           </Text>
           {orderItems.map((item, index) => (
             <View
-              key={index}
               className="mb-4 p-3 border border-gray-200 rounded-lg bg-gray-50"
+              key={index}
             >
               <View className="flex-row justify-between items-center mb-2">
                 <Text className="font-semibold text-gray-700">
@@ -260,10 +260,10 @@ export default function CreateOrderScreen() {
                 </Text>
                 {orderItems.length > 1 && (
                   <TouchableOpacity
-                    onPress={() => handleRemoveItem(index)}
                     className="p-1 rounded-full bg-red-100"
+                    onPress={() => handleRemoveItem(index)}
                   >
-                    <Feather name="x" size={18} color="#EF4444" />
+                    <Feather color="#EF4444" name="x" size={18} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -273,11 +273,11 @@ export default function CreateOrderScreen() {
                 </Text>
                 <View className="border border-gray-300 rounded-lg bg-white">
                   <Picker
-                    selectedValue={item.productId}
+                    className="w-full text-gray-800"
                     onValueChange={(itemValue: string) =>
                       handleOrderItemChange(index, 'productId', itemValue)
                     }
-                    className="w-full text-gray-800"
+                    selectedValue={item.productId}
                   >
                     <Picker.Item label="-- Select a Product --" value="" />
                     {products.map((product) => (
@@ -297,12 +297,12 @@ export default function CreateOrderScreen() {
                   </Text>
                   <TextInput
                     className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800"
-                    placeholder="Quantity"
                     keyboardType="numeric"
-                    value={item.quantity}
                     onChangeText={(text) =>
                       handleOrderItemChange(index, 'quantity', text)
                     }
+                    placeholder="Quantity"
+                    value={item.quantity}
                   />
                 </View>
                 <View className="flex-1 ml-2">
@@ -311,22 +311,22 @@ export default function CreateOrderScreen() {
                   </Text>
                   <TextInput
                     className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800"
-                    placeholder="Price"
                     keyboardType="numeric"
-                    value={item.priceAtOrder}
                     onChangeText={(text) =>
                       handleOrderItemChange(index, 'priceAtOrder', text)
                     }
+                    placeholder="Price"
+                    value={item.priceAtOrder}
                   />
                 </View>
               </View>
             </View>
           ))}
           <TouchableOpacity
-            onPress={handleAddItem}
             className="w-full p-3 rounded-lg bg-blue-500 flex-row justify-center items-center mt-2"
+            onPress={handleAddItem}
           >
-            <Feather name="plus" size={20} color="white" />
+            <Feather color="white" name="plus" size={20} />
             <Text className="text-white text-base font-semibold ml-2">
               Add Item
             </Text>
@@ -340,43 +340,43 @@ export default function CreateOrderScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="Street"
-            value={shippingAddress.street}
             onChangeText={(text) =>
               handleAddressChange('shipping', 'street', text)
             }
+            placeholder="Street"
+            value={shippingAddress.street}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="City"
-            value={shippingAddress.city}
             onChangeText={(text) =>
               handleAddressChange('shipping', 'city', text)
             }
+            placeholder="City"
+            value={shippingAddress.city}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="State"
-            value={shippingAddress.state}
             onChangeText={(text) =>
               handleAddressChange('shipping', 'state', text)
             }
+            placeholder="State"
+            value={shippingAddress.state}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="Zip Code"
-            value={shippingAddress.zipCode}
             onChangeText={(text) =>
               handleAddressChange('shipping', 'zipCode', text)
             }
+            placeholder="Zip Code"
+            value={shippingAddress.zipCode}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
-            placeholder="Country"
-            value={shippingAddress.country}
             onChangeText={(text) =>
               handleAddressChange('shipping', 'country', text)
             }
+            placeholder="Country"
+            value={shippingAddress.country}
           />
         </View>
 
@@ -387,53 +387,53 @@ export default function CreateOrderScreen() {
           </Text>
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="Street"
-            value={billingAddress.street}
             onChangeText={(text) =>
               handleAddressChange('billing', 'street', text)
             }
+            placeholder="Street"
+            value={billingAddress.street}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="City"
-            value={billingAddress.city}
             onChangeText={(text) =>
               handleAddressChange('billing', 'city', text)
             }
+            placeholder="City"
+            value={billingAddress.city}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="State"
-            value={billingAddress.state}
             onChangeText={(text) =>
               handleAddressChange('billing', 'state', text)
             }
+            placeholder="State"
+            value={billingAddress.state}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
-            placeholder="Zip Code"
-            value={billingAddress.zipCode}
             onChangeText={(text) =>
               handleAddressChange('billing', 'zipCode', text)
             }
+            placeholder="Zip Code"
+            value={billingAddress.zipCode}
           />
           <TextInput
             className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
-            placeholder="Country"
-            value={billingAddress.country}
             onChangeText={(text) =>
               handleAddressChange('billing', 'country', text)
             }
+            placeholder="Country"
+            value={billingAddress.country}
           />
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={submitting}
           className={`w-full p-4 rounded-lg flex-row justify-center items-center ${
             submitting ? 'bg-indigo-300' : 'bg-indigo-600'
           }`}
+          disabled={submitting}
+          onPress={handleSubmit}
         >
           {submitting ? (
             <ActivityIndicator color="#fff" />

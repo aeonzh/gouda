@@ -3,6 +3,14 @@ import { defineConfig } from '@snaplet/seed/config';
 import { Client } from 'pg';
 
 export default defineConfig({
+  adapter: async () => {
+    const client = new Client({
+      connectionString:
+        'postgresql://postgres:postgres@localhost:54322/postgres',
+    });
+    await client.connect();
+    return new SeedPg(client);
+  },
   select: [
     // We don't alter any extensions tables that might be owned by extensions
     '!*',
@@ -13,12 +21,4 @@ export default defineConfig({
     'auth.identities',
     'auth.sessions',
   ],
-  adapter: async () => {
-    const client = new Client({
-      connectionString:
-        'postgresql://postgres:postgres@localhost:54322/postgres',
-    });
-    await client.connect();
-    return new SeedPg(client);
-  },
 });

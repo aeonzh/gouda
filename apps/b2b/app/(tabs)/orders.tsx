@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Order, getCustomerOrderHistory } from 'shared/api/orders';
+import { getCustomerOrderHistory, Order } from 'shared/api/orders';
 
 export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -51,10 +51,10 @@ export default function OrdersScreen() {
 
   const renderOrderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
-      onPress={() =>
-        router.push({ pathname: 'orders/[id]', params: { id: item.id } })
-      }
       className="p-4 border-b border-gray-200 bg-white"
+      onPress={() =>
+        router.push({ params: { id: item.id }, pathname: 'orders/[id]' })
+      }
     >
       <View className="flex-row justify-between items-center">
         <Text className="text-lg font-semibold text-gray-800">
@@ -87,7 +87,7 @@ export default function OrdersScreen() {
   if (loading && !refreshing) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading orders...</Text>
       </View>
     );
@@ -98,7 +98,7 @@ export default function OrdersScreen() {
       
       {orders.length === 0 && !loading ? (
         <View className="flex-1 justify-center items-center p-4">
-          <Feather name="clipboard" size={60} color="#9CA3AF" />
+          <Feather color="#9CA3AF" name="clipboard" size={60} />
           <Text className="text-xl text-gray-600 mt-4 font-semibold">
             No Orders Found
           </Text>
@@ -108,14 +108,14 @@ export default function OrdersScreen() {
         </View>
       ) : (
         <FlatList
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 20 }}
           data={orders}
           keyExtractor={(item) => item.id}
-          renderItem={renderOrderItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
           }
-          className="flex-1"
+          renderItem={renderOrderItem}
         />
       )}
     </SafeAreaView>

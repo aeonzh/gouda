@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { signInWithEmail } from 'packages/shared/api/supabase';
+import React, { useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -29,25 +29,25 @@ export default function LoginScreen() {
       <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Welcome Back!</Text>
 
       <TextInput
+        autoCapitalize='none'
         className='mb-4 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        keyboardType='email-address'
+        onChangeText={setEmail}
         placeholder='Email'
         value={email}
-        onChangeText={setEmail}
-        keyboardType='email-address'
-        autoCapitalize='none'
       />
       <TextInput
         className='mb-6 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
-        placeholder='Password'
-        value={password}
         onChangeText={setPassword}
+        placeholder='Password'
         secureTextEntry
+        value={password}
       />
 
       <TouchableOpacity
         className={`w-full rounded-xl p-4 ${loading ? 'bg-blue-300' : 'bg-blue-600'}`}
-        onPress={handleLogin}
         disabled={loading}
+        onPress={handleLogin}
       >
         <Text className='text-center text-lg font-semibold text-white'>{loading ? 'Logging In...' : 'Login'}</Text>
       </TouchableOpacity>

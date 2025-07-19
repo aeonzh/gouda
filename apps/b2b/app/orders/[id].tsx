@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Order, getOrderDetails, updateOrderStatus } from 'shared/api/orders';
+import { getOrderDetails, Order, updateOrderStatus } from 'shared/api/orders';
 
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const [order, setOrder] = useState<Order | null>(null);
+  const [order, setOrder] = useState<null | Order>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,7 +64,7 @@ export default function OrderDetailsScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#6366F1" />
+        <ActivityIndicator color="#6366F1" size="large" />
         <Text className="mt-4 text-gray-700">Loading order details...</Text>
       </View>
     );
@@ -82,16 +82,16 @@ export default function OrderDetailsScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: `Order #${order.id.substring(0, 8)}`,
-          headerLargeTitle: true,
-          headerTransparent: false,
           headerBlurEffect: 'light',
+          headerLargeTitle: true,
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} className="p-2">
-              <Feather name="arrow-left" size={24} color="#6366F1" />
+            <TouchableOpacity className="p-2" onPress={() => router.back()}>
+              <Feather color="#6366F1" name="arrow-left" size={24} />
             </TouchableOpacity>
           ),
+          headerShown: true,
+          headerTransparent: false,
+          title: `Order #${order.id.substring(0, 8)}`,
         }}
       />
       <ScrollView className="p-4">
@@ -170,8 +170,8 @@ export default function OrderDetailsScreen() {
           </Text>
           {order.order_items?.map((item) => (
             <View
-              key={item.id}
               className="flex-row justify-between py-2 border-b border-gray-100 last:border-b-0"
+              key={item.id}
             >
               <Text className="text-base text-gray-700 flex-1">
                 {item.product?.name || 'Unknown Product'} (x{item.quantity})
@@ -191,9 +191,6 @@ export default function OrderDetailsScreen() {
             {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(
               (status) => (
                 <TouchableOpacity
-                  key={status}
-                  onPress={() => handleUpdateStatus(status as Order['status'])}
-                  disabled={submitting || order.status === status}
                   className={`w-[48%] p-3 rounded-lg mb-2 flex-row justify-center items-center ${
                     order.status === status
                       ? 'bg-gray-400'
@@ -201,6 +198,9 @@ export default function OrderDetailsScreen() {
                         ? 'bg-indigo-300'
                         : 'bg-indigo-600'
                   }`}
+                  disabled={submitting || order.status === status}
+                  key={status}
+                  onPress={() => handleUpdateStatus(status as Order['status'])}
                 >
                   {submitting && order.status !== status ? (
                     <ActivityIndicator color="#fff" />

@@ -157,7 +157,7 @@ export default function CartScreen() {
     setLoading(true);
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
-      .insert({ user_id: user.id, total_amount: totalPrice, status: 'pending' })
+      .insert({ status: 'pending', total_amount: totalPrice, user_id: user.id })
       .select()
       .single();
 
@@ -170,9 +170,9 @@ export default function CartScreen() {
 
     const orderItems = cartItems.map((item) => ({
       order_id: orderData.id,
+      price_at_order: item.product.price,
       product_id: item.product.id,
       quantity: item.quantity,
-      price_at_order: item.product.price,
     }));
 
     const { error: orderItemsError } = await supabase
@@ -201,8 +201,8 @@ export default function CartScreen() {
 
     setLoading(false);
     router.push({
-      pathname: '/order-confirmation',
       params: { orderId: orderData.id, total: totalPrice.toFixed(2) },
+      pathname: '/order-confirmation',
     });
   };
 
@@ -214,25 +214,25 @@ export default function CartScreen() {
       </View>
       <View className="flex-row items-center">
         <TouchableOpacity
+          className="bg-red-500 p-2 rounded-md"
           onPress={() =>
             updateCartItemQuantity(item.product.id, item.quantity - 1)
           }
-          className="bg-red-500 p-2 rounded-md"
         >
           <Text className="text-white font-bold">-</Text>
         </TouchableOpacity>
         <Text className="mx-3 text-lg">{item.quantity}</Text>
         <TouchableOpacity
+          className="bg-green-500 p-2 rounded-md"
           onPress={() =>
             updateCartItemQuantity(item.product.id, item.quantity + 1)
           }
-          className="bg-green-500 p-2 rounded-md"
         >
           <Text className="text-white font-bold">+</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => removeCartItem(item.product.id)}
           className="ml-4 bg-gray-300 p-2 rounded-md"
+          onPress={() => removeCartItem(item.product.id)}
         >
           <Text className="text-gray-800">Remove</Text>
         </TouchableOpacity>
@@ -250,10 +250,10 @@ export default function CartScreen() {
           <Text className="text-center text-lg">Your cart is empty.</Text>
         ) : (
           <FlatList
-            data={cartItems}
-            renderItem={renderCartItem}
-            keyExtractor={(item) => item.product.id}
             contentContainerClassName="pb-4"
+            data={cartItems}
+            keyExtractor={(item) => item.product.id}
+            renderItem={renderCartItem}
           />
         )}
 
@@ -263,9 +263,9 @@ export default function CartScreen() {
               Total: ${totalPrice.toFixed(2)}
             </Text>
             <Button
+              className="mt-4 bg-blue-600 py-3 rounded-lg"
               onPress={createOrder}
               title="Create Order"
-              className="mt-4 bg-blue-600 py-3 rounded-lg"
             />
           </View>
         )}

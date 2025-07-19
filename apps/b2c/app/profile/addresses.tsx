@@ -19,7 +19,7 @@ import {
 export default function AddressesScreen() {
   const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<null | string>(null);
   const router = useRouter();
 
   const fetchAddresses = useCallback(async (id: string) => {
@@ -78,11 +78,10 @@ export default function AddressesScreen() {
       'Are you sure you want to delete this address?',
       [
         {
-          text: 'Cancel',
           style: 'cancel',
+          text: 'Cancel',
         },
         {
-          text: 'Delete',
           onPress: async () => {
             setLoading(true);
             try {
@@ -100,6 +99,7 @@ export default function AddressesScreen() {
               setLoading(false);
             }
           },
+          text: 'Delete',
         },
       ],
     );
@@ -126,14 +126,14 @@ export default function AddressesScreen() {
       )}
       <View className="flex-row justify-end mt-2">
         <TouchableOpacity
-          onPress={() => router.push(`/profile/addresses/edit?id=${item.id}`)}
           className="bg-yellow-500 px-4 py-2 rounded-lg mr-2 shadow-sm"
+          onPress={() => router.push(`/profile/addresses/edit?id=${item.id}`)}
         >
           <Text className="text-white font-semibold text-sm">Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleDeleteAddress(item.id)}
           className="bg-red-500 px-4 py-2 rounded-lg shadow-sm"
+          onPress={() => handleDeleteAddress(item.id)}
         >
           <Text className="text-white font-semibold text-sm">Delete</Text>
         </TouchableOpacity>
@@ -144,7 +144,7 @@ export default function AddressesScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-100">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator color="#0000ff" size="large" />
         <Text className="mt-4 text-lg text-gray-700">Loading addresses...</Text>
       </View>
     );
@@ -162,8 +162,8 @@ export default function AddressesScreen() {
             No addresses found.
           </Text>
           <TouchableOpacity
-            onPress={() => router.push('/profile/addresses/add')}
             className="bg-blue-600 py-3 px-5 rounded-lg shadow-sm"
+            onPress={() => router.push('/profile/addresses/add')}
           >
             <Text className="text-white font-semibold text-base">
               Add New Address
@@ -173,14 +173,14 @@ export default function AddressesScreen() {
       ) : (
         <>
           <FlatList
+            contentContainerStyle={{ paddingBottom: 20 }}
             data={addresses}
             keyExtractor={(item) => item.id}
             renderItem={renderAddressItem}
-            contentContainerStyle={{ paddingBottom: 20 }}
           />
           <TouchableOpacity
-            onPress={() => router.push('/profile/addresses/add')}
             className="bg-blue-600 py-3 px-5 rounded-lg self-center shadow-sm mt-4"
+            onPress={() => router.push('/profile/addresses/add')}
           >
             <Text className="text-white font-semibold text-base">
               Add New Address

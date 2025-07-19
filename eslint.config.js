@@ -1,16 +1,16 @@
-import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
-import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import reactPlugin from 'eslint-plugin-react';
-import eslint from '@eslint/js';
-
 import * as reactHooks from 'eslint-plugin-react-hooks';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config([
   eslint.configs.recommended,
   eslintConfigPrettier,
+  perfectionist.configs['recommended-natural'],
   /* eslint-disable import/no-named-as-default-member */
   tseslint.configs.recommended,
   tseslint.configs.strict,
@@ -40,27 +40,20 @@ export default tseslint.config([
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    plugins: {
-      perfectionist,
-    },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'import/default': 'off',
       // https://typescript-eslint.io/troubleshooting/typed-linting/performance/#eslint-plugin-import
       'import/named': 'off',
       'import/namespace': 'off',
-      'import/default': 'off',
-      'import/node-named-as-default-member': 'off',
-      'import/no-named-as-default': 'off',
       'import/no-cycle': 'off',
-      'import/no-unused-modules': 'off',
       'import/no-deprecated': 'off',
-      'import/order': 'error',
+      'import/no-named-as-default': 'off',
+      'import/no-unused-modules': 'off',
+      'import/node-named-as-default-member': 'off',
     },
     settings: {
-      react: {
-        version: 'detect',
-      },
       'import/resolver': {
         node: true,
         typescript: {
@@ -68,16 +61,14 @@ export default tseslint.config([
           project: ['packages/**/tsconfig.json', 'apps/**/tsconfig.json'],
         },
       },
-      perfectionist: {
-        order: 'asc',
-        partitionByComment: true,
-        type: 'natural',
-      },
       languageOptions: {
         parserOptions: {
           projectService: true,
           tsconfigRootDir: import.meta.dirname,
         },
+      },
+      react: {
+        version: 'detect',
       },
     },
   },

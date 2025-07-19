@@ -8,17 +8,12 @@ async function main() {
     connect: true,
   });
 
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   // Client for AUTH operations (will become authenticated as the last user)
-  const supabaseAuth = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!,
-  );
-
+  const supabaseAuth = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
   // A separate, CLEAN client for administrative DATA operations
-  const supabaseAdmin = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!,
-  );
+  const supabaseAdmin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
+  /* eslint-enable @typescript-eslint/no-non-null-assertion */
 
   faker.seed(123);
 
@@ -69,11 +64,7 @@ async function main() {
         deleted_at: null,
         members: (x) =>
           x(3, () => ({
-            role_in_business: faker.helpers.arrayElement([
-              'owner',
-              'sales_agent',
-              'customer',
-            ]),
+            role_in_business: faker.helpers.arrayElement(['owner', 'sales_agent', 'customer']),
             deleted_at: null,
           })),
       })),
@@ -87,11 +78,7 @@ async function main() {
         x({ min: 2, max: 10 }, () => ({
           name: faker.commerce.productName(),
           description: faker.commerce.productDescription(),
-          status: faker.helpers.arrayElement([
-            'draft',
-            'published',
-            'rejected',
-          ]),
+          status: faker.helpers.arrayElement(['draft', 'published', 'rejected']),
           price: faker.number.float({ fractionDigits: 2 }),
           image_url: faker.image.urlLoremFlickr(),
           stock_quantity: faker.number.int({ min: 0, max: 100 }),

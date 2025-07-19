@@ -1,7 +1,6 @@
 import '@/global.css';
 import { Session } from '@supabase/supabase-js';
-import { SplashScreen } from 'expo-router';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { supabase } from 'shared/api/supabase';
@@ -29,14 +28,12 @@ export default function InitialLayout() {
     });
 
     // Subscribe to authentication state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        if (!loading) {
-          SplashScreen.hideAsync();
-        }
-      },
-    );
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session);
+      if (!loading) {
+        SplashScreen.hideAsync();
+      }
+    });
 
     // Cleanup function to unsubscribe from the auth listener when the component unmounts
     return () => {
@@ -94,8 +91,8 @@ export default function InitialLayout() {
   // Render a loading screen while the app is loading
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-xl text-gray-700">Loading app...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <Text className='text-xl text-gray-700'>Loading app...</Text>
       </View>
     );
   }
@@ -103,8 +100,14 @@ export default function InitialLayout() {
   // Render the main app stack once loading is complete
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="products/manage" options={{ headerShown: false }} />
+      <Stack.Screen
+        name='(tabs)'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='products/manage'
+        options={{ headerShown: false }}
+      />
       {/* Add other admin routes here if needed */}
     </Stack>
   );

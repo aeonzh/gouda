@@ -1,6 +1,4 @@
-import { useRouter } from 'expo-router';
-// Adjust path as needed
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { signUpWithEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -16,10 +14,7 @@ export default function SignUpScreen() {
     setLoading(true);
     try {
       await signUpWithEmail(email, password, fullName);
-      Alert.alert(
-        'Success',
-        'Account created! Please check your email to verify.',
-      );
+      Alert.alert('Success', 'Account created! Please check your email to verify.');
       router.replace('/login'); // Navigate to login after successful registration
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -29,51 +24,45 @@ export default function SignUpScreen() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-white p-4">
+    <View className='flex-1 items-center justify-center bg-white p-4'>
       <Stack.Screen options={{ headerShown: false }} />
-      <Text className="text-3xl font-extrabold text-gray-900 mb-8">
-        Join Gouda!
-      </Text>
+      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Join Gouda!</Text>
 
       <TextInput
-        className="w-full p-4 mb-4 text-lg border border-gray-300 rounded-xl focus:border-blue-500"
-        placeholder="Full Name"
+        className='mb-4 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        placeholder='Full Name'
         value={fullName}
         onChangeText={setFullName}
-        autoCapitalize="words"
+        autoCapitalize='words'
       />
       <TextInput
-        className="w-full p-4 mb-4 text-lg border border-gray-300 rounded-xl focus:border-blue-500"
-        placeholder="Email"
+        className='mb-4 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        placeholder='Email'
         value={email}
         onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        keyboardType='email-address'
+        autoCapitalize='none'
       />
       <TextInput
-        className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:border-blue-500"
-        placeholder="Password"
+        className='mb-6 w-full rounded-xl border border-gray-300 p-4 text-lg focus:border-blue-500'
+        placeholder='Password'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
       <TouchableOpacity
-        className={`w-full p-4 rounded-xl ${
-          loading ? 'bg-green-300' : 'bg-green-600'
-        }`}
+        className={`w-full rounded-xl p-4 ${loading ? 'bg-green-300' : 'bg-green-600'}`}
         onPress={handleSignUp}
         disabled={loading}
       >
-        <Text className="text-white text-center text-lg font-semibold">
-          {loading ? 'Registering...' : 'Sign Up'}
-        </Text>
+        <Text className='text-center text-lg font-semibold text-white'>{loading ? 'Registering...' : 'Sign Up'}</Text>
       </TouchableOpacity>
 
-      <View className="flex-row mt-8">
-        <Text className="text-gray-700 text-lg">Already have an account? </Text>
+      <View className='mt-8 flex-row'>
+        <Text className='text-lg text-gray-700'>Already have an account? </Text>
         <TouchableOpacity onPress={() => router.push('/login')}>
-          <Text className="text-blue-600 text-lg font-semibold">Login</Text>
+          <Text className='text-lg font-semibold text-blue-600'>Login</Text>
         </TouchableOpacity>
       </View>
     </View>

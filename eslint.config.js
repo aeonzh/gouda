@@ -11,9 +11,11 @@ import * as reactHooks from 'eslint-plugin-react-hooks';
 export default tseslint.config([
   eslint.configs.recommended,
   eslintConfigPrettier,
+  /* eslint-disable import/no-named-as-default-member */
   tseslint.configs.recommended,
   tseslint.configs.strict,
   tseslint.configs.stylistic,
+  /* eslint-enable import/no-named-as-default-member */
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.react,
   importPlugin.flatConfigs['react-native'],
@@ -53,6 +55,7 @@ export default tseslint.config([
       'import/no-cycle': 'off',
       'import/no-unused-modules': 'off',
       'import/no-deprecated': 'off',
+      'import/order': 'error',
     },
     settings: {
       react: {

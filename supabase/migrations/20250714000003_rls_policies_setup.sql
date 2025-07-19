@@ -74,8 +74,9 @@ CREATE POLICY "profiles_delete_access" ON profiles FOR DELETE USING (
 CREATE POLICY "products_select_access" ON products FOR SELECT USING (
     deleted_at IS NULL AND (
         ((auth.jwt())::jsonb -> 'user_metadata' ->> 'role' = 'admin') OR
-        (EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = (select auth.uid()) AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent'))) OR
-        (EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = (select auth.uid()) AND m.business_id = products.business_id AND m.role_in_business = 'customer') AND status = 'published')
+        (EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = (select auth.uid()) AND m.business_id = products.business_id AND m.role_in_business IN ('owner', 'sales_agent')))
+    ) OR (
+        (EXISTS (SELECT 1 FROM public.members m WHERE m.profile_id = (select auth.uid()) AND m.business_id = products.business_id AND m.role_in_business = 'customer') AND products.status = 'published')
     )
 );
 -- Policy for inserting products: Allows admins to insert any product and business owners/sales agents to insert products within their business.

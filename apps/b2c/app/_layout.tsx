@@ -31,9 +31,6 @@ export default function InitialLayout() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
-        if (!loading) {
-          SplashScreen.hideAsync();
-        }
       },
     );
 
@@ -45,6 +42,10 @@ export default function InitialLayout() {
 
   // Effect to handle redirection based on session status
   useEffect(() => {
+    console.log('Session:', session);
+    console.log('Loading:', loading);
+    console.log('Segments:', segments);
+
     if (!loading) {
       // Check if the current route is within the authentication group
       const inAuthGroup = segments[0] === '(auth)';
@@ -68,8 +69,8 @@ export default function InitialLayout() {
   // Render a loading screen while the app is loading
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-xl text-gray-700">Loading app...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <Text className='text-xl text-gray-700'>Loading app...</Text>
       </View>
     );
   }
@@ -77,15 +78,30 @@ export default function InitialLayout() {
   // Render the main app stack once loading is complete
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="order-confirmation"
+        name='(tabs)'
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="cart" options={{ headerShown: false }} />
-      <Stack.Screen name="products/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="orders/[id]" options={{ headerShown: false }} />
+      <Stack.Screen
+        name='(auth)'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='order-confirmation'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='cart'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='products/[id]'
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='orders/[id]'
+        options={{ headerShown: false }}
+      />
       {/* Add other b2c routes here if needed */}
     </Stack>
   );

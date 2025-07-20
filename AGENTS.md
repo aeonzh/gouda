@@ -122,7 +122,7 @@ The `apps/b2c/` directory contains a React Native Expo application.
 It uses NativeWind for styling.
 The application has the following main screens/features:
 
-- **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented.
+- **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented. The authentication routing issue, where unauthenticated users were not consistently redirected to `/login`, has been fixed by adjusting the `SplashScreen.hideAsync()` call in `apps/b2c/app/_layout.tsx` to prevent race conditions.
 - **Tabs**:
   - **Home**: `(tabs)/index.tsx` (currently a placeholder).
   - **Products**: `(tabs)/products.tsx` for product browsing, search, and filtering using `packages/shared/api/products`. Product details are shown in `products/[id].tsx`. Product listing/catalog, search/filtering, and product details are implemented.

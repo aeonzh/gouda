@@ -12,10 +12,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   // In a production app, you might want to throw an error or prevent app load
 }
 
-export const supabase = createClient(
-  supabaseUrl || 'YOUR_SUPABASE_URL',
-  supabaseAnonKey || 'YOUR_SUPABASE_ANON_KEY',
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function resetPasswordForEmail(email: string) {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {

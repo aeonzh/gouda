@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "format": "eslint . --fix",
     "db:reset": "supabase db reset",
-    "db:reset:seed": "pnpx tsx seed.ts",
+    "db:reset:seed": "supabase db reset && pnpx tsx seed.ts",
     "clean-install": "pnpm i --frozen-lockfile"
   },
   "devDependencies": {

@@ -7,10 +7,13 @@ This file serves as a chronological record of changes, decisions, and their rati
 
 #### [Brief, descriptive title of the change/decision]
 
+- **What were we trying to do**: [Explanation of the original task.]
 - **What was changed/decided and why (root cause/reason)**: [Explanation of the problem or the reason for the change/decision.]
 - **How the change addresses the root cause**: [Explanation of the solution implemented or the decision made.]
 - **Why the change addresses the root cause**: [Explanation of the rationale behind the solution or decision.]
 ```
+
+Entries are only appended, unless part of the same scope or told explicitly
 
 ### Session: Wednesday, July 16, 2025
 
@@ -81,9 +84,94 @@ This file serves as a chronological record of changes, decisions, and their rati
 
 - **What was changed/decided and why (root cause/reason)**: The B2C application was consistently throwing a "Server Error: Invalid URL" related to Supabase initialization, despite `console.log` statements showing correct `supabaseUrl` and `supabaseAnonKey` values. The root cause was likely a caching or bundling issue within Expo's environment variable handling, preventing the `createClient` function from correctly receiving the `Constants.expoConfig?.extra` values.
 - **How the change addresses the root cause**: The issue was resolved by a series of debugging steps that included:
-    1.  Adding and then removing `console.log` statements with type and length checks.
-    2.  Temporarily hardcoding the Supabase URL and Anon Key directly into `packages/shared/api/supabase.ts` (which resolved the issue).
-    3.  Reverting the hardcoded values back to `Constants.expoConfig?.extra` (which surprisingly continued to work).
-    4.  Removing a temporary dummy field added to `apps/b2c/app.config.ts` that was intended to force Expo to re-evaluate its configuration.
-    The combination of these actions, particularly the hardcoding and subsequent reversion, seems to have forced Expo's build system to correctly process and bundle the environment variables.
+  1.  Adding and then removing `console.log` statements with type and length checks.
+  2.  Temporarily hardcoding the Supabase URL and Anon Key directly into `packages/shared/api/supabase.ts` (which resolved the issue).
+  3.  Reverting the hardcoded values back to `Constants.expoConfig?.extra` (which surprisingly continued to work).
+  4.  Removing a temporary dummy field added to `apps/b2c/app.config.ts` that was intended to force Expo to re-evaluate its configuration.
+      The combination of these actions, particularly the hardcoding and subsequent reversion, seems to have forced Expo's build system to correctly process and bundle the environment variables.
 - **Why the change addresses the root cause**: The debugging process, though iterative, effectively "refreshed" Expo's understanding of the environment variables. The temporary hardcoding likely bypassed the problematic caching, and once the cache was cleared or rebuilt, the `Constants.expoConfig` method began working as intended. This indicates the problem was not with the values themselves, but with their propagation through the Expo build pipeline.
+
+### Session: Sunday, July 20, 2025
+
+#### TypeScript Build Fix for Shared Components (Context: Component Import Simplification)
+
+- **What was changed/decided and why (root cause/reason)**: The primary goal was to simplify component imports in the B2C application from specific file paths (e.g., `packages/shared/components/Input`) to a more consolidated path (e.g., `packages/shared/components`). To achieve this, a barrel file (`packages/shared/components/index.ts`) was created to re-export all components from the `components` directory, and `packages/shared/index.ts` was updated to export from this new barrel file.
+
+  However, this change led to a TypeScript build error (`TS6307: File '...' is not listed within the file list of project '...'`) for `packages/shared/components/index.ts`. The root cause of this error was that the `packages/shared/tsconfig.json`'s `include` array only specified `.tsx` files (`"components/**/*.tsx"`) within the `components` directory, overlooking `.ts` files like the newly created `index.ts`.
+
+- **How the change addresses the root cause**: The `packages/shared/tsconfig.json` file was modified. Specifically, the line `"components/**/*.tsx",` in the `include` array was changed to:
+
+```
+    "components/**/*.tsx",
+    "components/**/*.ts",
+```
+
+This change explicitly tells the TypeScript compiler to include all `.ts` files within the `components` directory for compilation, alongside the existing `.tsx` files.
+
+- **Why the change addresses the root cause**: By including `.ts` files in the `components` directory, the TypeScript compiler can now correctly find and process the `packages/shared/components/index.ts` barrel file. This resolves the `TS6307` error, allowing the `shared` package to build successfully and enabling the desired simplified module resolution for components imported from `packages/shared/components`.
+
+### Session: Monday, July 21, 2025
+
+#### Implement Authorized Vendor List on B2C Home Page
+
+- **What were we trying to do**: Implement the B2C home page (`apps/b2c/app/(tabs)/index.tsx`) to display a list of authorized vendors for the logged-in user, as per the `docs/tasks/b2c_home_page_plan.md`.
+- **What was changed/decided and why (root cause/reason)**: The B2C home page was a placeholder. The goal was to populate it with dynamic data representing authorized vendors and provide search/filter functionality.
+- **How the change addresses the root cause**:
+  1.  A `VendorCard` component was created to render individual vendor information.
+  2.  The `apps/b2c/app/(tabs)/index.tsx` component was updated to:
+      - Fetch authorized vendors using `getAuthorizedBusinesses` from `packages/shared/api/profiles.ts`.
+      - Manage loading, error, and empty states.
+      - Implement search/filter functionality based on vendor name and address.
+      - Use a `FlatList` to display the `VendorCard` components.
+      - Set up navigation to a dynamic product page (`/products/[vendorId]`) when a vendor card is pressed.
+- **Why the change addresses the root cause**: This implementation transforms the placeholder home page into a functional entry point for B2C users, allowing them to discover and access products from their authorized vendors. The search and filter capabilities enhance usability, and the navigation ensures a seamless user experience within the closed-discovery multi-vendor model.
+
+#### Fix for `useAuth` not a function error
+
+- **What were we trying to do**: Resolve the `(0 , _supabase.useAuth) is not a function` error encountered after implementing the authorized vendor list.
+- **What was changed/decided and why (root cause/reason)**: The `useAuth` hook, `AuthContext`, and `AuthProvider` were initially defined directly within `packages/shared/api/supabase.ts`. This caused a `SyntaxError` because JSX syntax (used in `AuthProvider`) is not allowed in `.ts` files unless specifically configured, and the `api` directory was not set up for JSX parsing. This led to `useAuth` not being properly exported or recognized as a function.
+- **How the change addresses the root cause**:
+  1.  A new file, `packages/shared/components/AuthProvider.tsx`, was created to house the `AuthContext`, `AuthProvider` component, and `useAuth` hook. This separates the JSX-containing code into a `.tsx` file, which is correctly parsed for JSX.
+  2.  The original definitions of `AuthContext`, `AuthProvider`, and `useAuth` were removed from `packages/shared/api/supabase.ts`.
+  3.  `packages/shared/components/index.ts` was updated to export `AuthProvider` from the new `AuthProvider.tsx` file.
+  4.  The import statement in `apps/b2c/app/_layout.tsx` was updated to import `AuthProvider` from `packages/shared/components`.
+- **Why the change addresses the root cause**: By moving the JSX-containing `AuthProvider` and related context/hook definitions to a `.tsx` file, the `SyntaxError` is resolved. This ensures that `useAuth` is correctly defined, exported, and imported, making the authentication context available throughout the B2C application as intended. This adheres to best practices by separating concerns and ensuring proper file type handling for JSX.
+
+### Session: Monday, July 21, 2025
+
+#### Implement Authorized Vendor List on B2C Home Page
+
+- **What were we trying to do**: Implement the B2C home page (`apps/b2c/app/(tabs)/index.tsx`) to display a list of authorized vendors for the logged-in user, as per the `docs/tasks/b2c_home_page_plan.md`.
+- **What was changed/decided and why (root cause/reason)**: The B2C home page was a placeholder. The goal was to populate it with dynamic data representing authorized vendors and provide search/filter functionality.
+- **How the change addresses the root cause**:
+  1.  A `VendorCard` component was created to render individual vendor information.
+  2.  The `apps/b2c/app/(tabs)/index.tsx` component was updated to:
+      - Fetch authorized vendors using `getAuthorizedBusinesses` from `packages/shared/api/profiles.ts`.
+      - Manage loading, error, and empty states.
+      - Implement search/filter functionality based on vendor name and address.
+      - Use a `FlatList` to display the `VendorCard` components.
+      - Set up navigation to a dynamic product page (`/products/[vendorId]`) when a vendor card is pressed.
+- **Why the change addresses the root cause**: This implementation transforms the placeholder home page into a functional entry point for B2C users, allowing them to discover and access products from their authorized vendors. The search and filter capabilities enhance usability, and the navigation ensures a seamless user experience within the closed-discovery multi-vendor model.
+
+#### Fix for `useAuth` not a function error and AuthProvider Refactoring
+
+- **What were we trying to do**: Resolve the `(0 , _supabase.useAuth) is not a function` error encountered after implementing the authorized vendor list, and refactor the authentication provider for better code organization.
+- **What was changed/decided and why (root cause/reason)**: The `useAuth` hook, `AuthContext`, and `AuthProvider` were initially defined directly within `packages/shared/api/supabase.ts`. This caused a `SyntaxError` because JSX syntax (used in `AuthProvider`) is not allowed in `.ts` files unless specifically configured, and the `api` directory was not set up for JSX parsing. This led to `useAuth` not being properly exported or recognized as a function.
+- **How the change addresses the root cause**:
+  1.  A new file, `packages/shared/components/AuthProvider.tsx`, was created to house the `AuthContext`, `AuthProvider` component, and `useAuth` hook. This separates the JSX-containing code into a `.tsx` file, which is correctly parsed for JSX.
+  2.  The original definitions of `AuthContext`, `AuthProvider`, and `useAuth` were removed from `packages/shared/api/supabase.ts`.
+  3.  `packages/shared/components/index.ts` was updated to export `AuthProvider` from the new `AuthProvider.tsx` file.
+  4.  The import statement in `apps/b2c/app/_layout.tsx` was updated to import `AuthProvider` from `packages/shared/components`.
+  5.  `packages/shared/tsconfig.json` was updated to include `.ts` files in the `components` directory, resolving a build error related to the new `index.ts` barrel file.
+- **Why the change addresses the root cause**: By moving the JSX-containing `AuthProvider` and related context/hook definitions to a `.tsx` file, the `SyntaxError` is resolved. This ensures that `useAuth` is correctly defined, exported, and imported, making the authentication context available throughout the B2C application as intended. This adheres to best practices by separating concerns and ensuring proper file type handling for JSX. The `tsconfig.json` update ensures all necessary files are compiled.
+
+#### Shared Components Import Simplification and New ShoppingCartIcon
+
+- **What were we trying to do**: Simplify component imports in the B2C application and introduce a new `ShoppingCartIcon` component.
+- **What was changed/decided and why (root cause/reason)**: Imports for shared components were verbose, pointing to individual files (e.g., `packages/shared/components/Button`). The goal was to consolidate these imports. Additionally, a `ShoppingCartIcon` was needed for the B2C home page header.
+- **How the change addresses the root cause**:
+  1.  A new barrel file, `packages/shared/components/index.ts`, was created to re-export all components from the `components` directory.
+  2.  `packages/shared/index.ts` was updated to export from this new barrel file.
+  3.  Imports in `apps/b2c/app/(tabs)/_layout.tsx`, `apps/b2c/app/cart.tsx`, and `apps/b2c/app/order-confirmation.tsx` were updated to use the simplified import path (e.g., `packages/shared/components`).
+  4.  A new `ShoppingCartIcon.tsx` component was added to `packages/shared/components` and exported via the barrel file.
+- **Why the change addresses the root cause**: This change significantly cleans up import statements across the B2C application, making the codebase more maintainable and readable. The new `ShoppingCartIcon` provides a dedicated, reusable component for cart navigation.

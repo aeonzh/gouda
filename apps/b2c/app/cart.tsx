@@ -1,17 +1,10 @@
 import { Stack, useRouter } from 'expo-router';
+import { Product } from 'packages/shared/api/products';
+import { supabase } from 'packages/shared/api/supabase';
+import { Button } from 'packages/shared/components';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Adjust path as needed
-import { Product } from '../../../packages/shared/api/products';
-import { supabase } from '../../../packages/shared/api/supabase';
-// Adjust path as needed
-import { Button } from '../../../packages/shared/components/Button';
-// Adjust path as needed
-import { Input } from '../../../packages/shared/components/Input';
-
-// Adjust path as needed
 
 interface CartItem {
   product: Product;
@@ -207,50 +200,50 @@ export default function CartScreen() {
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (
-    <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
-      <View className="flex-1">
-        <Text className="text-lg font-bold">{item.product.name}</Text>
-        <Text className="text-gray-600">${item.product.price.toFixed(2)}</Text>
+    <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
+      <View className='flex-1'>
+        <Text className='text-lg font-bold'>{item.product.name}</Text>
+        <Text className='text-gray-600'>${item.product.price.toFixed(2)}</Text>
       </View>
-      <View className="flex-row items-center">
+      <View className='flex-row items-center'>
         <TouchableOpacity
-          className="bg-red-500 p-2 rounded-md"
+          className='rounded-md bg-red-500 p-2'
           onPress={() =>
             updateCartItemQuantity(item.product.id, item.quantity - 1)
           }
         >
-          <Text className="text-white font-bold">-</Text>
+          <Text className='font-bold text-white'>-</Text>
         </TouchableOpacity>
-        <Text className="mx-3 text-lg">{item.quantity}</Text>
+        <Text className='mx-3 text-lg'>{item.quantity}</Text>
         <TouchableOpacity
-          className="bg-green-500 p-2 rounded-md"
+          className='rounded-md bg-green-500 p-2'
           onPress={() =>
             updateCartItemQuantity(item.product.id, item.quantity + 1)
           }
         >
-          <Text className="text-white font-bold">+</Text>
+          <Text className='font-bold text-white'>+</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="ml-4 bg-gray-300 p-2 rounded-md"
+          className='ml-4 rounded-md bg-gray-300 p-2'
           onPress={() => removeCartItem(item.product.id)}
         >
-          <Text className="text-gray-800">Remove</Text>
+          <Text className='text-gray-800'>Remove</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className='flex-1 bg-white'>
       <Stack.Screen options={{ title: 'Your Cart' }} />
-      <View className="flex-1 p-4">
+      <View className='flex-1 p-4'>
         {loading ? (
-          <Text className="text-center text-lg">Loading cart...</Text>
+          <Text className='text-center text-lg'>Loading cart...</Text>
         ) : cartItems.length === 0 ? (
-          <Text className="text-center text-lg">Your cart is empty.</Text>
+          <Text className='text-center text-lg'>Your cart is empty.</Text>
         ) : (
           <FlatList
-            contentContainerClassName="pb-4"
+            contentContainerClassName='pb-4'
             data={cartItems}
             keyExtractor={(item) => item.product.id}
             renderItem={renderCartItem}
@@ -258,14 +251,14 @@ export default function CartScreen() {
         )}
 
         {!loading && cartItems.length > 0 && (
-          <View className="mt-4 p-4 border-t border-gray-200">
-            <Text className="text-xl font-bold text-right">
+          <View className='mt-4 border-t border-gray-200 p-4'>
+            <Text className='text-right text-xl font-bold'>
               Total: ${totalPrice.toFixed(2)}
             </Text>
             <Button
-              className="mt-4 bg-blue-600 py-3 rounded-lg"
+              className='mt-4 rounded-lg bg-blue-600 py-3'
               onPress={createOrder}
-              title="Create Order"
+              title='Create Order'
             />
           </View>
         )}

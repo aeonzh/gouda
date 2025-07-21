@@ -1,37 +1,36 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Button } from 'packages/shared/components';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { Button } from '../../../packages/shared/components/Button';
 
 export default function OrderConfirmationScreen() {
   const router = useRouter();
   const { orderId, total } = useLocalSearchParams();
 
   return (
-    <SafeAreaView className="flex-1 bg-white items-center justify-center p-4">
+    <SafeAreaView className='flex-1 items-center justify-center bg-white p-4'>
       <Stack.Screen options={{ title: 'Order Confirmation' }} />
-      <View className="bg-green-100 p-8 rounded-lg items-center shadow-md">
-        <Text className="text-4xl font-bold text-green-700 mb-4">🎉</Text>
-        <Text className="text-2xl font-bold text-gray-800 mb-2">
+      <View className='items-center rounded-lg bg-green-100 p-8 shadow-md'>
+        <Text className='mb-4 text-4xl font-bold text-green-700'>🎉</Text>
+        <Text className='mb-2 text-2xl font-bold text-gray-800'>
           Order Placed Successfully!
         </Text>
-        <Text className="text-lg text-gray-600 mb-1">
-          Your order ID: <Text className="font-bold">{orderId}</Text>
+        <Text className='mb-1 text-lg text-gray-600'>
+          Your order ID: <Text className='font-bold'>{orderId}</Text>
         </Text>
-        <Text className="text-lg text-gray-600 mb-6">
-          Total amount: <Text className="font-bold">${total}</Text>
+        <Text className='mb-6 text-lg text-gray-600'>
+          Total amount: <Text className='font-bold'>${total}</Text>
         </Text>
         <Button
-          className="bg-blue-600 py-3 px-6 rounded-lg mb-4"
+          className='mb-4 rounded-lg bg-blue-600 px-6 py-3'
           onPress={() => router.replace('/orders')}
-          title="View My Orders"
+          title='View My Orders'
         />
         <Button
-          className="bg-gray-300 py-3 px-6 rounded-lg text-gray-800"
+          className='rounded-lg bg-gray-300 px-6 py-3 text-gray-800'
           onPress={() => router.replace('/products')}
-          title="Continue Shopping"
+          title='Continue Shopping'
         />
       </View>
     </SafeAreaView>

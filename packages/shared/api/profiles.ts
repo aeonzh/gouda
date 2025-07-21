@@ -14,6 +14,18 @@ export interface BusinessDetails {
   updated_at: string;
 }
 
+export interface Organisation {
+  id: string;
+  name: string;
+  address_line1: string;
+  address_line2: string | null;
+  city: string;
+  state: string;
+  postal_code: string;
+  country: string;
+  status: 'approved' | 'pending' | 'rejected' | 'suspended';
+}
+
 export interface Profile {
   avatar_url?: string;
   created_at: string;
@@ -103,6 +115,45 @@ export async function getAllCustomers(): Promise<null | Profile[]> {
     throw error;
   }
   return data;
+}
+
+/**
+ * Fetches all organisations a user is a member of with a 'customer' role.
+ * @param {string} userId - The ID of the user.
+ * @returns {Promise<Organisation[] | null>} A promise that resolves to an array of organisations or null on error.
+ */
+export async function getAuthorizedBusinesses(
+  userId: string,
+): Promise<null | Organisation[]> {
+  const { data: memberData, error: memberError } = await supabase
+    .from('members')
+    .select('business_id')
+    .eq('profile_id', userId)
+    .eq('role_in_business', 'customer');
+
+  if (memberError) {
+    console.error('Error fetching member businesses:', memberError.message);
+    throw memberError;
+  }
+
+  if (!memberData || memberData.length === 0) {
+    return [];
+  }
+
+  const businessIds = memberData.map((member) => member.business_id);
+
+  const { data: organisationData, error: organisationError } = await supabase
+    .from('organisations')
+    .select('id, name, address_line1, address_line2, city, state, postal_code, country, status')
+    .in('id', businessIds)
+    .eq('status', 'approved'); // Only show approved organisations
+
+  if (organisationError) {
+    console.error('Error fetching authorised organisations:', organisationError.message);
+    throw organisationError;
+  }
+
+  return organisationData;
 }
 
 /**

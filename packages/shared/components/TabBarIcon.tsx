@@ -1,6 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { StyleProp, ViewStyle } from 'react-native';
 
 interface TabBarIconProps {
   color: string;

@@ -2,6 +2,7 @@ import '@expo/metro-runtime';
 import { Session } from '@supabase/supabase-js';
 import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
 import { supabase } from 'packages/shared/api/supabase';
+import { AuthProvider } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -77,32 +78,34 @@ export default function InitialLayout() {
 
   // Render the main app stack once loading is complete
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name='(tabs)'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='(auth)'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='order-confirmation'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='cart'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='products/[id]'
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='orders/[id]'
-        options={{ headerShown: false }}
-      />
-      {/* Add other b2c routes here if needed */}
-    </Stack>
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name='(tabs)'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='(auth)'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='order-confirmation'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='cart'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='products/[id]'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='orders/[id]'
+          options={{ headerShown: false }}
+        />
+        {/* Add other b2c routes here if needed */}
+      </Stack>
+    </AuthProvider>
   );
 }

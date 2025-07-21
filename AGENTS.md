@@ -58,6 +58,7 @@ At the same time, keep this file updated with a summary of the end-state we reac
 
 ### Project Overview
 
+- Multi-vendor e-commerce system.
 - Two mobile applications: Customer (B2C) and Administrative (B2B).
 - Both built with React Native, Expo, NativeWind.
 - Backend: Supabase (PostgreSQL, PostgREST, Auth, Storage).
@@ -124,7 +125,7 @@ The application has the following main screens/features:
 
 - **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented. The authentication routing issue, where unauthenticated users were not consistently redirected to `/login`, has been fixed by adjusting the `SplashScreen.hideAsync()` call in `apps/b2c/app/_layout.tsx` to prevent race conditions.
 - **Tabs**:
-  - **Home**: `(tabs)/index.tsx` (currently a placeholder).
+  - **Home**: `(tabs)/index.tsx` now displays a list of authorized vendors for the logged-in user, with search/filter functionality and navigation to vendor product pages. This was implemented using a `VendorCard` component and fetching data via `getAuthorizedBusinesses`.
   - **Products**: `(tabs)/products.tsx` for product browsing, search, and filtering using `packages/shared/api/products`. Product details are shown in `products/[id].tsx`. Product listing/catalog, search/filtering, and product details are implemented.
   - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details are shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details are implemented.
   - **Cart**: `cart.tsx` for managing the shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen are implemented.
@@ -142,16 +143,17 @@ The `packages/shared/` directory contains shared code, including API clients and
 - **`orders.ts`**: Contains functions for managing carts and orders, including `getOrCreateCart`, `addOrUpdateCartItem`, `removeCartItem`, `updateCartItemQuantity`, `getCartItems`, `createOrderFromCart`, `getCustomerOrderHistory`, `getOrderDetails`, `updateOrderStatus`, and `createOrderForCustomer`.
 - **`products.ts`**: Contains functions for managing products and categories, including `getProducts`, `getProductById`, `createProduct`, `updateProduct`, `deleteProduct`, `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`, `getInventoryLevels`, and `adjustInventoryLevel`.
 - **`profiles.ts`**: Contains functions for managing user profiles and business details, including `getProfile`, `updateProfile`, `getBusinessDetails`, `addBusinessDetails`, `updateBusinessDetails`, `deleteBusinessDetails`, `getAllCustomers`, `getCustomerById`, `createCustomer`, and `updateCustomer`.
-- **`supabase.ts`**: Initializes the Supabase client and provides authentication functions like `signUpWithEmail`, `signInWithEmail`, `resetPasswordForEmail`, and `signOut`.
+- **`supabase.ts`**: Initializes the Supabase client and provides authentication functions like `signUpWithEmail`, `signInWithEmail`, `resetPasswordForEmail`, and `signOut`. The `AuthContext`, `AuthProvider`, and `useAuth` hook definitions have been moved to `packages/shared/components/AuthProvider.tsx` to resolve JSX parsing errors in `.ts` files.
 
 #### `components/`
 
+- **`AuthProvider.tsx`**: New file containing `AuthContext`, `AuthProvider` component, and `useAuth` hook for centralized authentication state management.
 - **`Button.tsx`**: A reusable button component with loading states and variants.
 - **`Input.tsx`**: A reusable input component with labels and various keyboard types.
 
 ### Other
 
-- `index.ts`: Entry point for the shared package.
+- `index.ts`: Entry point for the shared package. Now exports `AuthProvider`.
 - `nativewind-env.d.ts`: NativeWind type definitions.
 - `package.json`: Package metadata and dependencies.
 - `tsconfig.json`: TypeScript configuration for the shared package.

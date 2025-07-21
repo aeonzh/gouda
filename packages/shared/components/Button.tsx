@@ -66,7 +66,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <TouchableOpacity
-      accessibilityRole="button"
+      accessibilityRole='button'
       className={`${baseClasses} ${variantClasses} ${sizeClasses} ${className} ${
         disabled || isLoading ? 'opacity-50' : ''
       }`}

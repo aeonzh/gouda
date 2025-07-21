@@ -23,6 +23,7 @@
     "index.ts",
     "api/**/*.ts",
     "components/**/*.tsx",
+    "components/**/*.ts",
     "nativewind-env.d.ts"
   ],
   "exclude": ["node_modules", "dist"]

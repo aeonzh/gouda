@@ -156,7 +156,7 @@ The `packages/shared/` directory contains shared code, including API clients and
 
 ### Other
 
-- `index.ts`: Entry point for the shared package. Now exports `AuthProvider`.
+- `index.ts`: Entry point for the shared package. Exports all components from the `components` directory, including `AuthProvider`.
 - `nativewind-env.d.ts`: NativeWind type definitions.
 - `package.json`: Package metadata and dependencies.
 - `tsconfig.json`: TypeScript configuration for the shared package.

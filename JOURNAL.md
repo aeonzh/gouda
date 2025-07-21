@@ -163,3 +163,17 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   5.  Updated `AGENTS.md` with new instructions for commit messages and data source verification.
   6.  Removed shopping cart icon from the B2C home page plan in `docs/tasks/b2c_home_page_plan.md` as it was no longer relevant to the current task.
 - **Why the change addresses the root cause**: This refactoring improves code organization, readability, and maintainability by clearly separating concerns within the API layer. It makes it easier to locate and manage functions related to specific entities (customers, organizations, profiles) and reduces the cognitive load when working with these modules. The updates to `apps/b2c/app/(tabs)/index.tsx` and `AGENTS.md` ensure that the application and agent guidelines reflect these structural changes.
+
+#### Implement Storefront Page and Rename VendorCard to StorefrontCard
+
+- **What were we trying to do**: Implement a dedicated page to display products for a selected store and ensure consistent naming conventions across the application.
+- **What was changed/decided and why (root cause/reason)**: The B2C
+  application needed a way to display products specific to a chosen vendor. To maintain clear terminology and consistency, the new page was named "Storefront Page," and the component leading to it was renamed from `VendorCard` to `StorefrontCard`.
+- **How the change addresses the root cause**:
+  1.  A new directory `apps/b2c/app/storefront/` was created.
+  2.  The `apps/b2c/app/storefront/[id].tsx` file was created to serve as the Storefront Page. This page fetches and displays products and categories for a given `storeId` (business ID), includes search and category filtering, and navigates to product details.
+  3.  The `VendorCard` component within `apps/b2c/app/(tabs)/index.tsx` was renamed to `StorefrontCard`.
+  4.  The navigation logic in `apps/b2c/app/(tabs)/index.tsx` was updated to direct to `/storefront/[vendorId]` when a `StorefrontCard` is pressed.
+  5.  The `docs/tasks/b2c_store_product_listing_plan.md` was updated to reflect the new "Storefront Page" and "StorefrontCard" terminology.
+
+- **Why the change addresses the root cause**: This implementation provides the necessary functionality for users to browse products from specific vendors. The consistent naming (`StorefrontCard` leading to `StorefrontPage`) improves code readability and maintainability, making the application's structure more intuitive.

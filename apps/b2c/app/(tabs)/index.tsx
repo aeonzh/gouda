@@ -95,7 +95,7 @@ export default function HomeScreen() {
   }, [searchQuery, vendors]);
 
   const handleVendorPress = (vendorId: string) => {
-    router.push(`/products/${vendorId}`);
+    router.push(`/storefront/${vendorId}`);
   };
 
   return (
@@ -135,7 +135,7 @@ export default function HomeScreen() {
           data={filteredVendors}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <VendorCard
+            <StorefrontCard
               onPress={handleVendorPress}
               vendor={item}
             />

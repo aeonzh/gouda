@@ -2,43 +2,43 @@ import { Product } from './products';
 import { supabase } from './supabase';
 
 export interface Cart {
-  created_at: string;
   id: string;
-  updated_at: string;
   user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CartItem {
   cart_id: string;
-  created_at: string;
   id: string;
+  product_id: string;
   price_at_addition: number;
   product?: Product; // Optional: to include product details when fetching cart
-  product_id: string;
   quantity: number;
+  created_at: string;
   updated_at: string;
 }
 
 export interface Order {
-  created_at: string;
   id: string;
+  user_id: string;
   order_date: string;
   order_items?: OrderItem[]; // Optional: to include order item details when fetching order
   sales_agent_id?: string;
   status: 'cancelled' | 'delivered' | 'pending' | 'processing' | 'shipped';
   total_amount: number;
+  created_at: string;
   updated_at: string;
-  user_id: string;
 }
 
 export interface OrderItem {
-  created_at: string;
   id: string;
   order_id: string;
+  product_id: string;
   price_at_order: number;
   product?: Product; // Optional: to include product details when fetching order
-  product_id: string;
   quantity: number;
+  created_at: string;
   updated_at: string;
 }
 
@@ -116,13 +116,16 @@ export async function addOrUpdateCartItem(
 export async function createOrderForCustomer(
   customerId: string,
   salesAgentId: string,
-  items: { priceAtOrder: number; productId: string; quantity: number; }[],
+  items: { priceAtOrder: number; productId: string; quantity: number }[],
 ): Promise<null | Order> {
   if (!items || items.length === 0) {
     throw new Error('Order must contain at least one item.');
   }
 
-  const totalAmount = items.reduce((sum, item) => sum + item.quantity * item.priceAtOrder, 0);
+  const totalAmount = items.reduce(
+    (sum, item) => sum + item.quantity * item.priceAtOrder,
+    0,
+  );
 
   const { data: newOrder, error: orderError } = await supabase
     .from('orders')
@@ -149,10 +152,15 @@ export async function createOrderForCustomer(
     quantity: item.quantity,
   }));
 
-  const { error: orderItemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
+  const { error: orderItemsError } = await supabase
+    .from('order_items')
+    .insert(orderItemsToInsert);
 
   if (orderItemsError) {
-    console.error('Error creating order items for customer-created order:', orderItemsError.message);
+    console.error(
+      'Error creating order items for customer-created order:',
+      orderItemsError.message,
+    );
     // Consider rolling back the order if order items fail to create
     throw orderItemsError;
   }
@@ -165,11 +173,20 @@ export async function createOrderForCustomer(
  * @param {string} userId - The ID of the user creating the order.
  * @returns {Promise<Order | null>} A promise that resolves to the created order or null on error.
  */
-export async function createOrderFromCart(userId: string): Promise<null | Order> {
-  const { data: cart, error: cartError } = await supabase.from('carts').select('id').eq('user_id', userId).single();
+export async function createOrderFromCart(
+  userId: string,
+): Promise<null | Order> {
+  const { data: cart, error: cartError } = await supabase
+    .from('carts')
+    .select('id')
+    .eq('user_id', userId)
+    .single();
 
   if (cartError || !cart) {
-    console.error('Error fetching user cart:', cartError?.message || 'Cart not found');
+    console.error(
+      'Error fetching user cart:',
+      cartError?.message || 'Cart not found',
+    );
     throw cartError || new Error('Cart not found for user.');
   }
 
@@ -179,11 +196,17 @@ export async function createOrderFromCart(userId: string): Promise<null | Order>
     .eq('cart_id', cart.id);
 
   if (cartItemsError || !cartItems || cartItems.length === 0) {
-    console.error('Error fetching cart items or cart is empty:', cartItemsError?.message || 'Cart is empty');
+    console.error(
+      'Error fetching cart items or cart is empty:',
+      cartItemsError?.message || 'Cart is empty',
+    );
     throw cartItemsError || new Error('Cart is empty. Cannot create order.');
   }
 
-  const totalAmount = cartItems.reduce((sum, item) => sum + item.quantity * item.price_at_addition, 0);
+  const totalAmount = cartItems.reduce(
+    (sum, item) => sum + item.quantity * item.price_at_addition,
+    0,
+  );
 
   const { data: newOrder, error: orderError } = await supabase
     .from('orders')
@@ -209,7 +232,9 @@ export async function createOrderFromCart(userId: string): Promise<null | Order>
     quantity: item.quantity,
   }));
 
-  const { error: orderItemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
+  const { error: orderItemsError } = await supabase
+    .from('order_items')
+    .insert(orderItemsToInsert);
 
   if (orderItemsError) {
     console.error('Error creating order items:', orderItemsError.message);
@@ -218,10 +243,16 @@ export async function createOrderFromCart(userId: string): Promise<null | Order>
   }
 
   // Clear the cart after order creation
-  const { error: clearCartError } = await supabase.from('cart_items').delete().eq('cart_id', cart.id);
+  const { error: clearCartError } = await supabase
+    .from('cart_items')
+    .delete()
+    .eq('cart_id', cart.id);
 
   if (clearCartError) {
-    console.error('Error clearing cart after order creation:', clearCartError.message);
+    console.error(
+      'Error clearing cart after order creation:',
+      clearCartError.message,
+    );
     // This error might not be critical enough to fail the order creation, but should be logged
   }
 
@@ -276,7 +307,11 @@ export async function getCustomerOrderHistory(
  * @returns {Promise<Cart | null>} A promise that resolves to the user's cart or null on error.
  */
 export async function getOrCreateCart(userId: string): Promise<Cart | null> {
-  let { data: cart, error } = await supabase.from('carts').select('*').eq('user_id', userId).single();
+  let { data: cart, error } = await supabase
+    .from('carts')
+    .select('*')
+    .eq('user_id', userId)
+    .single();
 
   if (error && error.code === 'PGRST116') {
     // No rows found
@@ -324,7 +359,10 @@ export async function getOrderDetails(orderId: string): Promise<null | Order> {
  * @returns {Promise<void>} A promise that resolves when the item is removed or rejects on error.
  */
 export async function removeCartItem(cartItemId: string): Promise<void> {
-  const { error } = await supabase.from('cart_items').delete().eq('id', cartItemId);
+  const { error } = await supabase
+    .from('cart_items')
+    .delete()
+    .eq('id', cartItemId);
 
   if (error) {
     console.error('Error removing cart item:', error.message);
@@ -338,7 +376,10 @@ export async function removeCartItem(cartItemId: string): Promise<void> {
  * @param {number} quantity - The new quantity.
  * @returns {Promise<CartItem | null>} A promise that resolves to the updated cart item or null on error.
  */
-export async function updateCartItemQuantity(cartItemId: string, quantity: number): Promise<CartItem | null> {
+export async function updateCartItemQuantity(
+  cartItemId: string,
+  quantity: number,
+): Promise<CartItem | null> {
   if (quantity <= 0) {
     await removeCartItem(cartItemId);
     return null;
@@ -364,7 +405,10 @@ export async function updateCartItemQuantity(cartItemId: string, quantity: numbe
  * @param {Order['status']} newStatus - The new status of the order.
  * @returns {Promise<Order | null>} A promise that resolves to the updated order or null on error.
  */
-export async function updateOrderStatus(orderId: string, newStatus: Order['status']): Promise<null | Order> {
+export async function updateOrderStatus(
+  orderId: string,
+  newStatus: Order['status'],
+): Promise<null | Order> {
   const { data, error } = await supabase
     .from('orders')
     .update({ status: newStatus, updated_at: new Date().toISOString() })

@@ -13,10 +13,10 @@ export interface InventoryProduct {
 
 export interface Product {
   category_id?: string;
-  description?: string;
   id: string;
-  image_url?: string;
   name: string;
+  description?: string;
+  image_url?: string;
   price: number;
   stock_quantity: number;
 }

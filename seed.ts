@@ -40,7 +40,7 @@ async function main() {
       email: faker.internet.email({ provider: 'example.com' }),
       options: {
         data: {
-          avatar_url: faker.image.avatar(),
+          avatar_url: faker.image.personPortrait(),
           email_verified: true,
           full_name: faker.person.fullName(),
           role: 'user',
@@ -62,6 +62,7 @@ async function main() {
         city: faker.location.city(),
         country: faker.location.country(),
         deleted_at: null,
+        image_url: faker.image.url(),
         members: (x) =>
           x(3, () => ({
             deleted_at: null,

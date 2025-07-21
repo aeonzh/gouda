@@ -1,16 +1,16 @@
 import { supabase } from './supabase';
 
 export interface BusinessDetails {
+  id: string;
+  profile_id: string;
+  business_name: string;
   address_line1: string;
   address_line2: null | string;
-  business_name: string;
   city: string;
   country: string;
-  created_at: string;
-  id: string;
   postal_code: string;
-  profile_id: string;
   state: string;
+  created_at: string;
   updated_at: string;
 }
 
@@ -18,22 +18,24 @@ export interface Organisation {
   id: string;
   name: string;
   address_line1: string;
-  address_line2: string | null;
+  address_line2: null | string;
   city: string;
-  state: string;
-  postal_code: string;
   country: string;
+  postal_code: string;
+  state: string;
+  description?: string;
+  image_url?: string;
   status: 'approved' | 'pending' | 'rejected' | 'suspended';
 }
 
 export interface Profile {
-  avatar_url?: string;
-  created_at: string;
-  full_name?: string;
   id: string;
-  role: 'admin' | 'customer' | 'sales_agent';
-  updated_at: string;
+  full_name?: string;
   username: string;
+  avatar_url?: string;
+  role: 'admin' | 'customer' | 'sales_agent';
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -144,12 +146,17 @@ export async function getAuthorizedBusinesses(
 
   const { data: organisationData, error: organisationError } = await supabase
     .from('organisations')
-    .select('id, name, address_line1, address_line2, city, state, postal_code, country, status')
+    .select(
+      'id, name, address_line1, address_line2, city, state, postal_code, country, status, image_url, description',
+    ) // Added description
     .in('id', businessIds)
     .eq('status', 'approved'); // Only show approved organisations
 
   if (organisationError) {
-    console.error('Error fetching authorised organisations:', organisationError.message);
+    console.error(
+      'Error fetching authorised organisations:',
+      organisationError.message,
+    );
     throw organisationError;
   }
 
@@ -336,7 +343,7 @@ export async function updateCustomer(
 
 /**
  * Updates a user's profile.
- * @param {string} userId - The ID of the user to update.
+ * @param {string} userId - The ID of the user.
  * @param {Partial<Profile>} profileData - The partial profile data to update.
  * @returns {Promise<Profile | null>} A promise that resolves to the updated profile or null on error.
  */

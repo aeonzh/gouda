@@ -3,9 +3,9 @@ import {
   getAuthorizedBusinesses,
   Organisation,
 } from 'packages/shared/api/profiles';
-import { Input, ShoppingCartIcon, useAuth } from 'packages/shared/components';
+import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
 import '@/global.css';
 
@@ -16,22 +16,27 @@ interface VendorCardProps {
 
 const VendorCard: React.FC<VendorCardProps> = ({ onPress, vendor }) => (
   <TouchableOpacity
-    className='mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm'
+    className='mb-4 min-h-32 rounded-lg border border-gray-200 bg-white p-4 shadow-sm'
     onPress={() => onPress(vendor.id)}
   >
-    <View className='flex-row items-center'>
-      {/* Placeholder for Vendor Logo/Image */}
-      <View className='mr-4 h-12 w-12 items-center justify-center rounded-full bg-gray-200'>
-        <Text className='text-lg font-bold text-gray-600'>
-          {vendor.name.charAt(0)}
-        </Text>
-      </View>
-      <View className='flex-1'>
+    <View className='min-h-full flex-row items-center'>
+      {vendor.image_url ? (
+        <Image
+          className='mr-4 h-12 w-12'
+          source={{ uri: vendor.image_url }}
+        />
+      ) : (
+        <View className='mr-4 h-12 w-12 items-center justify-center rounded-full bg-gray-200'>
+          <Text className='text-lg font-bold text-gray-600'>
+            {vendor.name.charAt(0)}
+          </Text>
+        </View>
+      )}
+      <View className='flex-1 py-2'>
         <Text className='text-lg font-bold'>{vendor.name}</Text>
-        {/* Brief Description/Category - using address as placeholder for now */}
-        <Text className='text-sm text-gray-500'>
-          {`${vendor.address_line1}, ${vendor.city}, ${vendor.state} ${vendor.postal_code}, ${vendor.country}`}
-        </Text>
+        {vendor.description && (
+          <Text className='text-sm text-gray-500'>{vendor.description}</Text>
+        )}
       </View>
     </View>
   </TouchableOpacity>
@@ -76,7 +81,8 @@ export default function HomeScreen() {
         (vendor) =>
           vendor.name.toLowerCase().includes(lowerCaseQuery) ||
           vendor.address_line1.toLowerCase().includes(lowerCaseQuery) ||
-          (vendor.address_line2 && vendor.address_line2.toLowerCase().includes(lowerCaseQuery)) ||
+          (vendor.address_line2 &&
+            vendor.address_line2.toLowerCase().includes(lowerCaseQuery)) ||
           vendor.city.toLowerCase().includes(lowerCaseQuery) ||
           vendor.state.toLowerCase().includes(lowerCaseQuery) ||
           vendor.postal_code.toLowerCase().includes(lowerCaseQuery) ||
@@ -103,9 +109,14 @@ export default function HomeScreen() {
             value={searchQuery}
           />
         </View>
-        <View className='flex-row'>
-          <ShoppingCartIcon />
-        </View>
+        <TouchableOpacity
+          className='rounded-md bg-blue-500 px-4 py-2'
+          onPress={() => {
+            /* No action for now */
+          }}
+        >
+          <Text className='text-white'>Add New Vendors</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Main Content Area - Authorized Vendor List */}

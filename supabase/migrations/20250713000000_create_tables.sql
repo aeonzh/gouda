@@ -1,4 +1,3 @@
-
 -- Create profiles table
 CREATE TABLE profiles (
     id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -21,6 +20,8 @@ CREATE TABLE organisations (
     state text NOT NULL,
     postal_code text NOT NULL,
     country text NOT NULL,
+    image_url text,
+    description text,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     status text NOT NULL DEFAULT 'pending',

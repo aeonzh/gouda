@@ -33,9 +33,14 @@ This document outlines essential commands and code style guidelines for agents w
   - `.roo/rules/`
   - `.kilocode/rules/`
 
+## Git
+
+- Always use git MCP tools.
+- When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format. Always show the commit message and let the user review it before commit.
+- The commit message will focus on the functional and structural updates, without explicitly mentioning GEMINI.md or JOURNAL.md.
+
 ## Other instructions
 
-- When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format. Always show the commit message and let the user review it before commit.
 - This is a monorepo, so adding packages to the root will always require `-w`.
 - Always look for information from the source of truth and not infere from surrounding context. e.g. When I ask "do we have a `business_details` table?" The answer should come from the database schema and not from the surrounding code, which could be outdated.
 

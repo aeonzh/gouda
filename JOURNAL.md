@@ -126,33 +126,6 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
       - Set up navigation to a dynamic product page (`/products/[vendorId]`) when a vendor card is pressed.
 - **Why the change addresses the root cause**: This implementation transforms the placeholder home page into a functional entry point for B2C users, allowing them to discover and access products from their authorized vendors. The search and filter capabilities enhance usability, and the navigation ensures a seamless user experience within the closed-discovery multi-vendor model.
 
-#### Fix for `useAuth` not a function error
-
-- **What were we trying to do**: Resolve the `(0 , _supabase.useAuth) is not a function` error encountered after implementing the authorized vendor list.
-- **What was changed/decided and why (root cause/reason)**: The `useAuth` hook, `AuthContext`, and `AuthProvider` were initially defined directly within `packages/shared/api/supabase.ts`. This caused a `SyntaxError` because JSX syntax (used in `AuthProvider`) is not allowed in `.ts` files unless specifically configured, and the `api` directory was not set up for JSX parsing. This led to `useAuth` not being properly exported or recognized as a function.
-- **How the change addresses the root cause**:
-  1.  A new file, `packages/shared/components/AuthProvider.tsx`, was created to house the `AuthContext`, `AuthProvider` component, and `useAuth` hook. This separates the JSX-containing code into a `.tsx` file, which is correctly parsed for JSX.
-  2.  The original definitions of `AuthContext`, `AuthProvider`, and `useAuth` were removed from `packages/shared/api/supabase.ts`.
-  3.  `packages/shared/components/index.ts` was updated to export `AuthProvider` from the new `AuthProvider.tsx` file.
-  4.  The import statement in `apps/b2c/app/_layout.tsx` was updated to import `AuthProvider` from `packages/shared/components`.
-- **Why the change addresses the root cause**: By moving the JSX-containing `AuthProvider` and related context/hook definitions to a `.tsx` file, the `SyntaxError` is resolved. This ensures that `useAuth` is correctly defined, exported, and imported, making the authentication context available throughout the B2C application as intended. This adheres to best practices by separating concerns and ensuring proper file type handling for JSX.
-
-### Session: Monday, July 21, 2025
-
-#### Implement Authorized Vendor List on B2C Home Page
-
-- **What were we trying to do**: Implement the B2C home page (`apps/b2c/app/(tabs)/index.tsx`) to display a list of authorized vendors for the logged-in user, as per the `docs/tasks/b2c_home_page_plan.md`.
-- **What was changed/decided and why (root cause/reason)**: The B2C home page was a placeholder. The goal was to populate it with dynamic data representing authorized vendors and provide search/filter functionality.
-- **How the change addresses the root cause**:
-  1.  A `VendorCard` component was created to render individual vendor information.
-  2.  The `apps/b2c/app/(tabs)/index.tsx` component was updated to:
-      - Fetch authorized vendors using `getAuthorizedBusinesses` from `packages/shared/api/profiles.ts`.
-      - Manage loading, error, and empty states.
-      - Implement search/filter functionality based on vendor name and address.
-      - Use a `FlatList` to display the `VendorCard` components.
-      - Set up navigation to a dynamic product page (`/products/[vendorId]`) when a vendor card is pressed.
-- **Why the change addresses the root cause**: This implementation transforms the placeholder home page into a functional entry point for B2C users, allowing them to discover and access products from their authorized vendors. The search and filter capabilities enhance usability, and the navigation ensures a seamless user experience within the closed-discovery multi-vendor model.
-
 #### Fix for `useAuth` not a function error and AuthProvider Refactoring
 
 - **What were we trying to do**: Resolve the `(0 , _supabase.useAuth) is not a function` error encountered after implementing the authorized vendor list, and refactor the authentication provider for better code organization.
@@ -175,3 +148,18 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   3.  Imports in `apps/b2c/app/(tabs)/_layout.tsx`, `apps/b2c/app/cart.tsx`, and `apps/b2c/app/order-confirmation.tsx` were updated to use the simplified import path (e.g., `packages/shared/components`).
   4.  A new `ShoppingCartIcon.tsx` component was added to `packages/shared/components` and exported via the barrel file.
 - **Why the change addresses the root cause**: This change significantly cleans up import statements across the B2C application, making the codebase more maintainable and readable. The new `ShoppingCartIcon` provides a dedicated, reusable component for cart navigation.
+
+### Session: Monday, July 21, 2025
+
+#### Refactor API: Separate Customer and Organization APIs
+
+- **What were we trying to do**: Improve the organization and maintainability of the API layer by separating customer and organization related functions into their own dedicated files.
+- **What was changed/decided and why (root cause/reason)**: Previously, `packages/shared/api/profiles.ts` contained functions related to user profiles, business details, customers, and organizations. This made the file large and less focused. The goal was to adhere to the single responsibility principle and improve code clarity.
+- **How the change addresses the root cause**:
+  1.  Created a new file `packages/shared/api/customers.ts` and moved all customer-related API functions (`createCustomer`, `getAllCustomers`, `getcustomerById`, `updateCustomer`) and the `Profile` interface (as it's used by customer functions) into it.
+  2.  Created a new file `packages/shared/api/organisations.ts` and moved all organization-related API functions (`getAuthorizedBusinesses`, `getCustomerBusinessId`) and the `Organisation` interface into it.
+  3.  Updated `packages/shared/api/profiles.ts` to only contain functions directly related to user profiles (`getProfile`, `updateProfile`, `getBusinessIdForUser`).
+  4.  Updated `apps/b2c/app/(tabs)/index.tsx` to import `Organisation` from the new `packages/shared/api/organisations.ts`.
+  5.  Updated `AGENTS.md` with new instructions for commit messages and data source verification.
+  6.  Removed shopping cart icon from the B2C home page plan in `docs/tasks/b2c_home_page_plan.md` as it was no longer relevant to the current task.
+- **Why the change addresses the root cause**: This refactoring improves code organization, readability, and maintainability by clearly separating concerns within the API layer. It makes it easier to locate and manage functions related to specific entities (customers, organizations, profiles) and reduces the cognitive load when working with these modules. The updates to `apps/b2c/app/(tabs)/index.tsx` and `AGENTS.md` ensure that the application and agent guidelines reflect these structural changes.

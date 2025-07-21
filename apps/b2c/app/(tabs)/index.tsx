@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import {
   getAuthorizedBusinesses,
   Organisation,
-} from 'packages/shared/api/profiles';
+} from 'packages/shared/api/organisations';
 import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';

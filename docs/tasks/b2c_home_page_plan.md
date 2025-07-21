@@ -9,8 +9,6 @@ To design and implement the B2C home page (`apps/b2c/app/(tabs)/index.tsx`) to s
 ### 1. Header
 
 - **Search Bar**: Allows users to filter the list of _their authorized vendors_ by name or category.
-- **Icons**:
-  - Shopping Cart icon (navigates to the cart).
 
 ### 2. Authorized Vendor List (Main Content)
 

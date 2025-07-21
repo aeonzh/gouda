@@ -35,8 +35,9 @@ This document outlines essential commands and code style guidelines for agents w
 
 ## Other instructions
 
-When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format.
-This is a monorepo, so adding packages to the root will always require `-w`.
+- When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format. Always show the commit message and let the user review it before commit.
+- This is a monorepo, so adding packages to the root will always require `-w`.
+- Always look for information from the source of truth and not infere from surrounding context. e.g. When I ask "do we have a `business_details` table?" The answer should come from the database schema and not from the surrounding code, which could be outdated.
 
 ## Memories
 
@@ -125,7 +126,7 @@ The application has the following main screens/features:
 
 - **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase` for authentication. Login, Sign Up, Forgot Password screens, API integration, and session management are implemented. The authentication routing issue, where unauthenticated users were not consistently redirected to `/login`, has been fixed by adjusting the `SplashScreen.hideAsync()` call in `apps/b2c/app/_layout.tsx` to prevent race conditions.
 - **Tabs**:
-  - **Home**: `(tabs)/index.tsx` now displays a list of authorized vendors for the logged-in user, with search/filter functionality and navigation to vendor product pages. This was implemented using a `VendorCard` component and fetching data via `getAuthorizedBusinesses`.
+  - **Home**: `(tabs)/index.tsx` now displays a list of authorized vendors for the logged-in user, with search/filter functionality and navigation to vendor product pages. This was implemented using a `VendorCard` component and fetching data via `getAuthorizedBusinesses` from `packages/shared/api/organisations`.
   - **Products**: `(tabs)/products.tsx` for product browsing, search, and filtering using `packages/shared/api/products`. Product details are shown in `products/[id].tsx`. Product listing/catalog, search/filtering, and product details are implemented.
   - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details are shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details are implemented.
   - **Cart**: `cart.tsx` for managing the shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen are implemented.
@@ -140,9 +141,11 @@ The `packages/shared/` directory contains shared code, including API clients and
 
 #### `api/`
 
+- **`customers.ts`**: Contains functions for managing customer profiles, including `createCustomer`, `getAllCustomers`, `getCustomerById`, and `updateCustomer`.
 - **`orders.ts`**: Contains functions for managing carts and orders, including `getOrCreateCart`, `addOrUpdateCartItem`, `removeCartItem`, `updateCartItemQuantity`, `getCartItems`, `createOrderFromCart`, `getCustomerOrderHistory`, `getOrderDetails`, `updateOrderStatus`, and `createOrderForCustomer`.
+- **`organisations.ts`**: Contains functions for managing organisations, including `getAuthorizedBusinesses` and `getCustomerBusinessId`.
 - **`products.ts`**: Contains functions for managing products and categories, including `getProducts`, `getProductById`, `createProduct`, `updateProduct`, `deleteProduct`, `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`, `getInventoryLevels`, and `adjustInventoryLevel`.
-- **`profiles.ts`**: Contains functions for managing user profiles and business details, including `getProfile`, `updateProfile`, `getBusinessDetails`, `addBusinessDetails`, `updateBusinessDetails`, `deleteBusinessDetails`, `getAllCustomers`, `getCustomerById`, `createCustomer`, and `updateCustomer`.
+- **`profiles.ts`**: Contains functions for managing user profiles, including `getProfile` and `updateProfile`.
 - **`supabase.ts`**: Initializes the Supabase client and provides authentication functions like `signUpWithEmail`, `signInWithEmail`, `resetPasswordForEmail`, and `signOut`. The `AuthContext`, `AuthProvider`, and `useAuth` hook definitions have been moved to `packages/shared/components/AuthProvider.tsx` to resolve JSX parsing errors in `.ts` files.
 
 #### `components/`

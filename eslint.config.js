@@ -52,6 +52,36 @@ export default tseslint.config([
       'import/no-named-as-default': 'off',
       'import/no-unused-modules': 'off',
       'import/node-named-as-default-member': 'off',
+      'perfectionist/sort-interfaces': [
+        'error',
+        {
+          groups: ['top', 'name-group', 'address-group', 'unknown', 'bottom'],
+          customGroups: [
+            {
+              groupName: 'top',
+              selector: 'property',
+              elementNamePattern:
+                '^(?:id|business_id|profile_id|user_id|cart_id|product_id|category_id|order_id)',
+            },
+            {
+              groupName: 'name-group',
+              selector: 'property',
+              elementNamePattern: '^(?:name|username|full_name|business_name)',
+            },
+            {
+              groupName: 'address-group',
+              selector: 'property',
+              elementNamePattern:
+                '^(?:address_line1|address_line2|city|state|postal_code|country)',
+            },
+            {
+              groupName: 'bottom',
+              selector: 'property',
+              elementNamePattern: '^(?:created_at|updated_at|deleted_at)',
+            },
+          ],
+        },
+      ],
     },
     settings: {
       'import/resolver': {
@@ -66,6 +96,9 @@ export default tseslint.config([
           projectService: true,
           tsconfigRootDir: import.meta.dirname,
         },
+      },
+      perfectionist: {
+        partitionByComment: true,
       },
       react: {
         version: 'detect',

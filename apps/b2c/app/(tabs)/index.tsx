@@ -14,7 +14,7 @@ interface VendorCardProps {
   vendor: Organisation;
 }
 
-const VendorCard: React.FC<VendorCardProps> = ({ onPress, vendor }) => (
+const StorefrontCard: React.FC<VendorCardProps> = ({ onPress, vendor }) => (
   <TouchableOpacity
     className='mb-4 min-h-32 rounded-lg border border-gray-200 bg-white p-4 shadow-sm'
     onPress={() => onPress(vendor.id)}

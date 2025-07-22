@@ -126,9 +126,10 @@ export async function getCategories({
 }): Promise<Category[] | null> {
   let query = supabase.from('categories').select('*');
 
-  if (business_id) {
-    query = query.eq('business_id', business_id);
+  if (!business_id) {
+    return [];
   }
+  query = query.eq('business_id', business_id);
 
   const { data, error } = await query;
 

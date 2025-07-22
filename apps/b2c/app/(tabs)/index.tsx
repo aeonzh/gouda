@@ -95,6 +95,7 @@ export default function HomeScreen() {
   }, [searchQuery, vendors]);
 
   const handleVendorPress = (vendorId: string) => {
+    console.log(`Attempting to navigate to: /storefront/${vendorId}`);
     router.push(`/storefront/${vendorId}`);
   };
 

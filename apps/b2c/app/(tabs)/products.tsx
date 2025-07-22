@@ -34,10 +34,13 @@ export default function ProductsScreen() {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (user) {
+        if (user && user.id) {
           const id = await getBusinessIdForUser(user.id);
           console.log('Fetched business ID:', id);
           setBusinessId(id);
+        } else {
+          console.log('User or user ID is not available.');
+          setBusinessId(null); // Ensure businessId is null if user.id is not available
         }
       } catch (error) {
         console.error('Failed to fetch business ID:', error);

@@ -51,18 +51,19 @@ export default function InitialLayout() {
       // Check if the current route is within the authentication group
       const inAuthGroup = segments[0] === '(auth)';
       const inTabsGroup = segments[0] === '(tabs)';
+      const inStorefrontGroup = segments[0] === 'storefront';
+      const inProductsDetailGroup = segments[0] === 'products' && segments[1] === '[id]'; // Check for products/[id]
 
-      if (session && !inAuthGroup) {
-        // User is logged in, redirect to tabs if not already there
-        if (!inTabsGroup) {
+      if (session) {
+        if (inAuthGroup) {
+          router.replace('/(tabs)');
+        } else if (!inTabsGroup && !inStorefrontGroup && !inProductsDetailGroup) {
+          // If not in auth, tabs, storefront, or products detail, redirect to tabs
           router.replace('/(tabs)');
         }
-      } else if (!session && !inAuthGroup) {
+      } else if (!inAuthGroup) {
         // User is not logged in and not in auth group, redirect to login
         router.replace('/(auth)/login');
-      } else if (session && inAuthGroup) {
-        // User is logged in and in auth group, redirect to tabs
-        router.replace('/(tabs)');
       }
     }
   }, [session, segments, loading]); // Dependencies for this effect: session, segments, and loading state
@@ -93,15 +94,11 @@ export default function InitialLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='cart'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name='products/[id]'
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='orders/[id]'
+          name='storefront/[id]'
           options={{ headerShown: false }}
         />
         {/* Add other b2c routes here if needed */}

@@ -9,7 +9,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name='index'
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -21,7 +21,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="products"
+        name='products'
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -33,7 +33,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="orders"
+        name='orders'
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
@@ -45,27 +45,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="orders/[id]"
-        options={{
-          headerShown: true, // Show header for order details
-          href: null, // Hide this tab from the tab bar
-          title: 'Order Details',
-        }}
-      />
-      <Tabs.Screen
-        name="cart"
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              color={color}
-              name={focused ? 'cart' : 'cart-outline'}
-            />
-          ),
-          title: 'Cart',
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
+        name='profile'
         options={{
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon

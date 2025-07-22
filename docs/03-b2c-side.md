@@ -4,6 +4,8 @@
 
 This document outlines the requirements for the B2C application, a mobile application designed to serve as the primary interface for buyers interacting with the B2B wholesale store platform. The application will allow Customers to browse products, create orders, manage their accounts, and view their order history.
 
+**Important Note:** This application focuses on order creation and management. It does not handle payment processing or shipment/delivery logistics.
+
 ## 2. Core Requirements
 
 - Enable Customers to register and log in securely.

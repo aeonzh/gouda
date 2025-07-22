@@ -4,6 +4,8 @@
 
 This document outlines the requirements for the B2B application, a mobile application designed to serve as the interface for high-level admins, business owners, sales agents interacting with the B2B wholesale store platform. The application will provide tools for managing products, inventory, orders, and users, with functionalities varying based on user roles.
 
+**Important Note:** This application focuses on order management and administrative tasks. It does not handle payment processing or shipment/delivery logistics.
+
 ## 2. Core Requirements
 
 - Enable users (high-level admins, business owners, sales agents) to log in securely.

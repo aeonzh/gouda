@@ -391,6 +391,7 @@ At the same time, keep this file updated with a summary of the end-state we reac
 - Both built with React Native, Expo, NativeWind.
 - Backend: Supabase (PostgreSQL, PostgREST, Auth, Storage).
 - Monorepo structure.
+- **Important Note:** The application focuses on order creation and management. It does not handle payment processing or shipment/delivery logistics.
 
 ### Key Entities and Database Schema (Supabase)
 

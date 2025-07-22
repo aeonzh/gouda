@@ -177,3 +177,30 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   5.  The `docs/tasks/b2c_store_product_listing_plan.md` was updated to reflect the new "Storefront Page" and "StorefrontCard" terminology.
 
 - **Why the change addresses the root cause**: This implementation provides the necessary functionality for users to browse products from specific vendors. The consistent naming (`StorefrontCard` leading to `StorefrontPage`) improves code readability and maintainability, making the application's structure more intuitive.
+### Session: Tuesday, July 22, 2025
+
+#### Fix for "StorefrontCard is not defined" error
+
+- **What were we trying to do**: Resolve the `StorefrontCard is not defined` error after renaming `VendorCard` to `StorefrontCard`.
+- **What was changed/decided and why (root cause/reason)**: The component definition in `apps/b2c/app/(tabs)/index.tsx` was still `const VendorCard`, while the usage was `StorefrontCard`. This caused the `ReferenceError`.
+- **How the change addresses the root cause**: Renamed `const VendorCard` to `const StorefrontCard` in `apps/b2c/app/(tabs)/index.tsx`.
+- **Why the change addresses the root cause**: Ensures consistency between the component definition and its usage, resolving the `ReferenceError`.
+
+#### Fix for routing to storefront being broken
+
+- **What were we trying to do**: Enable proper navigation to the `storefront/[id]` route in the B2C application.
+- **What was changed/decided and why (root cause/reason)**: The routing logic in `apps/b2c/app/_layout.tsx` was implicitly redirecting authenticated users back to the `(tabs)` group, as it didn't explicitly account for other top-level routes like `storefront/[id]`.
+- **How the change addresses the root cause**: Modified `apps/b2c/app/_layout.tsx` to introduce `inStorefrontGroup` and updated the redirection logic to allow navigation to `storefront` routes for authenticated users.
+- **Why the change addresses the root cause**: This change ensures that the `storefront` route is recognized and allowed, preventing the router from redirecting away from it and enabling correct navigation.
+
+#### Fix for "invalid input syntax for type uuid: 'some_user_id'" and "session is not defined" errors in storefront/[id].tsx
+
+- **What were we trying to do**: Resolve errors related to invalid user ID and undefined session in `storefront/[id].tsx`.
+- **What was changed/decided and why (root cause/reason)**:
+  1.  The `getAuthorizedBusinesses` function was being called with a hardcoded string `'some_user_id'`, which is not a valid UUID, leading to the "invalid input syntax" error.
+  2.  The `session` variable was not correctly defined or accessible within the component's scope, leading to "session is not defined" errors.
+- **How the change addresses the root cause**:
+  1.  Imported `useAuth` from `packages/shared/components/AuthProvider.tsx` in `apps/b2c/app/storefront/[id].tsx`.
+  2.  Used `session?.user?.id || ''` to pass the actual user ID to `getAuthorizedBusinesses`.
+  3.  Explicitly added `const { session } = useAuth();` at the beginning of the `StorefrontPage` component to ensure `session` is properly initialized and accessible.
+- **Why the change addresses the root cause**: Ensures a valid user ID is used for API calls and that the `session` object is correctly available within the component, resolving data fetching and runtime errors.

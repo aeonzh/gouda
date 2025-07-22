@@ -20,18 +20,7 @@ export default function TabLayout() {
           title: 'Home',
         }}
       />
-      <Tabs.Screen
-        name='products'
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              color={color}
-              name={focused ? 'grid' : 'grid-outline'}
-            />
-          ),
-          title: 'Products',
-        }}
-      />
+      
       <Tabs.Screen
         name='orders'
         options={{

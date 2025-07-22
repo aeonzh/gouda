@@ -17,7 +17,7 @@ This document outlines the requirements for the B2C application, a mobile applic
 ## 3. Core Features
 
 - **Authentication:** User registration, login, and password reset.
-- **Product Catalog:** Browse products by category, search, filter, and view detailed product information (including pricing and availability).
+- **Product Browsing:** Browse products within authorized vendor storefronts by category, search, filter, and view detailed product information (including pricing and availability).
 - **Shopping Cart:** Add, remove, and update product quantities in the cart.
 - **Order Creation:** Create an order directly from the shopping cart.
 - **Order History:** View a list of past orders with details and status.
@@ -81,10 +81,10 @@ Authentication Screens:
 
 Product Browsing and Discovery:
 
-- Home/Dashboard: A landing page that might feature promotions, new arrivals, or curated collections.
-- Product Listing/Catalog: To display products, likely with filtering and sorting options (by category, price, etc.).
+- Home/Dashboard: A landing page that displays authorized vendors and allows navigation to their storefronts.
+- Storefront Page: To display products specific to a chosen vendor, with filtering and sorting options.
 - Product Details: To show detailed information about a single product (description, images, pricing, availability).
-- Search Results: To display results based on Customer searches.
+- Search Results: To display results based on Customer searches within a storefront.
 
 Ordering:
 

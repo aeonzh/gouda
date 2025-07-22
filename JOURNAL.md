@@ -70,7 +70,7 @@ Entries are only appended, unless part of the same scope or told explicitly
 - **Why the change addresses the root cause**:
   1.  **RLS Policy Security Fix**: This change eliminates the security vulnerability by ensuring that RLS policies rely on a trusted, server-controlled source of truth for user roles (`profiles.role`) rather than a client-editable one (`user_metadata`). This significantly enhances the security posture of the application's data access control.
   2.  **B2C Authentication Routing Fix**: By ensuring `SplashScreen.hideAsync()` is called only after the initial session determination, the routing logic has a stable state to evaluate, preventing the race condition and ensuring that unauthenticated users are reliably redirected to the login screen.
-  3.  **RLS Policy Fix: Infinite Recursion in profiles_select_access**: This approach definitively breaks the infinite recursion by providing secure and non-recursive methods for the `profiles_select_access` policy to determine business membership and user roles. The simplification of the policy to only allow self-access and admin access is a temporary measure to isolate the recursion, allowing us to confirm the fix before reintroducing more complex business logic. This should resolve the persistent internal server error related to profile selection and allow products to be displayed correctly.
+  3.  **RLS Policy Fix: Infinite Recursion in profiles_select_access**: This approach definitively breaks the recursion by providing secure and non-recursive methods for the `profiles_select_access` policy to determine business membership and user roles. The simplification of the policy to only allow self-access and admin access is a temporary measure to isolate the recursion, allowing us to confirm the fix before reintroducing more complex business logic. This should resolve the persistent internal server error related to profile selection and allow products to be displayed correctly.
 
 #### Reintroducing Full Logic for profiles_select_access RLS Policy
 
@@ -204,3 +204,25 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   2.  Used `session?.user?.id || ''` to pass the actual user ID to `getAuthorizedBusinesses`.
   3.  Explicitly added `const { session } = useAuth();` at the beginning of the `StorefrontPage` component to ensure `session` is properly initialized and accessible.
 - **Why the change addresses the root cause**: Ensures a valid user ID is used for API calls and that the `session` object is correctly available within the component, resolving data fetching and runtime errors.
+
+### Session: Wednesday, July 23, 2025
+
+#### Fix for Invalid UUID in Product and Category Fetching
+
+- **What was changed/decided and why (root cause/reason)**: The error occurred because an empty string was being passed as a `business_id` to Supabase queries, which expect a valid UUID. This was due to two main reasons:
+  1.  In `apps/b2c/app/(tabs)/products.tsx`, the `useEffect` hook fetching the `businessId` was not explicitly handling cases where `user` or `user.id` might be `null` or `undefined` before calling `getBusinessIdForUser`.
+  2.  The `getCategories` function in `packages/shared/api/products.ts` did not have the same check for a valid `business_id` as `getProducts`, allowing an empty string to be used in the Supabase query.
+- **How the change addresses the root cause**:
+  1.  In `apps/b2c/app/(tabs)/products.tsx`, the `useEffect` hook was modified to explicitly check `if (user && user.id)` before calling `getBusinessIdForUser`. If `user` or `user.id` is not available, `setBusinessId(null)` is called, ensuring that `businessId` is `null` and not an empty string.
+  2.  In `packages/shared/api/products.ts`, the `getCategories` function was updated to include a check `if (!business_id) { return []; }` at the beginning, similar to `getProducts`.
+- **Why the change addresses the root cause**: These changes ensure that all Supabase queries requiring a `business_id` are only executed with a valid UUID. By preventing empty strings from being passed as UUIDs, the "invalid input syntax" error is resolved, leading to more robust data fetching in the B2C application.
+
+#### Product Details Page Navigation and Route Correction
+
+- **What were we trying to do**: Ensure correct navigation to the product details page in the B2C app, preventing it from appearing as a tab while maintaining proper routing.
+- **What was changed/decided and why (root cause/reason)**: Initially, clicking a product redirected to the home screen because `products/[id].tsx` was outside the `(tabs)` directory, causing `expo-router` navigation issues. Moving it *into* `(tabs)` resolved the redirection but made the product details page appear as an unwanted tab. The root cause was the incorrect placement of the product details route relative to the tab navigation structure and the need for explicit route handling in `_layout.tsx`.
+- **How the change addresses the root cause**:
+  1.  The `products` directory (containing `[id].tsx`) was initially moved from `apps/b2c/app/` to `apps/b2c/app/(tabs)/products/` to fix the redirection issue.
+  2.  Subsequently, to prevent it from appearing as a tab, the `products` directory (containing `[id].tsx`) was moved back from `apps/b2c/app/(tabs)/products` to `apps/b2c/app/products`.
+  3.  The `apps/b2c/app/_layout.tsx` file was updated to explicitly include `products/[id]` as an allowed route for authenticated users.
+- **Why the change addresses the root cause**: The initial move into `(tabs)` temporarily fixed the navigation by making it a child route. The subsequent move back out, combined with explicit route inclusion in `_layout.tsx`, ensures the product details page is treated as a standalone route. This allows `expo-router` to correctly handle the navigation stack, providing the intended user experience where the product details page is a separate screen, not a tab, and is accessible directly without unintended redirects.

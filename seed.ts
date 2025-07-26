@@ -62,7 +62,7 @@ async function main() {
         city: faker.location.city(),
         country: faker.location.country(),
         deleted_at: null,
-        image_url: faker.image.url(),
+        image_url: faker.image.urlPicsumPhotos(),
         members: (x) =>
           x(3, () => ({
             deleted_at: null,
@@ -80,7 +80,7 @@ async function main() {
     { connect: { profiles } },
   );
   // Create categories for organisations
-  const categories = await seed.categories((x) =>
+  const { categories, products } = await seed.categories((x) =>
     x({ max: 10, min: 2 }, () => ({
       deleted_at: null,
       name: faker.commerce.department(),
@@ -88,15 +88,11 @@ async function main() {
         x({ max: 10, min: 2 }, () => ({
           deleted_at: null,
           description: faker.commerce.productDescription(),
-          image_url: faker.image.urlLoremFlickr(),
+          image_url: faker.image.urlPicsumPhotos(),
           name: faker.commerce.productName(),
           price: faker.number.float({ fractionDigits: 2 }),
-          status: faker.helpers.arrayElement([
-            'draft',
-            'published',
-            'rejected',
-          ]),
-          stock_quantity: faker.number.int({ max: 100, min: 0 }),
+          status: faker.helpers.arrayElement(['draft', 'published']),
+          stock_quantity: faker.number.int({ max: 100, min: 1 }),
         })),
     })),
   );

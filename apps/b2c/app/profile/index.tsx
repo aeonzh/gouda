@@ -21,32 +21,41 @@ export default function ProfileScreen() {
 
   const fetchProfile = useCallback(async (userId: string) => {
     setProfileLoading(true);
+    console.log('Fetching profile for user:', userId);
     try {
       const fetchedProfile = await getProfile(userId);
       setProfile(fetchedProfile);
+      console.log('Profile fetched:', fetchedProfile);
     } catch (error: any) {
       Alert.alert('Error', `Failed to fetch profile: ${error.message}`);
+      console.error('Error fetching profile:', error);
     } finally {
       setProfileLoading(false);
+      console.log('Profile loading finished.');
     }
   }, []);
 
   useEffect(() => {
+    console.log('useEffect: Initial session check.');
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
+      console.log('Initial session data:', session);
       if (session?.user?.id) {
         await fetchProfile(session.user.id);
       }
       setLoading(false);
+      console.log('Initial loading finished. Session:', session, 'Loading:', false);
     });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
+        console.log('AuthStateChange event:', _event, 'Session:', session);
         if (session?.user?.id) {
           await fetchProfile(session.user.id);
         }
         setLoading(false);
+        console.log('AuthStateChange loading finished. Session:', session, 'Loading:', false);
       },
     );
 
@@ -54,6 +63,8 @@ export default function ProfileScreen() {
       authListener.subscription.unsubscribe();
     };
   }, [fetchProfile]);
+
+  console.log('Render: loading:', loading, 'profileLoading:', profileLoading, 'session:', session, 'profile:', profile);
 
   const handleLogout = async () => {
     setLoading(true);

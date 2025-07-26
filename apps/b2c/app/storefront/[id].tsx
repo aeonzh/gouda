@@ -20,6 +20,7 @@ import {
 
 export default function StorefrontPage() {
   const { id: storeId } = useLocalSearchParams();
+  console.log('Current storeId from params:', storeId);
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -48,6 +49,7 @@ export default function StorefrontPage() {
           business_id: storeId as string,
           category_id: selectedCategory || undefined,
           search_query: searchQuery || undefined,
+          status: 'published',
         });
         setProducts(fetchedProducts || []);
 
@@ -58,6 +60,8 @@ export default function StorefrontPage() {
           { id: null, name: 'All' },
           ...(fetchedCategories || []),
         ]);
+        console.log('Fetched Categories:', fetchedCategories);
+        console.log('Fetched Products:', fetchedProducts);
       } catch (err) {
         console.error('Failed to fetch data:', err);
         setError('Failed to load products or categories.');
@@ -66,7 +70,7 @@ export default function StorefrontPage() {
       }
     };
 
-    if (storeId) {
+    if (storeId && session?.user?.id) {
       fetchStoreData();
     }
   }, [storeId, selectedCategory, searchQuery, session?.user?.id]);

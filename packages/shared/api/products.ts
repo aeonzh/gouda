@@ -190,12 +190,14 @@ export async function getProducts({
   limit = 10,
   page = 1,
   search_query,
+  status,
 }: {
   business_id?: string;
   category_id?: string;
   limit?: number;
   page?: number;
   search_query?: string;
+  status?: string;
 }): Promise<null | Product[]> {
   let query = supabase.from('products').select('*');
 
@@ -203,6 +205,10 @@ export async function getProducts({
     return [];
   }
   query = query.eq('business_id', business_id);
+
+  if (status) {
+    query = query.eq('status', status);
+  }
 
   if (category_id) {
     query = query.eq('category_id', category_id);

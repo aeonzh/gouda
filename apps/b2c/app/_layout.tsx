@@ -52,12 +52,17 @@ export default function InitialLayout() {
       const inAuthGroup = segments[0] === '(auth)';
       const inTabsGroup = segments[0] === '(tabs)';
       const inStorefrontGroup = segments[0] === 'storefront';
-      const inProductsDetailGroup = segments[0] === 'products' && segments[1] === '[id]'; // Check for products/[id]
+      const inProductsDetailGroup =
+        segments[0] === 'products' && segments[1] === '[id]';
 
       if (session) {
         if (inAuthGroup) {
           router.replace('/(tabs)');
-        } else if (!inTabsGroup && !inStorefrontGroup && !inProductsDetailGroup) {
+        } else if (
+          !inTabsGroup &&
+          !inStorefrontGroup &&
+          !inProductsDetailGroup
+        ) {
           // If not in auth, tabs, storefront, or products detail, redirect to tabs
           router.replace('/(tabs)');
         }
@@ -94,11 +99,7 @@ export default function InitialLayout() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='products/[id]'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='storefront/[id]'
+          name='storefront'
           options={{ headerShown: false }}
         />
         {/* Add other b2c routes here if needed */}

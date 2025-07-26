@@ -226,3 +226,30 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   2.  Subsequently, to prevent it from appearing as a tab, the `products` directory (containing `[id].tsx`) was moved back from `apps/b2c/app/(tabs)/products` to `apps/b2c/app/products`.
   3.  The `apps/b2c/app/_layout.tsx` file was updated to explicitly include `products/[id]` as an allowed route for authenticated users.
 - **Why the change addresses the root cause**: The initial move into `(tabs)` temporarily fixed the navigation by making it a child route. The subsequent move back out, combined with explicit route inclusion in `_layout.tsx`, ensures the product details page is treated as a standalone route. This allows `expo-router` to correctly handle the navigation stack, providing the intended user experience where the product details page is a separate screen, not a tab, and is accessible directly without unintended redirects.
+### Session: Friday, July 25, 2025
+
+#### Enhance Storefront Product Filtering, Navigation, and Seed Data
+
+- **What were we trying to do**: Improve product filtering in the B2C storefront, refine navigation logic, and update seed data generation for product images.
+- **What was changed/decided and why (root cause/reason)**:
+  1.  **Product Filtering**: Products in the B2C storefront were not being filtered by their `status`, potentially showing non-published items.
+  2.  **Navigation Refinement**: The B2C application's `_layout.tsx` needed to explicitly handle `storefront` and `products/[id]` routes to ensure correct navigation and prevent unintended redirects for authenticated users.
+  3.  **Seed Data Improvement**: The `faker.image.url()` function in `seed.ts` was deprecated or not providing suitable image URLs, requiring an update to a more reliable image source.
+  4.  **Debugging**: Added console logs to `apps/b2c/app/profile/index.tsx` and `apps/b2c/app/storefront/[id].tsx` to aid in debugging.
+- **How the change addresses the root cause**:
+  1.  **Product Filtering**:
+      -   Modified `packages/shared/api/products.ts` to add a `status` parameter to the `getProducts` function, allowing filtering by product status.
+      -   Updated `apps/b2c/app/storefront/[id].tsx` to pass `status: 'published'` when fetching products for a storefront, ensuring only published products are displayed.
+  2.  **Navigation Refinement**:
+      -   Updated `apps/b2c/app/_layout.tsx` to include `inStorefrontGroup` and `inProductsDetailGroup` in the authentication redirection logic, ensuring that authenticated users are not redirected away from these valid routes.
+      -   Adjusted `Stack.Screen` definitions in `apps/b2c/app/_layout.tsx` to correctly handle `storefront` and `products/[id]` routes.
+  3.  **Seed Data Improvement**:
+      -   Updated `seed.ts` to use `faker.image.urlPicsumPhotos()` instead of `faker.image.url()` for generating product image URLs, providing more consistent and relevant images.
+  4.  **Debugging**:
+      -   Added `console.log` statements to `apps/b2c/app/profile/index.tsx` to trace profile fetching and session status.
+      -   Added `console.log` statements to `apps/b2c/app/storefront/[id].tsx` to monitor `storeId`, fetched categories, and products.
+- **Why the change addresses the root cause**:
+  1.  **Product Filtering**: Ensures that the B2C storefront only displays products that are explicitly marked as 'published', providing a more accurate and controlled product catalog for customers.
+  2.  **Navigation Refinement**: Improves the user experience by preventing unexpected redirects and allowing seamless navigation to storefronts and product detail pages for authenticated users. This makes the navigation flow more robust and predictable.
+  3.  **Seed Data Improvement**: Provides more realistic and consistent image data for seeded products, which is beneficial for development and testing environments.
+  4.  **Debugging**: The added logs provide valuable insights into the application's behavior, making it easier to diagnose and resolve future issues related to authentication, profile fetching, and product display.

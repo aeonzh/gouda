@@ -48,7 +48,7 @@ CREATE TABLE products (
     status text NOT NULL DEFAULT 'draft',
     price numeric NOT NULL,
     image_url text,
-    category_id uuid,
+    category_id uuid NOT NULL,
     stock_quantity integer NOT NULL DEFAULT 0,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),

@@ -4,9 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import 'dotenv/config';
 
 async function main() {
-  const seed = await createSeedClient({
-    connect: true,
-  });
+  const seed = await createSeedClient({});
 
   // Client for AUTH operations (will become authenticated as the last user)
   const supabaseAuth = createClient(
@@ -80,23 +78,27 @@ async function main() {
     { connect: { profiles } },
   );
   // Create categories for organisations
-  const { categories, products } = await seed.categories((x) =>
-    x({ max: 10, min: 2 }, () => ({
-      deleted_at: null,
-      name: faker.commerce.department(),
-      products: (x) =>
+  for (const o of organisations) {
+    const { categories, products } = await seed.categories(
+      (x) =>
         x({ max: 10, min: 2 }, () => ({
           deleted_at: null,
-          description: faker.commerce.productDescription(),
-          image_url: faker.image.urlPicsumPhotos(),
-          name: faker.commerce.productName(),
-          price: faker.number.float({ fractionDigits: 2 }),
-          status: faker.helpers.arrayElement(['draft', 'published']),
-          stock_quantity: faker.number.int({ max: 100, min: 1 }),
+          id: faker.string.uuid(),
+          name: faker.commerce.department(),
+          products: (x) =>
+            x({ max: 10, min: 2 }, () => ({
+              deleted_at: null,
+              description: faker.commerce.productDescription(),
+              image_url: faker.image.urlPicsumPhotos(),
+              name: faker.commerce.productName(),
+              price: faker.number.float({ fractionDigits: 2 }),
+              status: faker.helpers.arrayElement(['draft', 'published']),
+              stock_quantity: faker.number.int({ max: 100, min: 1 }),
+            })),
         })),
-    })),
-  );
-
+      { connect: { organisations: [o] } },
+    );
+  }
   // // Create orders
   // const orders = await seed.orders(
   //   (x) =>

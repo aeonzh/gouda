@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@snaplet/copycat": "^6.0.0",
     "@snaplet/seed": "0.98.0",
     "@supabase/supabase-js": "^2.52.0",
     "@types/pg": "^8.15.4",

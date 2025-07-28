@@ -1,12 +1,16 @@
 import { SeedPg } from '@snaplet/seed/adapter-pg';
 import { defineConfig } from '@snaplet/seed/config';
 import { Client } from 'pg';
+import 'dotenv/config';
 
 export default defineConfig({
   adapter: async () => {
     const client = new Client({
-      connectionString:
-        'postgresql://postgres:postgres@localhost:54322/postgres',
+      database: 'postgres',
+      host: process.env.DATABASE_HOST,
+      password: process.env.DATABASE_PASSWORD,
+      port: Number(process.env.DATABASE_PORT),
+      user: process.env.DATABASE_USER,
     });
     await client.connect();
     return new SeedPg(client);

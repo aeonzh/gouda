@@ -9,7 +9,7 @@ DECLARE
 BEGIN
     IF NEW.category_id IS NOT NULL THEN
         SELECT business_id INTO category_business_id
-        FROM categories
+        FROM public.categories
         WHERE id = NEW.category_id;
 
         IF category_business_id IS NULL THEN

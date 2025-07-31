@@ -1,7 +1,6 @@
-import { Session } from '@supabase/supabase-js';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { getProfile, Profile } from 'packages/shared/api/profiles';
-import { supabase } from 'packages/shared/api/supabase';
+import { useAuth } from 'packages/shared/components/AuthProvider';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,7 +12,7 @@ import {
 } from 'react-native';
 
 export default function ProfileScreen() {
-  const [session, setSession] = useState<null | Session>(null);
+  const { session, supabase } = useAuth();
   const [profile, setProfile] = useState<null | Profile>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -36,35 +35,13 @@ export default function ProfileScreen() {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect: Initial session check.');
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      console.log('Initial session data:', session);
-      if (session?.user?.id) {
-        await fetchProfile(session.user.id);
-      }
+    if (session?.user?.id) {
+      console.log('Calling fetchProfile with userId:', session.user.id);
+      fetchProfile(session.user.id);
+    } else {
       setLoading(false);
-      console.log('Initial loading finished. Session:', session, 'Loading:', false);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        console.log('AuthStateChange event:', _event, 'Session:', session);
-        if (session?.user?.id) {
-          await fetchProfile(session.user.id);
-        }
-        setLoading(false);
-        console.log('AuthStateChange loading finished. Session:', session, 'Loading:', false);
-      },
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [fetchProfile]);
-
-  console.log('Render: loading:', loading, 'profileLoading:', profileLoading, 'session:', session, 'profile:', profile);
+    }
+  }, [session, fetchProfile]);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -84,9 +61,12 @@ export default function ProfileScreen() {
 
   if (loading || profileLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#0000ff" size="large" />
-        <Text className="mt-4 text-lg text-gray-700">
+      <View className='flex-1 items-center justify-center bg-white'>
+        <ActivityIndicator
+          color='#0000ff'
+          size='large'
+        />
+        <Text className='mt-4 text-lg text-gray-700'>
           {loading ? 'Loading session...' : 'Loading profile...'}
         </Text>
       </View>
@@ -95,65 +75,68 @@ export default function ProfileScreen() {
 
   if (!session) {
     return (
-      <View className="flex-1 items-center justify-center bg-white p-4">
-        <Text className="text-xl font-bold mb-4">Not Logged In</Text>
-        <Button onPress={() => router.push('/login')} title="Go to Login" />
+      <View className='flex-1 items-center justify-center bg-white p-4'>
+        <Text className='mb-4 text-xl font-bold'>Not Logged In</Text>
+        <Button
+          onPress={() => router.push('/login')}
+          title='Go to Login'
+        />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <Text className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+    <View className='flex-1 bg-white p-4'>
+      <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
         My Account
       </Text>
 
-      <View className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-        <Text className="text-xl font-semibold mb-4 text-gray-700">
+      <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
+        <Text className='mb-4 text-xl font-semibold text-gray-700'>
           Profile Information
         </Text>
-        <Text className="text-lg mb-2 text-gray-600">
-          <Text className="font-medium">Email:</Text> {session.user?.email}
+        <Text className='mb-2 text-lg text-gray-600'>
+          <Text className='font-medium'>Email:</Text> {session.user?.email}
         </Text>
-        <Text className="text-lg mb-2 text-gray-600">
-          <Text className="font-medium">Username:</Text>{' '}
+        <Text className='mb-2 text-lg text-gray-600'>
+          <Text className='font-medium'>Username:</Text>{' '}
           {profile?.username || 'N/A'}
         </Text>
-        <Text className="text-lg mb-4 text-gray-600">
-          <Text className="font-medium">Full Name:</Text>{' '}
+        <Text className='mb-4 text-lg text-gray-600'>
+          <Text className='font-medium'>Full Name:</Text>{' '}
           {profile?.full_name || 'N/A'}
         </Text>
         <TouchableOpacity
-          className="bg-blue-600 py-3 px-5 rounded-lg self-start shadow-sm"
+          className='self-start rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
           onPress={() => router.push('/profile/edit')}
         >
-          <Text className="text-white font-semibold text-base">
+          <Text className='text-base font-semibold text-white'>
             Edit Profile
           </Text>
         </TouchableOpacity>
       </View>
 
-      <View className="bg-gray-50 p-6 rounded-xl shadow-md mb-6">
-        <Text className="text-xl font-semibold mb-4 text-gray-700">
+      <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
+        <Text className='mb-4 text-xl font-semibold text-gray-700'>
           Shipping Addresses
         </Text>
         <TouchableOpacity
-          className="bg-blue-600 py-3 px-5 rounded-lg self-start shadow-sm"
+          className='self-start rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
           onPress={() => router.push('/profile/addresses')}
         >
-          <Text className="text-white font-semibold text-base">
+          <Text className='text-base font-semibold text-white'>
             Manage Addresses
           </Text>
         </TouchableOpacity>
       </View>
 
-      <View className="mt-auto border-t border-gray-200 pt-6">
+      <View className='mt-auto border-t border-gray-200 pt-6'>
         <TouchableOpacity
-          className="bg-red-500 py-3 px-5 rounded-lg self-center shadow-sm"
+          className='self-center rounded-lg bg-red-500 px-5 py-3 shadow-sm'
           disabled={loading}
           onPress={handleLogout}
         >
-          <Text className="text-white font-semibold text-base">Logout</Text>
+          <Text className='text-base font-semibold text-white'>Logout</Text>
         </TouchableOpacity>
       </View>
     </View>

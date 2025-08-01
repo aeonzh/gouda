@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { getProfile, Profile } from 'packages/shared/api/profiles';
 import { useAuth } from 'packages/shared/components/AuthProvider';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -109,36 +109,47 @@ export default function ProfileScreen() {
         </Text>
         <TouchableOpacity
           className='self-start rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
-          onPress={() => router.push('/profile/edit')}
+          onPress={() => {
+            console.log('Navigating to /profile/edit from tab profile');
+            console.log('Current route:', router.canGoBack());
+            console.log('Attempting to navigate to: /profile/edit');
+            router.push('/profile/edit');
+          }}
         >
-          <Text className='font-semibold text-white'>Edit Profile</Text>
+          <Text className='text-base font-semibold text-white'>
+            Edit Profile
+          </Text>
         </TouchableOpacity>
       </View>
 
       <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
         <Text className='mb-4 text-xl font-semibold text-gray-700'>
-          Addresses
-        </Text>
-        <Text className='mb-4 text-lg text-gray-600'>
-          Manage your saved addresses for faster checkout.
+          Shipping Addresses
         </Text>
         <TouchableOpacity
           className='self-start rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
-          onPress={() => router.push('/profile/addresses')}
+          onPress={() => {
+            console.log('Navigating to /profile/addresses from tab profile');
+            console.log('Current route:', router.canGoBack());
+            console.log('Attempting to navigate to: /profile/addresses');
+            router.push('/profile/addresses');
+          }}
         >
-          <Text className='font-semibold text-white'>Manage Addresses</Text>
+          <Text className='text-base font-semibold text-white'>
+            Manage Addresses
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        className='mt-auto rounded-lg bg-red-600 px-5 py-3 shadow-sm'
-        disabled={loading}
-        onPress={handleLogout}
-      >
-        <Text className='text-center font-semibold text-white'>
-          {loading ? 'Logging out...' : 'Logout'}
-        </Text>
-      </TouchableOpacity>
+      <View className='mt-auto border-t border-gray-200 pt-6'>
+        <TouchableOpacity
+          className='self-center rounded-lg bg-red-500 px-5 py-3 shadow-sm'
+          disabled={loading}
+          onPress={handleLogout}
+        >
+          <Text className='text-base font-semibold text-white'>Logout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

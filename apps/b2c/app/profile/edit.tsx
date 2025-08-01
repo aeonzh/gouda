@@ -24,6 +24,10 @@ export default function EditProfileScreen() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log('EditProfileScreen: Component mounted');
+  }, []);
+
+  useEffect(() => {
     const fetchCurrentProfile = async () => {
       setLoading(true);
       try {
@@ -72,9 +76,12 @@ export default function EditProfileScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#0000ff" size="large" />
-        <Text className="mt-4 text-lg text-gray-700">
+      <View className='flex-1 items-center justify-center bg-white'>
+        <ActivityIndicator
+          color='#0000ff'
+          size='large'
+        />
+        <Text className='mt-4 text-lg text-gray-700'>
           Loading profile data...
         </Text>
       </View>
@@ -82,41 +89,41 @@ export default function EditProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <Text className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+    <View className='flex-1 bg-white p-4'>
+      <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
         Edit Profile
       </Text>
 
-      <View className="mb-4">
-        <Text className="text-lg font-semibold mb-2 text-gray-700">
+      <View className='mb-4'>
+        <Text className='mb-2 text-lg font-semibold text-gray-700'>
           Username
         </Text>
         <TextInput
-          className="border border-gray-300 p-3 rounded-lg text-lg"
+          className='rounded-lg border border-gray-300 p-3 text-lg'
           onChangeText={setUsername}
-          placeholder="Enter username"
+          placeholder='Enter username'
           value={username}
         />
       </View>
 
-      <View className="mb-6">
-        <Text className="text-lg font-semibold mb-2 text-gray-700">
+      <View className='mb-6'>
+        <Text className='mb-2 text-lg font-semibold text-gray-700'>
           Full Name
         </Text>
         <TextInput
-          className="border border-gray-300 p-3 rounded-lg text-lg"
+          className='rounded-lg border border-gray-300 p-3 text-lg'
           onChangeText={setFullName}
-          placeholder="Enter full name"
+          placeholder='Enter full name'
           value={fullName}
         />
       </View>
 
       <TouchableOpacity
-        className="bg-blue-600 py-3 px-5 rounded-lg self-center shadow-sm"
+        className='self-center rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
         disabled={loading}
         onPress={handleUpdateProfile}
       >
-        <Text className="text-white font-semibold text-base">Save Changes</Text>
+        <Text className='text-base font-semibold text-white'>Save Changes</Text>
       </TouchableOpacity>
     </View>
   );

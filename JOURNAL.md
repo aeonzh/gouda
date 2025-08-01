@@ -177,6 +177,7 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   5.  The `docs/tasks/b2c_store_product_listing_plan.md` was updated to reflect the new "Storefront Page" and "StorefrontCard" terminology.
 
 - **Why the change addresses the root cause**: This implementation provides the necessary functionality for users to browse products from specific vendors. The consistent naming (`StorefrontCard` leading to `StorefrontPage`) improves code readability and maintainability, making the application's structure more intuitive.
+
 ### Session: Tuesday, July 22, 2025
 
 #### Fix for "StorefrontCard is not defined" error
@@ -220,12 +221,13 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 #### Product Details Page Navigation and Route Correction
 
 - **What were we trying to do**: Ensure correct navigation to the product details page in the B2C app, preventing it from appearing as a tab while maintaining proper routing.
-- **What was changed/decided and why (root cause/reason)**: Initially, clicking a product redirected to the home screen because `products/[id].tsx` was outside the `(tabs)` directory, causing `expo-router` navigation issues. Moving it *into* `(tabs)` resolved the redirection but made the product details page appear as an unwanted tab. The root cause was the incorrect placement of the product details route relative to the tab navigation structure and the need for explicit route handling in `_layout.tsx`.
+- **What was changed/decided and why (root cause/reason)**: Initially, clicking a product redirected to the home screen because `products/[id].tsx` was outside the `(tabs)` directory, causing `expo-router` navigation issues. Moving it _into_ `(tabs)` resolved the redirection but made the product details page appear as an unwanted tab. The root cause was the incorrect placement of the product details route relative to the tab navigation structure and the need for explicit route handling in `_layout.tsx`.
 - **How the change addresses the root cause**:
   1.  The `products` directory (containing `[id].tsx`) was initially moved from `apps/b2c/app/` to `apps/b2c/app/(tabs)/products/` to fix the redirection issue.
   2.  Subsequently, to prevent it from appearing as a tab, the `products` directory (containing `[id].tsx`) was moved back from `apps/b2c/app/(tabs)/products` to `apps/b2c/app/products`.
   3.  The `apps/b2c/app/_layout.tsx` file was updated to explicitly include `products/[id]` as an allowed route for authenticated users.
 - **Why the change addresses the root cause**: The initial move into `(tabs)` temporarily fixed the navigation by making it a child route. The subsequent move back out, combined with explicit route inclusion in `_layout.tsx`, ensures the product details page is treated as a standalone route. This allows `expo-router` to correctly handle the navigation stack, providing the intended user experience where the product details page is a separate screen, not a tab, and is accessible directly without unintended redirects.
+
 ### Session: Friday, July 25, 2025
 
 #### Enhance Storefront Product Filtering, Navigation, and Seed Data
@@ -238,18 +240,27 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   4.  **Debugging**: Added console logs to `apps/b2c/app/profile/index.tsx` and `apps/b2c/app/storefront/[id].tsx` to aid in debugging.
 - **How the change addresses the root cause**:
   1.  **Product Filtering**:
-      -   Modified `packages/shared/api/products.ts` to add a `status` parameter to the `getProducts` function, allowing filtering by product status.
-      -   Updated `apps/b2c/app/storefront/[id].tsx` to pass `status: 'published'` when fetching products for a storefront, ensuring only published products are displayed.
+      - Modified `packages/shared/api/products.ts` to add a `status` parameter to the `getProducts` function, allowing filtering by product status.
+      - Updated `apps/b2c/app/storefront/[id].tsx` to pass `status: 'published'` when fetching products for a storefront, ensuring only published products are displayed.
   2.  **Navigation Refinement**:
-      -   Updated `apps/b2c/app/_layout.tsx` to include `inStorefrontGroup` and `inProductsDetailGroup` in the authentication redirection logic, ensuring that authenticated users are not redirected away from these valid routes.
-      -   Adjusted `Stack.Screen` definitions in `apps/b2c/app/_layout.tsx` to correctly handle `storefront` and `products/[id]` routes.
+      - Updated `apps/b2c/app/_layout.tsx` to include `inStorefrontGroup` and `inProductsDetailGroup` in the authentication redirection logic, ensuring that authenticated users are not redirected away from these valid routes.
+      - Adjusted `Stack.Screen` definitions in `apps/b2c/app/_layout.tsx` to correctly handle `storefront` and `products/[id]` routes.
   3.  **Seed Data Improvement**:
-      -   Updated `seed.ts` to use `faker.image.urlPicsumPhotos()` instead of `faker.image.url()` for generating product image URLs, providing more consistent and relevant images.
+      - Updated `seed.ts` to use `faker.image.urlPicsumPhotos()` instead of `faker.image.url()` for generating product image URLs, providing more consistent and relevant images.
   4.  **Debugging**:
-      -   Added `console.log` statements to `apps/b2c/app/profile/index.tsx` to trace profile fetching and session status.
-      -   Added `console.log` statements to `apps/b2c/app/storefront/[id].tsx` to monitor `storeId`, fetched categories, and products.
+      - Added `console.log` statements to `apps/b2c/app/profile/index.tsx` to trace profile fetching and session status.
+      - Added `console.log` statements to `apps/b2c/app/storefront/[id].tsx` to monitor `storeId`, fetched categories, and products.
 - **Why the change addresses the root cause**:
   1.  **Product Filtering**: Ensures that the B2C storefront only displays products that are explicitly marked as 'published', providing a more accurate and controlled product catalog for customers.
   2.  **Navigation Refinement**: Improves the user experience by preventing unexpected redirects and allowing seamless navigation to storefronts and product detail pages for authenticated users. This makes the navigation flow more robust and predictable.
   3.  **Seed Data Improvement**: Provides more realistic and consistent image data for seeded products, which is beneficial for development and testing environments.
   4.  **Debugging**: The added logs provide valuable insights into the application's behavior, making it easier to diagnose and resolve future issues related to authentication, profile fetching, and product display.
+
+### Session: Friday, August 1, 2025
+
+#### Fix Profile Navigation Redirection Issue
+
+- **What were we trying to do**: Fix the bug where buttons in the profile screen don't navigate to the right screens (Edit Profile and Manage Addresses buttons were redirecting to the tab index instead of the correct pages).
+- **What was changed/decided and why (root cause/reason)**: The root cause was identified in the redirection logic in `apps/b2c/app/_layout.tsx`. The authentication redirection logic was redirecting all non-tab routes (except storefront and products detail) back to the tabs, which included profile routes like `/profile/edit` and `/profile/addresses`. This caused users to be redirected away from profile sub-screens back to the main profile tab.
+- **How the change addresses the root cause**: Modified the redirection logic in `apps/b2c/app/_layout.tsx` by adding `segments[0] !== 'profile'` to the condition that checks whether to redirect to tabs. This prevents the app from redirecting users away from profile routes while maintaining the existing redirection behavior for other routes. The specific change was in the useEffect hook that handles authentication-based redirection.
+- **Why the change addresses the root cause**: By excluding profile routes from the general redirection logic, users can now successfully navigate to and remain on profile sub-screens like Edit Profile and Manage Addresses. This targeted fix maintains the overall navigation structure while allowing profile-specific routes to function as intended, resolving the navigation issue without disrupting other parts of the application.

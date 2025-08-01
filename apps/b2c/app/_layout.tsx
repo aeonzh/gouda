@@ -61,9 +61,10 @@ export default function InitialLayout() {
         } else if (
           !inTabsGroup &&
           !inStorefrontGroup &&
-          !inProductsDetailGroup
+          !inProductsDetailGroup &&
+          segments[0] !== 'profile'
         ) {
-          // If not in auth, tabs, storefront, or products detail, redirect to tabs
+          // If not in auth, tabs, storefront, products detail, or profile, redirect to tabs
           router.replace('/(tabs)');
         }
       } else if (!inAuthGroup) {

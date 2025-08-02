@@ -1,8 +1,8 @@
 # CRITICAL INSTRUCTIONS
 
-1. Activate memory bank using: `@rules/memory-bank-instructions.md`
+1. Activate memory bank using: @rules/memory-bank-instructions.md
    - For context management, follow the documented workflows in `rules/memory-bank-instructions.md`
-2. Activate general instruction using: `@rules/instructions.md`
+2. Activate general instruction using: @rules/instructions.md
 
 # Guidelines for Gouda Project
 

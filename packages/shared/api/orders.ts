@@ -2,6 +2,7 @@ import { Product } from './products';
 import { supabase } from './supabase';
 
 export interface Cart {
+  business_id: string;
   id: string;
   user_id: string;
   created_at: string;
@@ -12,7 +13,7 @@ export interface CartItem {
   cart_id: string;
   id: string;
   product_id: string;
-  price_at_addition: number;
+  price_at_time_of_add: number;
   product?: Product; // Optional: to include product details when fetching cart
   quantity: number;
   created_at: string;
@@ -56,6 +57,13 @@ export async function addOrUpdateCartItem(
   quantity: number,
   priceAtAddition: number,
 ): Promise<CartItem | null> {
+  console.log('addOrUpdateCartItem called with:', {
+    cartId,
+    priceAtAddition,
+    productId,
+    quantity,
+  });
+
   const { data: existingItem, error: fetchError } = await supabase
     .from('cart_items')
     .select('*')
@@ -68,7 +76,9 @@ export async function addOrUpdateCartItem(
     console.error('Error fetching existing cart item:', fetchError.message);
     throw fetchError;
   }
+
   if (existingItem) {
+    console.log('Found existing cart item, updating quantity');
     // Update quantity if item exists
     const newQuantity = existingItem.quantity + quantity;
     const { data, error } = await supabase
@@ -82,15 +92,17 @@ export async function addOrUpdateCartItem(
       console.error('Error updating cart item quantity:', error.message);
       throw error;
     }
+    console.log('Successfully updated cart item:', data);
     return data;
   } else {
+    console.log('No existing cart item, adding new item');
     // Add new item if it doesn't exist
     const { data, error } = await supabase
       .from('cart_items')
       .insert([
         {
           cart_id: cartId,
-          price_at_addition: priceAtAddition,
+          price_at_time_of_add: priceAtAddition,
           product_id: productId,
           quantity,
         },
@@ -102,6 +114,7 @@ export async function addOrUpdateCartItem(
       console.error('Error adding cart item:', error.message);
       throw error;
     }
+    console.log('Successfully added cart item:', data);
     return data;
   }
 }
@@ -175,11 +188,13 @@ export async function createOrderForCustomer(
  */
 export async function createOrderFromCart(
   userId: string,
+  businessId: string,
 ): Promise<null | Order> {
   const { data: cart, error: cartError } = await supabase
     .from('carts')
     .select('id')
     .eq('user_id', userId)
+    .eq('business_id', businessId)
     .single();
 
   if (cartError || !cart) {
@@ -192,7 +207,7 @@ export async function createOrderFromCart(
 
   const { data: cartItems, error: cartItemsError } = await supabase
     .from('cart_items')
-    .select('product_id, quantity, price_at_addition')
+    .select('product_id, quantity, price_at_time_of_add')
     .eq('cart_id', cart.id);
 
   if (cartItemsError || !cartItems || cartItems.length === 0) {
@@ -204,7 +219,7 @@ export async function createOrderFromCart(
   }
 
   const totalAmount = cartItems.reduce(
-    (sum, item) => sum + item.quantity * item.price_at_addition,
+    (sum, item) => sum + item.quantity * item.price_at_time_of_add,
     0,
   );
 
@@ -212,6 +227,7 @@ export async function createOrderFromCart(
     .from('orders')
     .insert([
       {
+        business_id: businessId,
         status: 'pending',
         total_amount: totalAmount,
         user_id: userId,
@@ -227,7 +243,7 @@ export async function createOrderFromCart(
 
   const orderItemsToInsert = cartItems.map((item) => ({
     order_id: newOrder.id,
-    price_at_order: item.price_at_addition,
+    price_at_order: item.price_at_time_of_add,
     product_id: item.product_id,
     quantity: item.quantity,
   }));
@@ -265,6 +281,8 @@ export async function createOrderFromCart(
  * @returns {Promise<CartItem[] | null>} A promise that resolves to an array of cart items or null on error.
  */
 export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
+  console.log('getCartItems called with cartId:', cartId);
+
   const { data, error } = await supabase
     .from('cart_items')
     .select('*, products(*)') // Select all cart item fields and join product details
@@ -274,6 +292,8 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
     console.error('Error fetching cart items:', error.message);
     throw error;
   }
+
+  console.log('getCartItems returned data:', data);
   return data as CartItem[];
 }
 
@@ -306,19 +326,26 @@ export async function getCustomerOrderHistory(
  * @param {string} userId - The ID of the user.
  * @returns {Promise<Cart | null>} A promise that resolves to the user's cart or null on error.
  */
-export async function getOrCreateCart(userId: string): Promise<Cart | null> {
-  let { data: cart, error } = await supabase
+export async function getOrCreateCart(
+  userId: string,
+  businessId: string,
+): Promise<Cart | null> {
+  console.log('getOrCreateCart called with:', { businessId, userId });
+
+  const { data: cart, error } = await supabase
     .from('carts')
     .select('*')
     .eq('user_id', userId)
+    .eq('business_id', businessId)
     .single();
 
   if (error && error.code === 'PGRST116') {
     // No rows found
+    console.log('No cart found, creating new cart...');
     // Create a new cart if one doesn't exist
     const { data: newCart, error: createError } = await supabase
       .from('carts')
-      .insert([{ user_id: userId }])
+      .insert([{ business_id: businessId, user_id: userId }])
       .select()
       .single();
 
@@ -326,12 +353,15 @@ export async function getOrCreateCart(userId: string): Promise<Cart | null> {
       console.error('Error creating cart:', createError.message);
       throw createError;
     }
-    cart = newCart;
+    console.log('Successfully created cart:', newCart);
+    return newCart;
   } else if (error) {
     console.error('Error fetching cart:', error.message);
     throw error;
+  } else {
+    console.log('Found existing cart:', cart);
+    return cart;
   }
-  return cart;
 }
 
 /**

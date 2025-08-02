@@ -12,6 +12,7 @@ export interface InventoryProduct {
 }
 
 export interface Product {
+  business_id: string;
   category_id?: string;
   id: string;
   name: string;

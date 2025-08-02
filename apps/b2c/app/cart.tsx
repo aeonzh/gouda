@@ -1,8 +1,16 @@
 import { Stack, useRouter } from 'expo-router';
+import {
+  addOrUpdateCartItem,
+  createOrderFromCart,
+  getCartItems,
+  getOrCreateCart,
+  removeCartItem as removeCartItemApi,
+  updateCartItemQuantity as updateCartItemQuantityApi,
+} from 'packages/shared/api/orders';
 import { Product } from 'packages/shared/api/products';
 import { supabase } from 'packages/shared/api/supabase';
 import { Button } from 'packages/shared/components';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -21,112 +29,229 @@ export default function CartScreen() {
     fetchCartItems();
   }, []);
 
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [cartItems]);
-
   const fetchCartItems = async () => {
     setLoading(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
+      console.log('No user found - not logged in');
       Alert.alert('Error', 'User not logged in.');
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('carts')
-      .select(
-        `
-        id,
-        quantity,
-        products (
-          id,
-          name,
-          description,
-          price,
-          image_url
-        )
-      `,
-      )
-      .eq('user_id', user.id);
+    console.log('Fetching cart items for user:', user.id);
 
-    if (error) {
+    // Get the user's authorized businesses
+    const { data: businesses, error: businessesError } = await supabase
+      .from('members')
+      .select('business_id')
+      .eq('profile_id', user.id);
+
+    if (businessesError || !businesses || businesses.length === 0) {
+      console.log('No authorized businesses found for user');
+      Alert.alert('Error', 'No authorized businesses found.');
+      setCartItems([]);
+      setLoading(false);
+      return;
+    }
+
+    // For now, use the first authorized business
+    const businessId = businesses[0].business_id;
+    console.log('Using business:', businessId);
+
+    try {
+      // Get or create cart using the shared API function
+      const cart = await getOrCreateCart(user.id, businessId);
+      if (!cart) {
+        console.log('Failed to get/create cart');
+        Alert.alert('Error', 'Failed to create cart.');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Found cart:', cart);
+
+      // Get cart items using the shared API function
+      const cartItemsData = await getCartItems(cart.id);
+      if (!cartItemsData) {
+        console.log('No cart items found');
+        setCartItems([]);
+        return;
+      }
+
+      console.log('Cart items data:', cartItemsData);
+      const items: CartItem[] = cartItemsData
+        .filter((item) => item.product !== undefined)
+        .map((item) => ({
+          product: item.product as Product,
+          quantity: item.quantity,
+        }));
+      setCartItems(items);
+    } catch (error) {
       console.error('Error fetching cart items:', error);
       Alert.alert('Error', 'Failed to fetch cart items.');
-    } else {
-      const items: CartItem[] = data.map((item: any) => ({
-        product: item.products,
-        quantity: item.quantity,
-      }));
-      setCartItems(items);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const calculateTotalPrice = () => {
+  const calculateTotalPrice = useCallback(() => {
     const total = cartItems.reduce(
       (sum, item) => sum + item.product.price * item.quantity,
       0,
     );
     setTotalPrice(total);
-  };
+  }, [cartItems]);
+
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [calculateTotalPrice]);
 
   const updateCartItemQuantity = async (
     productId: string,
     newQuantity: number,
   ) => {
+    console.log(
+      'Updating quantity for product:',
+      productId,
+      'to:',
+      newQuantity,
+    );
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
-
-    if (newQuantity <= 0) {
-      await removeCartItem(productId);
+    if (!user) {
+      console.log('No user found for update');
       return;
     }
 
-    const { error } = await supabase
-      .from('carts')
-      .update({ quantity: newQuantity })
-      .eq('user_id', user.id)
-      .eq('product_id', productId);
+    // Get the user's authorized businesses
+    const { data: businesses, error: businessesError } = await supabase
+      .from('members')
+      .select('business_id')
+      .eq('profile_id', user.id);
 
-    if (error) {
+    if (businessesError || !businesses || businesses.length === 0) {
+      console.log('No authorized businesses found for update');
+      Alert.alert('Error', 'No authorized businesses found.');
+      return;
+    }
+
+    if (newQuantity <= 0) {
+      console.log('Quantity <= 0, removing item');
+      await removeCartItem(productId, businesses[0].business_id);
+      return;
+    }
+
+    try {
+      // First get the user's cart
+      const cart = await getOrCreateCart(user.id, businesses[0].business_id);
+      if (!cart) {
+        console.log('No cart found for update');
+        return;
+      }
+
+      console.log('Found cart for update:', cart.id);
+
+      // Get the cart items to find the cart item ID
+      const cartItemsData = await getCartItems(cart.id);
+      if (!cartItemsData) {
+        console.log('No cart items found for update');
+        return;
+      }
+
+      const cartItem = cartItemsData.find(
+        (item) => item.product_id === productId,
+      );
+      if (!cartItem) {
+        console.log('Cart item not found for update');
+        return;
+      }
+
+      console.log('Found cart item for update:', cartItem.id);
+
+      // Use the shared API to update quantity
+      const updatedItem = await updateCartItemQuantityApi(
+        cartItem.id,
+        newQuantity,
+      );
+      if (updatedItem) {
+        console.log('Successfully updated quantity');
+        setCartItems((prevItems) =>
+          prevItems.map((item) =>
+            item.product.id === productId
+              ? { ...item, quantity: newQuantity }
+              : item,
+          ),
+        );
+      }
+    } catch (error) {
       console.error('Error updating cart item quantity:', error);
       Alert.alert('Error', 'Failed to update item quantity.');
-    } else {
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: newQuantity }
-            : item,
-        ),
-      );
     }
   };
 
-  const removeCartItem = async (productId: string) => {
+  const removeCartItem = async (productId: string, businessId?: string) => {
+    console.log('Removing product from cart:', productId);
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      console.log('No user found for removal');
+      return;
+    }
 
-    const { error } = await supabase
-      .from('carts')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('product_id', productId);
+    // Get the user's authorized businesses
+    const { data: businesses, error: businessesError } = await supabase
+      .from('members')
+      .select('business_id')
+      .eq('profile_id', user.id);
 
-    if (error) {
-      console.error('Error removing cart item:', error);
-      Alert.alert('Error', 'Failed to remove item from cart.');
-    } else {
+    if (businessesError || !businesses || businesses.length === 0) {
+      console.log('No authorized businesses found for removal');
+      Alert.alert('Error', 'No authorized businesses found.');
+      return;
+    }
+
+    // Use provided business_id or first authorized business
+    const targetBusinessId = businessId || businesses[0].business_id;
+
+    try {
+      // First get the user's cart
+      const cart = await getOrCreateCart(user.id, targetBusinessId);
+      if (!cart) {
+        console.log('No cart found for removal');
+        return;
+      }
+
+      console.log('Found cart for removal:', cart.id);
+
+      // Find the cart item ID for the product
+      const cartItemsData = await getCartItems(cart.id);
+      if (!cartItemsData) {
+        console.log('No cart items found for removal');
+        return;
+      }
+
+      const cartItem = cartItemsData.find(
+        (item) => item.product_id === productId,
+      );
+      if (!cartItem) {
+        console.log('Cart item not found for removal');
+        return;
+      }
+
+      // Use the shared API to remove the item
+      await removeCartItemApi(cartItem.id);
+      console.log('Successfully removed item');
       setCartItems((prevItems) =>
         prevItems.filter((item) => item.product.id !== productId),
       );
+    } catch (error) {
+      console.error('Error removing cart item:', error);
+      Alert.alert('Error', 'Failed to remove item from cart.');
     }
   };
 
@@ -139,6 +264,18 @@ export default function CartScreen() {
       return;
     }
 
+    // Get the user's authorized businesses
+    const { data: businesses, error: businessesError } = await supabase
+      .from('members')
+      .select('business_id')
+      .eq('profile_id', user.id);
+
+    if (businessesError || !businesses || businesses.length === 0) {
+      console.log('No authorized businesses found for order creation');
+      Alert.alert('Error', 'No authorized businesses found.');
+      return;
+    }
+
     if (cartItems.length === 0) {
       Alert.alert(
         'Cart Empty',
@@ -148,55 +285,26 @@ export default function CartScreen() {
     }
 
     setLoading(true);
-    const { data: orderData, error: orderError } = await supabase
-      .from('orders')
-      .insert({ status: 'pending', total_amount: totalPrice, user_id: user.id })
-      .select()
-      .single();
+    try {
+      // Use the shared API to create order from cart
+      const order = await createOrderFromCart(
+        user.id,
+        businesses[0].business_id,
+      );
+      if (!order) {
+        throw new Error('Failed to create order');
+      }
 
-    if (orderError || !orderData) {
-      console.error('Error creating order:', orderError);
+      router.push({
+        params: { orderId: order.id, total: totalPrice.toFixed(2) },
+        pathname: '/order-confirmation',
+      });
+    } catch (error) {
+      console.error('Error creating order:', error);
       Alert.alert('Error', 'Failed to create order.');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const orderItems = cartItems.map((item) => ({
-      order_id: orderData.id,
-      price_at_order: item.product.price,
-      product_id: item.product.id,
-      quantity: item.quantity,
-    }));
-
-    const { error: orderItemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
-
-    if (orderItemsError) {
-      console.error('Error creating order items:', orderItemsError);
-      Alert.alert('Error', 'Failed to add products to order.');
-      // Optionally, roll back the order if order items fail
-      await supabase.from('orders').delete().eq('id', orderData.id);
-      setLoading(false);
-      return;
-    }
-
-    // Clear the cart after successful order creation
-    const { error: clearCartError } = await supabase
-      .from('carts')
-      .delete()
-      .eq('user_id', user.id);
-
-    if (clearCartError) {
-      console.error('Error clearing cart:', clearCartError);
-      // This is a non-critical error, order is already placed.
-    }
-
-    setLoading(false);
-    router.push({
-      params: { orderId: orderData.id, total: totalPrice.toFixed(2) },
-      pathname: '/order-confirmation',
-    });
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (

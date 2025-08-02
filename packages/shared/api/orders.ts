@@ -26,7 +26,7 @@ export interface Order {
   order_date: string;
   order_items?: OrderItem[]; // Optional: to include order item details when fetching order
   sales_agent_id?: string;
-  status: 'cancelled' | 'delivered' | 'pending' | 'processing' | 'shipped';
+  status: 'cancelled' | 'pending' | 'processing';
   total_amount: number;
   created_at: string;
   updated_at: string;
@@ -57,7 +57,7 @@ export async function addOrUpdateCartItem(
   quantity: number,
   priceAtAddition: number,
 ): Promise<CartItem | null> {
-  console.log('addOrUpdateCartItem called with:', {
+  console.log('=== DEBUG: addOrUpdateCartItem called ===', {
     cartId,
     priceAtAddition,
     productId,
@@ -73,12 +73,22 @@ export async function addOrUpdateCartItem(
 
   if (fetchError && fetchError.code !== 'PGRST116') {
     // Not a "no rows found" error
-    console.error('Error fetching existing cart item:', fetchError.message);
+    console.error(
+      '=== DEBUG: Error fetching existing cart item ===',
+      fetchError,
+    );
     throw fetchError;
   }
 
+  if (fetchError && fetchError.code === 'PGRST116') {
+    console.log('=== DEBUG: No existing cart item found, adding new item ===');
+  }
+
   if (existingItem) {
-    console.log('Found existing cart item, updating quantity');
+    console.log('=== DEBUG: Found existing cart item, updating quantity ===', {
+      existingItem,
+      newQuantity: existingItem.quantity + quantity,
+    });
     // Update quantity if item exists
     const newQuantity = existingItem.quantity + quantity;
     const { data, error } = await supabase
@@ -89,13 +99,18 @@ export async function addOrUpdateCartItem(
       .single();
 
     if (error) {
-      console.error('Error updating cart item quantity:', error.message);
+      console.error('=== DEBUG: Error updating cart item quantity ===', error);
       throw error;
     }
-    console.log('Successfully updated cart item:', data);
+    console.log('=== DEBUG: Successfully updated cart item ===', data);
     return data;
   } else {
-    console.log('No existing cart item, adding new item');
+    console.log('=== DEBUG: Adding new cart item ===', {
+      cartId,
+      priceAtAddition,
+      productId,
+      quantity,
+    });
     // Add new item if it doesn't exist
     const { data, error } = await supabase
       .from('cart_items')
@@ -111,10 +126,10 @@ export async function addOrUpdateCartItem(
       .single();
 
     if (error) {
-      console.error('Error adding cart item:', error.message);
+      console.error('=== DEBUG: Error adding cart item ===', error);
       throw error;
     }
-    console.log('Successfully added cart item:', data);
+    console.log('=== DEBUG: Successfully added cart item ===', data);
     return data;
   }
 }
@@ -190,6 +205,11 @@ export async function createOrderFromCart(
   userId: string,
   businessId: string,
 ): Promise<null | Order> {
+  console.log('=== DEBUG: createOrderFromCart called ===', {
+    businessId,
+    userId,
+  });
+
   const { data: cart, error: cartError } = await supabase
     .from('carts')
     .select('id')
@@ -199,11 +219,12 @@ export async function createOrderFromCart(
 
   if (cartError || !cart) {
     console.error(
-      'Error fetching user cart:',
+      '=== DEBUG: Error fetching user cart ===',
       cartError?.message || 'Cart not found',
     );
     throw cartError || new Error('Cart not found for user.');
   }
+  console.log('=== DEBUG: Found cart ===', cart);
 
   const { data: cartItems, error: cartItemsError } = await supabase
     .from('cart_items')
@@ -212,16 +233,18 @@ export async function createOrderFromCart(
 
   if (cartItemsError || !cartItems || cartItems.length === 0) {
     console.error(
-      'Error fetching cart items or cart is empty:',
+      '=== DEBUG: Error fetching cart items or cart is empty ===',
       cartItemsError?.message || 'Cart is empty',
     );
     throw cartItemsError || new Error('Cart is empty. Cannot create order.');
   }
+  console.log('=== DEBUG: Found cart items ===', cartItems);
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.quantity * item.price_at_time_of_add,
     0,
   );
+  console.log('=== DEBUG: Calculated total amount ===', totalAmount);
 
   const { data: newOrder, error: orderError } = await supabase
     .from('orders')
@@ -237,9 +260,10 @@ export async function createOrderFromCart(
     .single();
 
   if (orderError || !newOrder) {
-    console.error('Error creating order:', orderError?.message);
+    console.error('=== DEBUG: Error creating order ===', orderError);
     throw orderError;
   }
+  console.log('=== DEBUG: Successfully created order ===', newOrder);
 
   const orderItemsToInsert = cartItems.map((item) => ({
     order_id: newOrder.id,
@@ -253,10 +277,11 @@ export async function createOrderFromCart(
     .insert(orderItemsToInsert);
 
   if (orderItemsError) {
-    console.error('Error creating order items:', orderItemsError.message);
+    console.error('=== DEBUG: Error creating order items ===', orderItemsError);
     // Consider rolling back the order if order items fail to create
     throw orderItemsError;
   }
+  console.log('=== DEBUG: Successfully created order items ===');
 
   // Clear the cart after order creation
   const { error: clearCartError } = await supabase
@@ -266,10 +291,12 @@ export async function createOrderFromCart(
 
   if (clearCartError) {
     console.error(
-      'Error clearing cart after order creation:',
-      clearCartError.message,
+      '=== DEBUG: Error clearing cart after order creation ===',
+      clearCartError,
     );
     // This error might not be critical enough to fail the order creation, but should be logged
+  } else {
+    console.log('=== DEBUG: Successfully cleared cart ===');
   }
 
   return newOrder;
@@ -285,7 +312,7 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
 
   const { data, error } = await supabase
     .from('cart_items')
-    .select('*, products(*)') // Select all cart item fields and join product details
+    .select('id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, products(*)')
     .eq('cart_id', cartId);
 
   if (error) {
@@ -294,7 +321,7 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
   }
 
   console.log('getCartItems returned data:', data);
-  return data as CartItem[];
+  return data;
 }
 
 /**
@@ -389,15 +416,18 @@ export async function getOrderDetails(orderId: string): Promise<null | Order> {
  * @returns {Promise<void>} A promise that resolves when the item is removed or rejects on error.
  */
 export async function removeCartItem(cartItemId: string): Promise<void> {
+  console.log('=== DEBUG: removeCartItem called ===', { cartItemId });
+
   const { error } = await supabase
     .from('cart_items')
     .delete()
     .eq('id', cartItemId);
 
   if (error) {
-    console.error('Error removing cart item:', error.message);
+    console.error('=== DEBUG: Error removing cart item ===', error);
     throw error;
   }
+  console.log('=== DEBUG: Successfully removed cart item ===');
 }
 
 /**
@@ -410,7 +440,13 @@ export async function updateCartItemQuantity(
   cartItemId: string,
   quantity: number,
 ): Promise<CartItem | null> {
+  console.log('=== DEBUG: updateCartItemQuantity called ===', {
+    cartItemId,
+    quantity,
+  });
+
   if (quantity <= 0) {
+    console.log('=== DEBUG: Quantity <= 0, calling removeCartItem ===');
     await removeCartItem(cartItemId);
     return null;
   }
@@ -423,9 +459,10 @@ export async function updateCartItemQuantity(
     .single();
 
   if (error) {
-    console.error('Error updating cart item quantity:', error.message);
+    console.error('=== DEBUG: Error updating cart item quantity ===', error);
     throw error;
   }
+  console.log('=== DEBUG: Successfully updated cart item quantity ===', data);
   return data;
 }
 

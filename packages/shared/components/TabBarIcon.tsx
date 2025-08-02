@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { StyleProp, ViewStyle } from 'react-native';
 
 interface TabBarIconProps {
-  color: string;
   name: keyof typeof Ionicons.glyphMap;
+  color: string;
   style?: StyleProp<ViewStyle>;
 }
 

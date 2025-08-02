@@ -55,31 +55,31 @@ export default tseslint.config([
       'perfectionist/sort-interfaces': [
         'error',
         {
-          groups: ['top', 'name-group', 'address-group', 'unknown', 'bottom'],
           customGroups: [
             {
-              groupName: 'top',
-              selector: 'property',
               elementNamePattern:
                 '^(?:id|business_id|profile_id|user_id|cart_id|product_id|category_id|order_id)',
+              groupName: 'top',
+              selector: 'property',
             },
             {
+              elementNamePattern: '^(?:name|username|full_name|business_name)',
               groupName: 'name-group',
               selector: 'property',
-              elementNamePattern: '^(?:name|username|full_name|business_name)',
             },
             {
-              groupName: 'address-group',
-              selector: 'property',
               elementNamePattern:
                 '^(?:address_line1|address_line2|city|state|postal_code|country)',
+              groupName: 'address-group',
+              selector: 'property',
             },
             {
+              elementNamePattern: '^(?:created_at|updated_at|deleted_at)',
               groupName: 'bottom',
               selector: 'property',
-              elementNamePattern: '^(?:created_at|updated_at|deleted_at)',
             },
           ],
+          groups: ['top', 'name-group', 'address-group', 'unknown', 'bottom'],
         },
       ],
     },

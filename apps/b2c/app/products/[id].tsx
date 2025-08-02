@@ -1,10 +1,11 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   addOrUpdateCartItem,
   getOrCreateCart,
 } from 'packages/shared/api/orders';
 import { getProductById, Product } from 'packages/shared/api/products';
 import { supabase } from 'packages/shared/api/supabase';
+import { Button, QuantitySelector } from 'packages/shared/components';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,17 +16,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
   const [product, setProduct] = useState<null | Product>(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [showGoToCart, setShowGoToCart] = useState(false);
+  const router = useRouter();
 
   const handleAddToCart = async () => {
     if (!product) return;
 
+    console.log('=== DEBUG: handleAddToCart started ===');
     console.log('Product details:', product);
+    console.log('Current selectedQuantity:', selectedQuantity);
+    console.log('Available stock:', product.stock_quantity);
+
     setAddingToCart(true);
     try {
       const {
@@ -39,7 +48,7 @@ export default function ProductDetailsScreen() {
       }
 
       console.log(
-        'Adding to cart for user:',
+        '=== DEBUG: ProductDetails - Adding to cart for user:',
         user.id,
         'product business:',
         product.business_id,
@@ -53,26 +62,33 @@ export default function ProductDetailsScreen() {
         throw new Error('Failed to create cart');
       }
 
-      console.log('Cart obtained:', cart);
+      console.log('=== DEBUG: ProductDetails - Cart obtained:', cart);
 
       // Add the product to the cart
-      console.log('Adding item to cart:', {
+      console.log('=== DEBUG: ProductDetails - Adding item to cart:', {
+        businessId: cart.business_id,
         cartId: cart.id,
         price: product.price,
         productId: product.id,
-        quantity: 1,
+        quantity: selectedQuantity,
       });
-      await addOrUpdateCartItem(
+
+      const result = await addOrUpdateCartItem(
         cart.id,
         product.id,
-        1, // quantity
+        selectedQuantity, // quantity
         product.price, // price at addition
       );
 
+      console.log('API result from addOrUpdateCartItem:', result);
+
       console.log('Product successfully added to cart');
       Alert.alert('Success', 'Product added to cart!');
+      setShowGoToCart(true);
+      setSelectedQuantity(1); // Reset quantity selector
+      console.log('=== DEBUG: handleAddToCart completed successfully ===');
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error('=== DEBUG: Error adding to cart ===', error);
       Alert.alert('Error', 'Failed to add product to cart.');
     } finally {
       setAddingToCart(false);
@@ -100,27 +116,50 @@ export default function ProductDetailsScreen() {
 
   if (loading) {
     return (
-      <View className='flex-1 items-center justify-center bg-gray-100'>
+      <SafeAreaView className='flex-1 items-center justify-center bg-white'>
         <ActivityIndicator
           color='#0000ff'
           size='large'
         />
-      </View>
+        <Text className='mt-2 text-gray-600'>Loading product details...</Text>
+      </SafeAreaView>
     );
   }
 
   if (!product) {
     return (
-      <View className='flex-1 items-center justify-center bg-gray-100 p-4'>
-        <Text className='text-lg text-gray-700'>Product not found.</Text>
-      </View>
+      <SafeAreaView className='flex-1 items-center justify-center bg-white p-4'>
+        <Text className='text-xl font-bold text-gray-800'>
+          Product not found.
+        </Text>
+        <Text className='mt-2 text-gray-600'>
+          The requested product could not be found.
+        </Text>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className='flex-1 bg-gray-100'>
-      <Stack.Screen options={{ headerShown: true, title: product.name }} />
-      <ScrollView className='flex-1'>
+    <SafeAreaView className='flex-1 bg-gray-100'>
+      <Stack.Screen 
+        options={{ 
+          headerShown: true, 
+          title: product.name,
+          headerRight: () => (
+            <TouchableOpacity
+              className='bg-blue-500 rounded-md px-3 py-1 mr-2'
+              onPress={() => router.push({ pathname: '/cart', params: { businessId: product.business_id } })}
+            >
+              <Text className='text-white text-sm'>Cart</Text>
+            </TouchableOpacity>
+          )
+        }} 
+      />
+      <ScrollView
+        className='flex-1'
+        contentContainerClassName='pb-6'
+        showsVerticalScrollIndicator={false}
+      >
         {product.image_url && (
           <Image
             className='h-80 w-full object-cover shadow-lg'
@@ -128,33 +167,53 @@ export default function ProductDetailsScreen() {
           />
         )}
         <View className='-mt-6 rounded-t-3xl bg-white p-6 shadow-xl'>
-          <Text className='mb-2 text-4xl font-extrabold text-gray-900'>
+          <Text className='mb-3 text-3xl font-bold text-gray-900'>
             {product.name}
           </Text>
-          <Text className='mb-4 text-3xl font-bold text-green-600'>
+          <Text className='mb-4 text-2xl font-bold text-green-600'>
             ${product.price.toFixed(2)}
           </Text>
-          <Text className='mb-8 text-base leading-relaxed text-gray-700'>
+          <Text className='mb-6 text-base leading-relaxed text-gray-700'>
             {product.description}
           </Text>
 
+          {/* Stock Information */}
+          <View className='mb-4 rounded-lg bg-gray-50 p-3'>
+            <Text className='text-sm text-gray-600'>
+              Stock: {product.stock_quantity} available
+            </Text>
+          </View>
+
+          {/* Quantity Selector */}
+          <View className='mb-6'>
+            <Text className='mb-2 text-sm font-medium text-gray-700'>
+              Quantity:
+            </Text>
+            <QuantitySelector
+              maxQuantity={product.stock_quantity}
+              onQuantityChange={setSelectedQuantity}
+              quantity={selectedQuantity}
+            />
+          </View>
+
           {/* Add to Cart Button */}
-          <TouchableOpacity
-            className='items-center justify-center rounded-xl bg-blue-700 py-4 shadow-lg transition-all duration-200 active:bg-blue-800 disabled:bg-gray-400'
+          <Button
+            className='w-full rounded-lg bg-blue-600 py-4 shadow-lg'
             disabled={addingToCart}
+            isLoading={addingToCart}
             onPress={handleAddToCart}
-          >
-            {addingToCart ? (
-              <ActivityIndicator
-                color='white'
-                size='small'
-              />
-            ) : (
-              <Text className='text-xl font-bold text-white'>Add to Cart</Text>
-            )}
-          </TouchableOpacity>
+            title='Add to Cart'
+          />
+
+          {showGoToCart && (
+            <Button
+              className='w-full rounded-lg bg-green-600 py-4 shadow-lg mt-4'
+              onPress={() => router.push({ params: { businessId: product.business_id }, pathname: '/cart' })}
+              title='Go to Cart'
+            />
+          )}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

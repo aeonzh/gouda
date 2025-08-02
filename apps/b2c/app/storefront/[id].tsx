@@ -101,12 +101,20 @@ export default function StorefrontPage() {
   return (
     <View className='flex-1 p-4'>
       <Stack.Screen options={{ title: storeName }} />
-      <Input
-        className='mb-4'
-        onChangeText={setSearchQuery}
-        placeholder='Search products...'
-        value={searchQuery}
-      />
+      <View className='flex-row items-center justify-between mb-4'>
+        <Input
+          className='flex-1 mr-2'
+          onChangeText={setSearchQuery}
+          placeholder='Search products...'
+          value={searchQuery}
+        />
+        <TouchableOpacity
+          className='bg-blue-500 rounded-md px-4 py-2'
+          onPress={() => router.push({ pathname: '/cart', params: { businessId: storeId } })}
+        >
+          <Text className='text-white'>Cart</Text>
+        </TouchableOpacity>
+      </View>
       <View className='mb-4 flex-row'>
         <FlatList
           data={categories}

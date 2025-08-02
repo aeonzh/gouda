@@ -62,7 +62,7 @@ export default function InitialLayout() {
           !inTabsGroup &&
           !inStorefrontGroup &&
           !inProductsDetailGroup &&
-          segments[0] !== 'profile'
+          segments[0] !== 'profile' && segments[0] !== 'cart'
         ) {
           // If not in auth, tabs, storefront, products detail, or profile, redirect to tabs
           router.replace('/(tabs)');
@@ -101,6 +101,10 @@ export default function InitialLayout() {
         />
         <Stack.Screen
           name='storefront'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='cart'
           options={{ headerShown: false }}
         />
         {/* Add other b2c routes here if needed */}

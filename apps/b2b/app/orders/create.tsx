@@ -19,9 +19,9 @@ import { supabase } from 'shared/api/supabase';
 // Assuming profiles table is accessible via supabase client
 
 interface Customer {
-  email: string;
-  full_name: string;
   id: string;
+  full_name: string;
+  email: string;
 }
 
 interface OrderItemInput {

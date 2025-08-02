@@ -1,6 +1,5 @@
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
-  addOrUpdateCartItem,
   createOrderFromCart,
   getCartItems,
   getOrCreateCart,
@@ -10,6 +9,7 @@ import {
 import { Product } from 'packages/shared/api/products';
 import { supabase } from 'packages/shared/api/supabase';
 import { Button } from 'packages/shared/components';
+import { QuantitySelector } from 'packages/shared/components/QuantitySelector';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,13 +23,12 @@ export default function CartScreen() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
+  const { businessId: paramBusinessId } = useLocalSearchParams();
   const router = useRouter();
 
-  useEffect(() => {
-    fetchCartItems();
-  }, []);
+  console.log('=== DEBUG: CartScreen - paramBusinessId:', paramBusinessId);
 
-  const fetchCartItems = async () => {
+  const fetchCartItems = useCallback(async () => {
     setLoading(true);
     const {
       data: { user },
@@ -41,7 +40,10 @@ export default function CartScreen() {
       return;
     }
 
-    console.log('Fetching cart items for user:', user.id);
+    console.log(
+      '=== DEBUG: CartScreen - Fetching cart items for user:',
+      user.id,
+    );
 
     // Get the user's authorized businesses
     const { data: businesses, error: businessesError } = await supabase
@@ -50,44 +52,61 @@ export default function CartScreen() {
       .eq('profile_id', user.id);
 
     if (businessesError || !businesses || businesses.length === 0) {
-      console.log('No authorized businesses found for user');
+      console.log(
+        '=== DEBUG: CartScreen - No authorized businesses found for user ===',
+      );
       Alert.alert('Error', 'No authorized businesses found.');
       setCartItems([]);
       setLoading(false);
       return;
     }
 
+    console.log(
+      '=== DEBUG: CartScreen - Authorized businesses:',
+      businesses.map((b) => b.business_id),
+    );
+
     // For now, use the first authorized business
-    const businessId = businesses[0].business_id;
-    console.log('Using business:', businessId);
+    const businessId = (paramBusinessId as string) || businesses[0].business_id;
+    console.log('=== DEBUG: CartScreen - Using businessId:', businessId); // Added log
+    console.log('Businesses from members table:', businesses); // Added log
 
     try {
       // Get or create cart using the shared API function
       const cart = await getOrCreateCart(user.id, businessId);
       if (!cart) {
-        console.log('Failed to get/create cart');
+        console.log('=== DEBUG: CartScreen - Failed to get/create cart ===');
         Alert.alert('Error', 'Failed to create cart.');
         setLoading(false);
         return;
       }
 
-      console.log('Found cart:', cart);
+      console.log('=== DEBUG: CartScreen - Found cart:', cart);
 
       // Get cart items using the shared API function
+      console.log(
+        '=== DEBUG: CartScreen - About to fetch cart items for cartId:',
+        cart.id,
+        'with businessId:',
+        cart.business_id,
+      );
       const cartItemsData = await getCartItems(cart.id);
       if (!cartItemsData) {
-        console.log('No cart items found');
+        console.log('=== DEBUG: CartScreen - No cart items found ===');
         setCartItems([]);
         return;
       }
 
       console.log('Cart items data:', cartItemsData);
+      cartItemsData.forEach(item => console.log('DEBUG: Individual cart item product:', item.product));
+      console.log('Cart items data BEFORE filter:', cartItemsData);
       const items: CartItem[] = cartItemsData
-        .filter((item) => item.product !== undefined)
+        .filter((item) => item.product)
         .map((item) => ({
           product: item.product as Product,
           quantity: item.quantity,
         }));
+      console.log('=== DEBUG: CartScreen - Processed cart items for state:', items);
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -95,7 +114,11 @@ export default function CartScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [paramBusinessId]); // Added paramBusinessId to dependency array
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [fetchCartItems]);
 
   const calculateTotalPrice = useCallback(() => {
     const total = cartItems.reduce(
@@ -113,17 +136,17 @@ export default function CartScreen() {
     productId: string,
     newQuantity: number,
   ) => {
-    console.log(
-      'Updating quantity for product:',
-      productId,
-      'to:',
-      newQuantity,
-    );
+    console.log('=== DEBUG: updateCartItemQuantity started ===');
+    console.log('Product ID:', productId);
+    console.log('New quantity:', newQuantity);
+    console.log('Current cart items:', cartItems);
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
       console.log('No user found for update');
+      Alert.alert('Error', 'User not authenticated.');
       return;
     }
 
@@ -135,19 +158,28 @@ export default function CartScreen() {
 
     if (businessesError || !businesses || businesses.length === 0) {
       console.log('No authorized businesses found for update');
+      console.log('Business error:', businessesError);
       Alert.alert('Error', 'No authorized businesses found.');
       return;
     }
 
+    console.log(
+      'Authorized businesses:',
+      businesses.map((b) => b.business_id),
+    );
+
+    const targetBusinessId = (paramBusinessId as string) || businesses[0].business_id;
+
     if (newQuantity <= 0) {
       console.log('Quantity <= 0, removing item');
-      await removeCartItem(productId, businesses[0].business_id);
+      await removeCartItem(productId);
+      console.log('=== DEBUG: updateCartItemQuantity completed (removal) ===');
       return;
     }
 
     try {
       // First get the user's cart
-      const cart = await getOrCreateCart(user.id, businesses[0].business_id);
+      const cart = await getOrCreateCart(user.id, targetBusinessId);
       if (!cart) {
         console.log('No cart found for update');
         return;
@@ -162,21 +194,30 @@ export default function CartScreen() {
         return;
       }
 
+      console.log('Cart items data from API:', cartItemsData);
+
       const cartItem = cartItemsData.find(
         (item) => item.product_id === productId,
       );
       if (!cartItem) {
         console.log('Cart item not found for update');
+        console.log(
+          'Available product IDs in cart:',
+          cartItemsData.map((item) => item.product_id),
+        );
         return;
       }
 
       console.log('Found cart item for update:', cartItem.id);
+      console.log('Current quantity in cart item:', cartItem.quantity);
 
       // Use the shared API to update quantity
       const updatedItem = await updateCartItemQuantityApi(
         cartItem.id,
         newQuantity,
       );
+      console.log('API response from updateCartItemQuantityApi:', updatedItem);
+
       if (updatedItem) {
         console.log('Successfully updated quantity');
         setCartItems((prevItems) =>
@@ -187,13 +228,16 @@ export default function CartScreen() {
           ),
         );
       }
+      console.log(
+        '=== DEBUG: updateCartItemQuantity completed successfully ===',
+      );
     } catch (error) {
-      console.error('Error updating cart item quantity:', error);
+      console.error('=== DEBUG: Error updating cart item quantity ===', error);
       Alert.alert('Error', 'Failed to update item quantity.');
     }
   };
 
-  const removeCartItem = async (productId: string, businessId?: string) => {
+  const removeCartItem = async (productId: string) => {
     console.log('Removing product from cart:', productId);
     const {
       data: { user },
@@ -216,7 +260,7 @@ export default function CartScreen() {
     }
 
     // Use provided business_id or first authorized business
-    const targetBusinessId = businessId || businesses[0].business_id;
+    const targetBusinessId = (paramBusinessId as string) || businesses[0].business_id;
 
     try {
       // First get the user's cart
@@ -256,10 +300,15 @@ export default function CartScreen() {
   };
 
   const createOrder = async () => {
+    console.log('=== DEBUG: createOrder called ===');
+    console.log('Current cart items:', cartItems);
+    console.log('Total price:', totalPrice);
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
+      console.log('=== DEBUG: No user found for order creation ===');
       Alert.alert('Error', 'User not logged in.');
       return;
     }
@@ -271,12 +320,15 @@ export default function CartScreen() {
       .eq('profile_id', user.id);
 
     if (businessesError || !businesses || businesses.length === 0) {
-      console.log('No authorized businesses found for order creation');
+      console.log(
+        '=== DEBUG: No authorized businesses found for order creation ===',
+      );
       Alert.alert('Error', 'No authorized businesses found.');
       return;
     }
 
     if (cartItems.length === 0) {
+      console.log('=== DEBUG: Cart is empty, cannot create order ===');
       Alert.alert(
         'Cart Empty',
         'Please add items to your cart before creating an order.',
@@ -286,21 +338,24 @@ export default function CartScreen() {
 
     setLoading(true);
     try {
+      console.log('=== DEBUG: Creating order from cart ===');
       // Use the shared API to create order from cart
       const order = await createOrderFromCart(
         user.id,
-        businesses[0].business_id,
+        (paramBusinessId as string) || businesses[0].business_id,
       );
       if (!order) {
+        console.log('=== DEBUG: Failed to create order - order is null ===');
         throw new Error('Failed to create order');
       }
 
+      console.log('=== DEBUG: Successfully created order ===', order);
       router.push({
         params: { orderId: order.id, total: totalPrice.toFixed(2) },
         pathname: '/order-confirmation',
       });
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error('=== DEBUG: Error creating order ===', error);
       Alert.alert('Error', 'Failed to create order.');
     } finally {
       setLoading(false);
@@ -313,26 +368,16 @@ export default function CartScreen() {
         <Text className='text-lg font-bold'>{item.product.name}</Text>
         <Text className='text-gray-600'>${item.product.price.toFixed(2)}</Text>
       </View>
-      <View className='flex-row items-center'>
-        <TouchableOpacity
-          className='rounded-md bg-red-500 p-2'
-          onPress={() =>
-            updateCartItemQuantity(item.product.id, item.quantity - 1)
+      <View className='flex-row items-center space-x-2'>
+        <QuantitySelector
+          maxQuantity={item.product.stock_quantity}
+          onQuantityChange={(newQuantity) =>
+            updateCartItemQuantity(item.product.id, newQuantity)
           }
-        >
-          <Text className='font-bold text-white'>-</Text>
-        </TouchableOpacity>
-        <Text className='mx-3 text-lg'>{item.quantity}</Text>
+          quantity={item.quantity}
+        />
         <TouchableOpacity
-          className='rounded-md bg-green-500 p-2'
-          onPress={() =>
-            updateCartItemQuantity(item.product.id, item.quantity + 1)
-          }
-        >
-          <Text className='font-bold text-white'>+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className='ml-4 rounded-md bg-gray-300 p-2'
+          className='ml-2 rounded-md bg-gray-300 p-2'
           onPress={() => removeCartItem(item.product.id)}
         >
           <Text className='text-gray-800'>Remove</Text>

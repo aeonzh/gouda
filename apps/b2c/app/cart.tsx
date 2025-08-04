@@ -98,7 +98,9 @@ export default function CartScreen() {
       }
 
       console.log('Cart items data:', cartItemsData);
-      cartItemsData.forEach(item => console.log('DEBUG: Individual cart item product:', item.product));
+      cartItemsData.forEach((item) =>
+        console.log('DEBUG: Individual cart item product:', item.product),
+      );
       console.log('Cart items data BEFORE filter:', cartItemsData);
       const items: CartItem[] = cartItemsData
         .filter((item) => item.product)
@@ -106,7 +108,10 @@ export default function CartScreen() {
           product: item.product as Product,
           quantity: item.quantity,
         }));
-      console.log('=== DEBUG: CartScreen - Processed cart items for state:', items);
+      console.log(
+        '=== DEBUG: CartScreen - Processed cart items for state:',
+        items,
+      );
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -168,7 +173,8 @@ export default function CartScreen() {
       businesses.map((b) => b.business_id),
     );
 
-    const targetBusinessId = (paramBusinessId as string) || businesses[0].business_id;
+    const targetBusinessId =
+      (paramBusinessId as string) || businesses[0].business_id;
 
     if (newQuantity <= 0) {
       console.log('Quantity <= 0, removing item');
@@ -260,7 +266,8 @@ export default function CartScreen() {
     }
 
     // Use provided business_id or first authorized business
-    const targetBusinessId = (paramBusinessId as string) || businesses[0].business_id;
+    const targetBusinessId =
+      (paramBusinessId as string) || businesses[0].business_id;
 
     try {
       // First get the user's cart
@@ -388,7 +395,7 @@ export default function CartScreen() {
 
   return (
     <SafeAreaView className='flex-1 bg-white'>
-      <Stack.Screen options={{ title: 'Your Cart' }} />
+      <Stack.Screen options={{ headerShown: true, title: 'Your Cart' }} />
       <View className='flex-1 p-4'>
         {loading ? (
           <Text className='text-center text-lg'>Loading cart...</Text>

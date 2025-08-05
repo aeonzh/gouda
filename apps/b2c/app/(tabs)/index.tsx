@@ -6,7 +6,6 @@ import {
 import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
-
 import '@/global.css';
 
 interface VendorCardProps {
@@ -16,10 +15,10 @@ interface VendorCardProps {
 
 const StorefrontCard: React.FC<VendorCardProps> = ({ onPress, vendor }) => (
   <TouchableOpacity
-    className='mb-4 min-h-32 rounded-lg border border-gray-200 bg-white p-4 shadow-sm'
+    className='mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm'
     onPress={() => onPress(vendor.id)}
   >
-    <View className='min-h-full flex-row items-center'>
+    <View className='flex-row items-center'>
       {vendor.image_url ? (
         <Image
           className='mr-4 h-12 w-12'

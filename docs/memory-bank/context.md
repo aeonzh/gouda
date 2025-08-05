@@ -32,7 +32,7 @@ This document provides a quick reference of the current end-state of the project
 
 - **Authentication**: Login, Sign Up, and Forgot Password screens (`(auth)/login.tsx`, `(auth)/signup.tsx`, `(auth)/forgot-password.tsx`) using `packages/shared/api/supabase`. Login, Sign Up, Forgot Password screens, API integration, and session management implemented. Authentication routing issue fixed by adjusting `SplashScreen.hideAsync()` call in `apps/b2c/app/_layout.tsx` to prevent race conditions.
 - **Tabs**:
-  - **Home**: `(tabs)/index.tsx` displays list of authorized vendors for logged-in user with search/filter functionality and navigation to vendor product pages. Implemented using `VendorCard` component and fetching data via `getAuthorizedBusinesses` from `packages/shared/api/organisations`.
+  - **Home**: `(tabs)/index.tsx` displays list of authorized vendors for logged-in user with search/filter functionality and navigation to vendor product pages. Implemented using `VendorCard` component and fetching data via `getAuthorizedBusinesses` from `packages/shared/api/organisations`. `SafeAreaView` was removed from this component as safe area handling is now centralized at the top-level layout. Adjusted card heights by removing `min-h-32` and `min-h-full` classes.
   - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details implemented.
   - **Cart**: `cart.tsx` for managing shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen implemented.
   - **Profile**: `(tabs)/profile.tsx` includes `profile/index.tsx` for viewing profile, `profile/edit.tsx` for editing profile, and `profile/addresses.tsx` for managing addresses. Uses `packages/shared/api/profiles`. My Account/Profile screen, profile data fetching/update, and Saved Addresses screen implemented.
@@ -75,3 +75,9 @@ This document provides a quick reference of the current end-state of the project
 ### Supabase RLS Policies
 
 All RLS policies for `public.profiles`, `public.products`, `public.categories`, `public.carts`, `public.cart_items`, `public.orders`, `public.order_items`, `public.organisations`, and `public.members` tables consolidated into single migration file (`supabase/migrations/20250713000002_add_rls_policies.sql`) to improve performance and remove redundant policies.
+
+---
+
+### Recent Changes
+
+- **B2C App Safe Area Handling**: Implemented `SafeAreaProvider` and `SafeAreaView` in `apps/b2c/app/_layout.tsx` to ensure consistent safe area padding across all screens. `SafeAreaView` is configured to apply padding only to the top edge to avoid excessive bottom padding. Removed `SafeAreaView` from `apps/b2c/app/(tabs)/index.tsx` as it is now handled at the top level. Resolved a `TypeError` by ensuring `SafeAreaProvider` was correctly implemented and `React` was explicitly imported.

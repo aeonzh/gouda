@@ -5,6 +5,7 @@ import { supabase } from 'packages/shared/api/supabase';
 import { AuthProvider } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -62,7 +63,8 @@ export default function InitialLayout() {
           !inTabsGroup &&
           !inStorefrontGroup &&
           !inProductsDetailGroup &&
-          segments[0] !== 'profile' && segments[0] !== 'cart'
+          segments[0] !== 'profile' &&
+          segments[0] !== 'cart'
         ) {
           // If not in auth, tabs, storefront, products detail, or profile, redirect to tabs
           router.replace('/(tabs)');
@@ -85,30 +87,37 @@ export default function InitialLayout() {
 
   // Render the main app stack once loading is complete
   return (
-    <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name='(tabs)'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='(auth)'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='order-confirmation'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='storefront'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='cart'
-          options={{ headerShown: false }}
-        />
-        {/* Add other b2c routes here if needed */}
-      </Stack>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <SafeAreaView
+          edges={['top']}
+          style={{ flex: 1 }}
+        >
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name='(tabs)'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='(auth)'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='order-confirmation'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='storefront'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='cart'
+              options={{ headerShown: false }}
+            />
+            {/* Add other b2c routes here if needed */}
+          </Stack>
+        </SafeAreaView>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

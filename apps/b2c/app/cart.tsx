@@ -226,13 +226,7 @@ export default function CartScreen() {
 
       if (updatedItem) {
         console.log('Successfully updated quantity');
-        setCartItems((prevItems) =>
-          prevItems.map((item) =>
-            item.product.id === productId
-              ? { ...item, quantity: newQuantity }
-              : item,
-          ),
-        );
+        fetchCartItems();
       }
       console.log(
         '=== DEBUG: updateCartItemQuantity completed successfully ===',
@@ -297,9 +291,7 @@ export default function CartScreen() {
       // Use the shared API to remove the item
       await removeCartItemApi(cartItem.id);
       console.log('Successfully removed item');
-      setCartItems((prevItems) =>
-        prevItems.filter((item) => item.product.id !== productId),
-      );
+      fetchCartItems();
     } catch (error) {
       console.error('Error removing cart item:', error);
       Alert.alert('Error', 'Failed to remove item from cart.');

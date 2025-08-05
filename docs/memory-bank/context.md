@@ -34,7 +34,7 @@ This document provides a quick reference of the current end-state of the project
 - **Tabs**:
   - **Home**: `(tabs)/index.tsx` displays list of authorized vendors for logged-in user with search/filter functionality and navigation to vendor product pages. Implemented using `VendorCard` component and fetching data via `getAuthorizedBusinesses` from `packages/shared/api/organisations`. `SafeAreaView` was removed from this component as safe area handling is now centralized at the top-level layout. Adjusted card heights by removing `min-h-32` and `min-h-full` classes.
   - **Orders**: `(tabs)/orders.tsx` for viewing order history. Order details shown in `orders/[id].tsx`. Uses `packages/shared/api/orders`. Order history list and order details implemented.
-  - **Cart**: `cart.tsx` for managing shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen implemented.
+  - **Cart**: `cart.tsx` for managing shopping cart. Uses `packages/shared/api/products` and `packages/shared/api/supabase`. Shopping cart screen, add/remove/update quantity logic, create order button, and order confirmation screen implemented. A check was added to `apps/b2c/app/products/[id].tsx` to prevent adding unpublished products to the cart. The back button styling was standardized by using the default header.
   - **Profile**: `(tabs)/profile.tsx` includes `profile/index.tsx` for viewing profile, `profile/edit.tsx` for editing profile, and `profile/addresses.tsx` for managing addresses. Uses `packages/shared/api/profiles`. My Account/Profile screen, profile data fetching/update, and Saved Addresses screen implemented.
 - **Order Confirmation**: `order-confirmation.tsx` displays order confirmation after order is placed.
 - **Navigation**: Uses `expo-router` (updated to `5.1.3`). Root `_layout.tsx` file created to handle session management and redirects. 'Profile' tab reordered to be last tab.
@@ -49,7 +49,7 @@ This document provides a quick reference of the current end-state of the project
 #### `api/`
 
 - **`customers.ts`**: Functions for managing customer profiles, including `createCustomer`, `getAllCustomers`, `getCustomerById`, and `updateCustomer`.
-- **`orders.ts`**: Functions for managing carts and orders, including `getOrCreateCart`, `addOrUpdateCartItem`, `removeCartItem`, `updateCartItemQuantity`, `getCartItems`, `createOrderFromCart`, `getCustomerOrderHistory`, `getOrderDetails`, `updateOrderStatus`, and `createOrderForCustomer`.
+- **`orders.ts`**: Functions for managing carts and orders, including `addOrUpdateCartItem`, `removeCartItem`, `updateCartItemQuantity`, `getCartItems`, `createOrderFromCart`, `getCustomerOrderHistory`, `getOrderDetails`, `updateOrderStatus`, and `createOrderForCustomer`.
 - **`organisations.ts`**: Functions for managing organisations, including `getAuthorizedBusinesses` and `getCustomerBusinessId`.
 - **`products.ts`**: Functions for managing products and categories, including `getProducts`, `getProductById`, `createProduct`, `updateProduct`, `deleteProduct`, `getCategories`, `createCategory`, `updateCategory`, `deleteCategory`, `getInventoryLevels`, and `adjustInventoryLevel`.
 - **`profiles.ts`**: Functions for managing user profiles, including `getProfile` and `updateProfile`.

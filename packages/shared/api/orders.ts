@@ -312,7 +312,7 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
 
   const { data, error } = await supabase
     .from('cart_items')
-    .select('id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, products(*)')
+    .select('id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, product:products(id, name, description, price, stock_quantity, image_url, business_id, category_id, status)')
     .eq('cart_id', cartId);
 
   if (error) {
@@ -361,34 +361,17 @@ export async function getOrCreateCart(
 
   const { data: cart, error } = await supabase
     .from('carts')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('business_id', businessId)
+    .upsert({ user_id: userId, business_id: businessId }, { onConflict: 'user_id, business_id' })
+    .select()
     .single();
 
-  if (error && error.code === 'PGRST116') {
-    // No rows found
-    console.log('No cart found, creating new cart...');
-    // Create a new cart if one doesn't exist
-    const { data: newCart, error: createError } = await supabase
-      .from('carts')
-      .insert([{ business_id: businessId, user_id: userId }])
-      .select()
-      .single();
-
-    if (createError) {
-      console.error('Error creating cart:', createError.message);
-      throw createError;
-    }
-    console.log('Successfully created cart:', newCart);
-    return newCart;
-  } else if (error) {
-    console.error('Error fetching cart:', error.message);
+  if (error) {
+    console.error('Error getting or creating cart:', error.message);
     throw error;
-  } else {
-    console.log('Found existing cart:', cart);
-    return cart;
   }
+
+  console.log('Found or created cart:', cart);
+  return cart;
 }
 
 /**

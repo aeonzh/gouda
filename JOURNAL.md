@@ -264,3 +264,66 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 - **What was changed/decided and why (root cause/reason)**: The root cause was identified in the redirection logic in `apps/b2c/app/_layout.tsx`. The authentication redirection logic was redirecting all non-tab routes (except storefront and products detail) back to the tabs, which included profile routes like `/profile/edit` and `/profile/addresses`. This caused users to be redirected away from profile sub-screens back to the main profile tab.
 - **How the change addresses the root cause**: Modified the redirection logic in `apps/b2c/app/_layout.tsx` by adding `segments[0] !== 'profile'` to the condition that checks whether to redirect to tabs. This prevents the app from redirecting users away from profile routes while maintaining the existing redirection behavior for other routes. The specific change was in the useEffect hook that handles authentication-based redirection.
 - **Why the change addresses the root cause**: By excluding profile routes from the general redirection logic, users can now successfully navigate to and remain on profile sub-screens like Edit Profile and Manage Addresses. This targeted fix maintains the overall navigation structure while allowing profile-specific routes to function as intended, resolving the navigation issue without disrupting other parts of the application.
+
+### Session: Tuesday, August 5, 2025
+
+#### Debugging and Fixing "Empty Cart" Issue
+
+- **What were we trying to do**: Resolve a bug where the shopping cart in the B2C application always appeared empty, despite items being successfully added to the database. This involved extensive debugging of data fetching, API responses, and database interactions.
+
+- **What was changed/decided and why (root cause/reason)**:
+  The root cause of the "empty cart" issue was a subtle mismatch between the data structure returned by the Supabase API and the data structure expected by the frontend TypeScript code. Specifically, when performing a join operation to fetch `product` details along with `cart_items`, the Supabase PostgREST API returns the joined `product` data under a key named after the joined table (e.g., `products`). However, the frontend's `CartItem` interface and rendering logic expected this nested product object to be under a singular key (e.g., `product`). This discrepancy caused the frontend's filtering logic (`.filter((item) => item.product)`) to filter out all cart items because `item.product` was always `undefined`.
+
+  A secondary issue was a race condition in `getOrCreateCart` and a missing unique constraint in the `carts` table, which prevented robust upsert operations and contributed to data inconsistency.
+
+- **How the change addresses the root cause**:
+  1.  **Product Interface Update**: The `Product` interface in `packages/shared/api/products.ts` was updated to include the `status` field, ensuring type consistency with the database schema.
+  2.  **Supabase Alias for Product Data**: In `packages/shared/api/orders.ts`, the `getCartItems` function's Supabase query was modified to use an alias for the joined `products` table. Specifically, `products(...)` was changed to `product:products(...)`. This instructs Supabase to return the nested product object under the key `product` (singular), matching the frontend's expectation.
+      **Detailed Explanation of `product:products(...)`**:
+      In Supabase, when you perform a `select` with a join (e.g., `select('*, products(*)')`), PostgREST (Supabase's API layer) by default returns the joined table's data under a key that is the plural name of the table. So, `products(*)` would result in a JSON structure like:
+      ```json
+      {
+        "id": "cart_item_id",
+        "product_id": "product_id",
+        // ... other cart_item fields
+        "products": { // Key is 'products' (plural)
+          "id": "product_id",
+          "name": "Product Name",
+          // ... other product fields
+        }
+      }
+      ```
+      However, our frontend `CartItem` interface in `apps/b2c/app/cart.tsx` and the corresponding logic (e.g., `item.product`) expected the key to be `product` (singular):
+      ```typescript
+      interface CartItem {
+        product: Product; // Expects 'product' (singular)
+        quantity: number;
+      }
+      ```
+      By changing the select statement to `product:products(...)`, we are telling PostgREST to alias the `products` relationship. The syntax `new_key:original_table_name(columns_to_select)` allows us to rename the key under which the joined data appears in the JSON response.
+      Thus, the API response now looks like this, correctly matching the frontend's `CartItem` interface:
+      ```json
+      {
+        "id": "cart_item_id",
+        "product_id": "product_id",
+        // ... other cart_item fields
+        "product": { // Key is now 'product' (singular)
+          "id": "product_id",
+          "name": "Product Name",
+          // ... other product fields
+        }
+      }
+      ```
+      This was the critical fix that allowed the frontend to correctly identify and process the nested product data.
+  3.  **UI Data Refresh Logic**: The `updateCartItemQuantity` and `removeCartItem` functions in `apps/b2c/app/cart.tsx` were updated to call `fetchCartItems()` after a successful API operation instead of manipulating local state. This ensures the UI always reflects the latest data from the server, preventing stale data issues.
+  4.  **Robust Cart Creation/Retrieval**: In `packages/shared/api/orders.ts`, the `getOrCreateCart` function was refactored to use a single `upsert` operation with `onConflict: 'user_id, business_id'`. This atomic operation eliminates the race condition that could occur with a separate `select` followed by an `insert`.
+  5.  **Database Unique Constraint**: A new database migration file, `supabase/migrations/20250805120000_add_unique_constraint_to_carts.sql`, was created to add a `UNIQUE (user_id, business_id)` constraint to the `carts` table. This constraint is essential for the `upsert` operation in `getOrCreateCart` to work correctly, as `upsert` requires a unique constraint to determine if a row should be updated or inserted.
+
+- **Why the change addresses the root cause**:
+  1.  **Product Interface Consistency**: Ensures that the TypeScript types align with the actual data structure returned by the API, preventing runtime errors and improving developer experience.
+  2.  **Supabase Alias**: Directly addresses the data key mismatch between the API response and the frontend's expected structure. By aliasing `products` to `product`, the frontend's existing logic (e.g., `.filter((item) => item.product)`) now correctly identifies and uses the product data associated with each cart item, making the cart items visible.
+  3.  **UI Refresh**: Guarantees data consistency across the application by always refetching the cart state from the source of truth (the database) after any modification. This prevents scenarios where the UI might show outdated information.
+  4.  **Atomic Upsert**: The `upsert` operation makes the `getOrCreateCart` function more robust and resilient to race conditions, ensuring that a cart is always correctly created or retrieved, even under concurrent requests.
+  5.  **Database Integrity**: The unique constraint on `carts` is fundamental for the `upsert` operation to work as intended, enforcing data integrity and preventing duplicate cart entries for the same user and business.
+
+  Collectively, these changes resolved the multifaceted "empty cart" bug by fixing data structure mismatches, enhancing UI update logic, and improving database interaction robustness.

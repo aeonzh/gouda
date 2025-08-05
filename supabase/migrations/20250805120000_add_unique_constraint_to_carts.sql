@@ -1,0 +1,1 @@
+ALTER TABLE public.carts ADD CONSTRAINT carts_user_id_business_id_key UNIQUE (user_id, business_id);

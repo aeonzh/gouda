@@ -20,6 +20,7 @@ export interface Product {
   image_url?: string;
   price: number;
   stock_quantity: number;
+  status: 'draft' | 'published' | 'rejected';
 }
 
 /**

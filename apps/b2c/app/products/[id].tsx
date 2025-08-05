@@ -141,19 +141,24 @@ export default function ProductDetailsScreen() {
 
   return (
     <SafeAreaView className='flex-1 bg-gray-100'>
-      <Stack.Screen 
-        options={{ 
-          headerShown: true, 
-          title: product.name,
+      <Stack.Screen
+        options={{
           headerRight: () => (
             <TouchableOpacity
-              className='bg-blue-500 rounded-md px-3 py-1 mr-2'
-              onPress={() => router.push({ pathname: '/cart', params: { businessId: product.business_id } })}
+              className='mr-2 rounded-md bg-blue-500 px-3 py-1'
+              onPress={() =>
+                router.push({
+                  params: { businessId: product.business_id },
+                  pathname: '/cart',
+                })
+              }
             >
-              <Text className='text-white text-sm'>Cart</Text>
+              <Text className='text-sm text-white'>Cart</Text>
             </TouchableOpacity>
-          )
-        }} 
+          ),
+          headerShown: true,
+          title: product.name,
+        }}
       />
       <ScrollView
         className='flex-1'
@@ -204,14 +209,6 @@ export default function ProductDetailsScreen() {
             onPress={handleAddToCart}
             title='Add to Cart'
           />
-
-          {showGoToCart && (
-            <Button
-              className='w-full rounded-lg bg-green-600 py-4 shadow-lg mt-4'
-              onPress={() => router.push({ params: { businessId: product.business_id }, pathname: '/cart' })}
-              title='Go to Cart'
-            />
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>

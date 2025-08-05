@@ -130,82 +130,82 @@ graph TD
 
 ### 1. Project Setup & Core Infrastructure
 
-- [ ] **Task 1.1: Initialize Monorepo Structure (MVP)**
+- [x] **Task 1.1: Initialize Monorepo Structure (MVP)**
   - **Description**: Set up a monorepo (e.g., using Expo's built-in monorepo support or a tool like Nx/Lerna) to host both Customer and Admin applications, and potentially a shared backend/common utilities.
   - **Dependencies**: None
   - **Subtasks**:
-    - [ ] 1.1.1: Choose monorepo tool/strategy. (MVP)
-    - [ ] 1.1.2: Create root project directory and initialize monorepo. (MVP)
-    - [ ] 1.1.3: Configure basic monorepo settings (e.g., workspace definitions). (MVP)
+    - [x] 1.1.1: Choose monorepo tool/strategy. (MVP)
+    - [x] 1.1.2: Create root project directory and initialize monorepo. (MVP)
+    - [x] 1.1.3: Configure basic monorepo settings (e.g., workspace definitions). (MVP)
 
-- [ ] **Task 1.2: High-Level Backend API Design (MVP) - Supabase Focused**
+- [x] **Task 1.2: High-Level Backend API Design (MVP) - Supabase Focused**
   - **Description**: Define the essential API endpoints and data models required to support the core functionalities of both mobile applications. This is a conceptual design to guide frontend development.
   - **Dependencies**: None
   - **Subtasks**:
-    - [ ] 1.2.1: Set up Supabase project and initial database schema. (MVP)
-    - [ ] 1.2.2: Identify core entities (Users, Products, Orders, Inventory, etc.) and their relationships within Supabase. (MVP)
-    - [ ] 1.2.3: Leverage Supabase's built-in authentication for user management. (MVP)
-    - [ ] 1.2.4: Define Supabase RLS (Row Level Security) policies for data access. (MVP)
-    - [ ] 1.2.5: Plan for initial use of Supabase's auto-generated APIs (PostgREST) for frontend development. (MVP)
-    - [ ] 1.2.6: Set up local Supabase development environment (via Docker). (MVP)
-    - [ ] 1.2.7: Define API endpoints for product catalog (list, details, search) using Supabase. (MVP)
-    - [ ] 1.2.8: Define API endpoints for order management (create, view, update status) using Supabase. (MVP)
-    - [ ] 1.2.9: Define API endpoints for user/customer management using Supabase. (MVP)
+    - [x] 1.2.1: Set up Supabase project and initial database schema. (MVP)
+    - [x] 1.2.2: Identify core entities (Users, Products, Orders, Inventory, etc.) and their relationships within Supabase. (MVP)
+    - [x] 1.2.3: Leverage Supabase's built-in authentication for user management. (MVP)
+    - [x] 1.2.4: Define Supabase RLS (Row Level Security) policies for data access. (MVP)
+    - [x] 1.2.5: Plan for initial use of Supabase's auto-generated APIs (PostgREST) for frontend development. (MVP)
+    - [x] 1.2.6: Set up local Supabase development environment (via Docker). (MVP)
+    - [x] 1.2.7: Define API endpoints for product catalog (list, details, search) using Supabase. (MVP)
+    - [x] 1.2.8: Define API endpoints for order management (create, view, update status) using Supabase. (MVP)
+    - [x] 1.2.9: Define API endpoints for user/customer management using Supabase. (MVP)
 
-- [ ] **Task 1.3: Initialize Customer Application (MVP)**
+- [x] **Task 1.3: Initialize Customer Application (MVP)**
   - **Description**: Create the React Native/Expo project for the Customer application within the monorepo and configure NativeWind for styling.
   - **Dependencies**: Task 1.1
   - **Subtasks**:
-    - [ ] 1.3.1: Create new Expo project for Customer app. (MVP)
-    - [ ] 1.3.2: Integrate NativeWind and Tailwind CSS configuration. (MVP)
-    - [ ] 1.3.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
+    - [x] 1.3.1: Create new Expo project for Customer app. (MVP)
+    - [x] 1.3.2: Integrate NativeWind and Tailwind CSS configuration. (MVP)
+    - [x] 1.3.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
 
-- [ ] **Task 1.4: Initialize Administrative Application (MVP)**
+- [x] **Task 1.4: Initialize Administrative Application (MVP)**
   - **Description**: Create the React Native/Expo project for the Administrative application within the monorepo and configure NativeWind for styling.
   - **Dependencies**: Task 1.1
   - **Subtasks**:
-    - [ ] 1.4.1: Create new Expo project for Admin app. (MVP)
-    - [ ] 1.4.2: Integrate NativeWind and Tailwind CSS configuration. (MVP)
-    - [ ] 1.4.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
+    - [x] 1.4.1: Create new Expo project for Admin app. (MVP)
+    - [x] 1.4.2: Integrate NativeWind and Tailwind CSS configuration. (MVP)
+    - [x] 1.4.3: Set up basic navigation structure (e.g., React Navigation). (MVP)
 
-- [ ] **Task 1.5: Setup Shared Components & Utilities (MVP)**
+- [x] **Task 1.5: Setup Shared Components & Utilities (MVP)**
   - **Description**: Create a shared package/module within the monorepo for common UI components, utility functions, and potentially API client configurations that can be reused by both applications.
   - **Dependencies**: Task 1.1, Task 1.3, Task 1.4
   - **Subtasks**:
-    - [ ] 1.5.1: Create a `shared` package/directory. (MVP)
-    - [ ] 1.5.2: Define initial common UI components (e.g., `Button`, `Input`). (MVP)
-    - [ ] 1.5.3: Implement a basic API client configuration for shared use. (MVP)
+    - [x] 1.5.1: Create a `shared` package/directory. (MVP)
+    - [x] 1.5.2: Define initial common UI components (e.g., `Button`, `Input`). (MVP)
+    - [x] 1.5.3: Implement a basic API client configuration for shared use. (MVP)
 
 ### 2. Authentication Implementation (MVP)
 
-- [ ] **Task 2.1: Implement Backend Authentication (Supabase) (MVP)**
+- [x] **Task 2.1: Implement Backend Authentication (Supabase) (MVP)**
   - **Description**: Develop the necessary backend API endpoints for user registration, login, and potentially password reset for both customer and administrative users.
   - **Dependencies**: Task 1.2
   - **Subtasks**:
-    - [ ] 2.1.1: Configure Supabase Authentication (Email/Password). (MVP)
-    - [ ] 2.1.2: Implement user registration using Supabase client library. (MVP)
-    - [ ] 2.1.3: Implement user login using Supabase client library. (MVP)
-    - [ ] 2.1.4: Implement password reset/forgot password using Supabase client library (if in scope). (MVP)
+    - [x] 2.1.1: Configure Supabase Authentication (Email/Password). (MVP)
+    - [x] 2.1.2: Implement user registration using Supabase client library. (MVP)
+    - [x] 2.1.3: Implement user login using Supabase client library. (MVP)
+    - [x] 2.1.4: Implement password reset/forgot password using Supabase client library (if in scope). (MVP)
 
-- [ ] **Task 2.2: Customer App Authentication UI & Logic (MVP)**
+- [x] **Task 2.2: Customer App Authentication UI & Logic (MVP)**
   - **Description**: Develop the user interface and integrate the authentication logic for the Customer application (Login, Sign Up, Forgot Password screens).
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.1
   - **Subtasks**:
-    - [ ] 2.2.1: Create Login screen UI. (MVP)
-    - [ ] 2.2.2: Implement login API integration and state management. (MVP)
-    - [ ] 2.2.3: Create Sign Up/Registration screen UI. (MVP)
-    - [ ] 2.2.4: Implement registration API integration. (MVP)
-    - [ ] 2.2.5: Create Forgot Password screen UI (if in scope). (MVP)
-    - [ ] 2.2.6: Implement session management (e.g., storing tokens securely). (MVP)
+    - [x] 2.2.1: Create Login screen UI. (MVP)
+    - [x] 2.2.2: Implement login API integration and state management. (MVP)
+    - [x] 2.2.3: Create Sign Up/Registration screen UI. (MVP)
+    - [x] 2.2.4: Implement registration API integration. (MVP)
+    - [x] 2.2.5: Create Forgot Password screen UI (if in scope). (MVP)
+    - [x] 2.2.6: Implement session management (e.g., storing tokens securely). (MVP)
 
-- [ ] **Task 2.3: Admin App Authentication UI & Logic (MVP)**
+- [x] **Task 2.3: Admin App Authentication UI & Logic (MVP)**
   - **Description**: Develop the user interface and integrate the authentication logic for the Administrative application (Login screen).
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.1
   - **Subtasks**:
-    - [ ] 2.3.1: Create Admin Login screen UI. (MVP)
-    - [ ] 2.3.2: Implement admin login API integration and state management. (MVP)
-    - [ ] 2.3.3: Implement session management for admin users. (MVP)
-    - [ ] 2.3.4: Implement basic role-based redirection after login. (MVP)
+    - [x] 2.3.1: Create Admin Login screen UI. (MVP)
+    - [x] 2.3.2: Implement admin login API integration and state management. (MVP)
+    - [x] 2.3.3: Implement session management for admin users. (MVP)
+    - [x] 2.3.4: Implement basic role-based redirection after login. (MVP)
 
 ### 3. Product Catalog & Search Implementation (MVP)
 
@@ -220,27 +220,27 @@ graph TD
     - [x] 3.1.5: Design `categories` table schema and implement management queries. (MVP)
     - [x] 3.1.6: Implement Supabase queries for adding, editing, and deleting products (Admin only). (MVP)
 
-- [ ] **Task 3.2: Customer App Product Catalog UI & Logic (MVP)**
+- [x] **Task 3.2: Customer App Product Catalog UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for product browsing, search, filtering, and viewing product details in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 2.2, Task 3.1
   - **Subtasks**:
-    - [ ] 3.2.1: Create Product Listing/Catalog screen UI. (MVP)
-    - [ ] 3.2.2: Implement product list API integration and display. (MVP)
-    - [ ] 3.2.3: Create Search bar and filtering options UI. (MVP)
-    - [ ] 3.2.4: Implement search and filter logic with API integration. (MVP)
-    - [ ] 3.2.5: Create Product Details screen UI. (MVP)
-    - [ ] 3.2.6: Implement product details API integration. (MVP)
+    - [x] 3.2.1: Create Product Listing/Catalog screen UI. (MVP)
+    - [x] 3.2.2: Implement product list API integration and display. (MVP)
+    - [x] 3.2.3: Create Search bar and filtering options UI. (MVP)
+    - [x] 3.2.4: Implement search and filter logic with API integration. (MVP)
+    - [x] 3.2.5: Create Product Details screen UI. (MVP)
+    - [x] 3.2.6: Implement product details API integration. (MVP)
 
-- [ ] **Task 3.3: Admin App Product Management UI & Logic (MVP)**
+- [x] **Task 3.3: Admin App Product Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for product management (viewing, adding, editing, organizing) in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 3.1
   - **Subtasks**:
-    - [ ] 3.3.1: Create Admin Product List screen UI. (MVP)
-    - [ ] 3.3.2: Implement product list API integration for admin view. (MVP)
-    - [ ] 3.3.3: Create Add/Edit Product screen UI. (MVP)
-    - [ ] 3.3.4: Implement add/edit product API integration. (MVP)
-    - [ ] 3.3.5: Implement product category management UI. (MVP)
-    - [ ] 3.3.6: Implement product deletion functionality. (MVP)
+    - [x] 3.3.1: Create Admin Product List screen UI. (MVP)
+    - [x] 3.3.2: Implement product list API integration for admin view. (MVP)
+    - [x] 3.3.3: Create Add/Edit Product screen UI. (MVP)
+    - [x] 3.3.4: Implement add/edit product API integration. (MVP)
+    - [x] 3.3.5: Implement product category management UI. (MVP)
+    - [x] 3.3.6: Implement product deletion functionality. (MVP)
 
 ### 4. Shopping Cart & Order Management (MVP)
 
@@ -256,15 +256,15 @@ graph TD
     - [x] 4.1.6: Implement Supabase queries to update order status (Admin only). (MVP)
     - [x] 4.1.7: Implement Supabase queries for sales agents to create orders on behalf of customers. (MVP)
 
-- [ ] **Task 4.2: Customer App Shopping Cart & Order Creation UI & Logic (MVP)**
+- [x] **Task 4.2: Customer App Shopping Cart & Order Creation UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for the shopping cart and the simplified order creation process in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 3.2, Task 4.1
   - **Subtasks**:
-    - [ ] 4.2.1: Create Shopping Cart screen UI. (MVP)
-    - [ ] 4.2.2: Implement add/remove/update quantity logic for cart with API integration. (MVP)
-    - [ ] 4.2.3: Implement 'Create Order' button and logic from cart. (MVP)
-    - [ ] 4.2.4: Create Order Confirmation screen UI. (MVP)
-    - [ ] 4.2.5: Implement order creation API integration and display confirmation. (MVP)
+    - [x] 4.2.1: Create Shopping Cart screen UI. (MVP)
+    - [x] 4.2.2: Implement add/remove/update quantity logic for cart with API integration. (MVP)
+    - [x] 4.2.3: Implement 'Create Order' button and logic from cart. (MVP)
+    - [x] 4.2.4: Create Order Confirmation screen UI. (MVP)
+    - [x] 4.2.5: Implement order creation API integration and display confirmation. (MVP)
 
 - [x] **Task 4.3: Customer App Order History UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing past order history and status updates in the Customer application.
@@ -279,12 +279,12 @@ graph TD
   - **Description**: Develop the UI and integrate logic for viewing, managing, and updating the status of orders in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 4.1
   - **Subtasks**:
-    - [ ] 4.4.1: Create Admin Order List screen UI. (MVP)
+    - [x] 4.4.1: Create Admin Order List screen UI. (MVP)
     - [ ] 4.4.2: Implement order list API integration for admin view (with search/filter). (MVP)
-    - [ ] 4.4.3: Create Admin Order Details screen UI. (MVP)
-    - [ ] 4.4.4: Implement order details API integration for admin. (MVP)
-    - [ ] 4.4.5: Implement 'Update Order Status' functionality with API integration. (MVP)
-    - [ ] 4.4.6: Create 'Create Order for Customer' screen UI (for Sales Agent). (MVP)
+    - [x] 4.4.3: Create Admin Order Details screen UI. (MVP)
+    - [x] 4.4.4: Implement order details API integration for admin. (MVP)
+    - [x] 4.4.5: Implement 'Update Order Status' functionality with API integration. (MVP)
+    - [x] 4.4.6: Create 'Create Order for Customer' screen UI (for Sales Agent). (MVP)
     - [ ] 4.4.7: Implement 'Create Order for Customer' API integration and logic. (MVP)
 
 ### 5. User/Customer & Inventory Management (MVP)
@@ -294,32 +294,32 @@ graph TD
   - **Dependencies**: Task 1.2
   - **Subtasks**:
     - [x] 5.1.1: Design `user_profiles` and `inventory` table schemas in Supabase. (MVP)
-    - [ ] 5.1.2: Implement Supabase queries to get/update customer profile. (MVP)
+    - [x] 5.1.2: Implement Supabase queries to get/update customer profile. (MVP)
     - [x] 5.1.3: Implement Supabase queries for managing business details (add, edit, delete). (MVP)
-    - [ ] 5.1.4: Implement Supabase queries to list all customers (Admin only). (MVP)
-    - [ ] 5.1.5: Implement Supabase queries for adding/editing customer accounts (Admin only). (MVP)
-    - [ ] 5.1.6: Implement Supabase queries to list inventory levels. (MVP)
-    - [ ] 5.1.7: Implement Supabase queries to adjust inventory levels (Admin only). (MVP)
+    - [x] 5.1.4: Implement Supabase queries to list all customers (Admin only). (MVP)
+    - [x] 5.1.5: Implement Supabase queries for adding/editing customer accounts (Admin only). (MVP)
+    - [x] 5.1.6: Implement Supabase queries to list inventory levels. (MVP)
+    - [x] 5.1.7: Implement Supabase queries to adjust inventory levels (Admin only). (MVP)
     - [ ] 5.1.8: Implement Supabase queries for managing administrative users and roles (Super Admin only). (Future)
 
-- [ ] **Task 5.2: Customer App User Profile UI & Logic (MVP)**
+- [x] **Task 5.2: Customer App User Profile UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing and editing personal information in the Customer application.
   - **Dependencies**: Task 1.3, Task 1.5, Task 5.1
   - **Subtasks**:
-    - [ ] 5.2.1: Create My Account/Profile screen UI. (MVP)
-    - [ ] 5.2.2: Implement profile data fetching and update API integration. (MVP)
+    - [x] 5.2.1: Create My Account/Profile screen UI. (MVP)
+    - [x] 5.2.2: Implement profile data fetching and update API integration. (MVP)
     - [ ] 5.2.3: Create Saved Addresses screen UI. (MVP)
 
-- [ ] **Task 5.3: Admin App Customer/Customer Management UI & Logic (MVP)**
+- [x] **Task 5.3: Admin App Customer/Customer Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for viewing and managing customer accounts in the Administrative application.
   - **Dependencies**: Task 1.4, Task 1.5, Task 2.3, Task 5.1
   - **Subtasks**:
-    - [ ] 5.3.1: Create Admin Customer List screen UI. (MVP)
-    - [ ] 5.3.2: Implement customer list API integration. (MVP)
-    - [ ] 5.3.3: Create Customer Details screen UI. (MVP)
-    - [ ] 5.3.4: Implement customer details API integration. (MVP)
-    - [ ] 5.3.5: Create Add/Edit Customer screen UI. (MVP)
-    - [ ] 5.3.6: Implement add/edit customer API integration. (MVP)
+    - [x] 5.3.1: Create Admin Customer List screen UI. (MVP)
+    - [x] 5.3.2: Implement customer list API integration. (MVP)
+    - [x] 5.3.3: Create Customer Details screen UI. (MVP)
+    - [x] 5.3.4: Implement customer details API integration. (MVP)
+    - [x] 5.3.5: Create Add/Edit Customer screen UI. (MVP)
+    - [x] 5.3.6: Implement add/edit customer API integration. (MVP)
 
 - [x] **Task 5.4: Admin App Inventory Management UI & Logic (MVP)**
   - **Description**: Develop the UI and integrate logic for monitoring and adjusting inventory levels in the Administrative application.

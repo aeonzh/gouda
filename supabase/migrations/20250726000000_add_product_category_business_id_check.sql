@@ -1,9 +1,6 @@
 -- Create a function to check if product's category_id belongs to the same business_id
-CREATE OR REPLACE FUNCTION check_product_category_business_id()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SET search_path = ''
-AS $$
+CREATE    OR REPLACE FUNCTION check_product_category_business_id () returns trigger language plpgsql
+SET       search_path = '' AS $$
 DECLARE
     category_business_id uuid;
 BEGIN
@@ -25,7 +22,7 @@ END;
 $$;
 
 -- Create a trigger to call the function before insert or update on products table
-CREATE TRIGGER trg_check_product_category_business_id
-BEFORE INSERT OR UPDATE ON products
-FOR EACH ROW
-EXECUTE FUNCTION check_product_category_business_id();
+CREATE    TRIGGER trg_check_product_category_business_id before insert
+OR       
+          UPDATE    ON products FOR each ROW
+          EXECUTE   function check_product_category_business_id ();

@@ -24,7 +24,6 @@ export default function ProductDetailsScreen() {
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const [showGoToCart, setShowGoToCart] = useState(false);
   const router = useRouter();
 
   const handleAddToCart = async () => {
@@ -84,7 +83,6 @@ export default function ProductDetailsScreen() {
 
       console.log('Product successfully added to cart');
       Alert.alert('Success', 'Product added to cart!');
-      setShowGoToCart(true);
       setSelectedQuantity(1); // Reset quantity selector
       console.log('=== DEBUG: handleAddToCart completed successfully ===');
     } catch (error) {

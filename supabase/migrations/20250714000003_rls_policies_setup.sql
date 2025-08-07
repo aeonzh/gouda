@@ -248,10 +248,11 @@ CREATE POLICY "order_items_select_access" ON order_items FOR SELECT USING (
         (EXISTS (SELECT 1 FROM public.orders WHERE id = order_id AND user_id = (select auth.uid())))
     )
 );
--- Policy for inserting order items: Allows admins to insert any order item and business owners/sales agents to insert order items within their business.
+-- Policy for inserting order items: Allows admins to insert any order item, business owners/sales agents to insert order items within their business, and customers to insert order items for their own orders.
 CREATE POLICY "order_items_insert_access" ON order_items FOR INSERT WITH CHECK (
     (EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = (select auth.uid()) AND p.role = 'admin')) OR
-    (EXISTS (SELECT 1 FROM public.orders o JOIN public.members m ON o.business_id = m.business_id WHERE o.id = order_items.order_id AND m.profile_id = (select auth.uid()) AND m.role_in_business IN ('owner', 'sales_agent')))
+    (EXISTS (SELECT 1 FROM public.orders o JOIN public.members m ON o.business_id = m.business_id WHERE o.id = order_items.order_id AND m.profile_id = (select auth.uid()) AND m.role_in_business IN ('owner', 'sales_agent'))) OR
+    (EXISTS (SELECT 1 FROM public.orders o JOIN public.members m ON o.business_id = m.business_id WHERE o.id = order_items.order_id AND o.user_id = (select auth.uid()) AND m.profile_id = (select auth.uid()) AND m.role_in_business = 'customer'))
 );
 -- Policy for updating order items: Allows admins to update any order item and business owners/sales agents to update order items within their business.
 CREATE POLICY "order_items_update_access" ON order_items FOR UPDATE USING (

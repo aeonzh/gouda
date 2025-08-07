@@ -6,6 +6,7 @@ import {
 import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+
 import '@/global.css';
 
 interface VendorCardProps {

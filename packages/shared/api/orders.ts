@@ -210,6 +210,19 @@ export async function createOrderFromCart(
     userId,
   });
 
+  // Verify user has business relationship
+  const { data: businessMembership, error: membershipError } = await supabase
+    .from('members')
+    .select('role_in_business')
+    .eq('profile_id', userId)
+    .eq('business_id', businessId)
+    .eq('deleted_at', null)
+    .single();
+
+  if (membershipError || !businessMembership) {
+    throw new Error('User is not associated with this business');
+  }
+
   const { data: cart, error: cartError } = await supabase
     .from('carts')
     .select('id')
@@ -312,7 +325,9 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
 
   const { data, error } = await supabase
     .from('cart_items')
-    .select('id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, product:products(id, name, description, price, stock_quantity, image_url, business_id, category_id, status)')
+    .select(
+      'id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, product:products!left(id, name, description, price, stock_quantity, image_url, business_id, category_id, status)',
+    )
     .eq('cart_id', cartId);
 
   if (error) {
@@ -321,7 +336,10 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
   }
 
   console.log('getCartItems returned data:', data);
-  return data;
+  return data.map((item) => ({
+    ...item,
+    product: item.product ? item.product[0] : undefined,
+  })) as CartItem[];
 }
 
 /**
@@ -361,7 +379,10 @@ export async function getOrCreateCart(
 
   const { data: cart, error } = await supabase
     .from('carts')
-    .upsert({ user_id: userId, business_id: businessId }, { onConflict: 'user_id, business_id' })
+    .upsert(
+      { business_id: businessId, user_id: userId },
+      { onConflict: 'user_id, business_id' },
+    )
     .select()
     .single();
 
@@ -382,7 +403,9 @@ export async function getOrCreateCart(
 export async function getOrderDetails(orderId: string): Promise<null | Order> {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, order_items(*, products(*))') // Select order and join order_items with product details
+    .select(
+      '*, order_items!left(*, product:products!left(id, name, description, price, stock_quantity, image_url, business_id, category_id, status))',
+    ) // Select order and join order_items with product details
     .eq('id', orderId)
     .single();
 

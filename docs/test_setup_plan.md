@@ -123,7 +123,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Prevents auth UX regressions.
 
 - [ ] 6. Optional live-integration (Supabase local) (deps: 1)
-  - [ ] 6.1 CI job: `supabase start` + `supabase db reset` + seed; run Node-based smoke suite (deps: 7.1)
+  - [x] 6.1 CI job: `supabase start` + `supabase db reset` + seed; run Node-based smoke suite (deps: 7.1)
     - What: Add CI job to spin up Supabase containers, apply migrations/seed, run a lightweight suite.
     - Why: Catches schema/policy mismatches MSW/unit might miss.
   - [ ] 6.2 Smoke: list products, create cart item, create order; assert 2xx + shapes (deps: 6.1)
@@ -131,7 +131,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Verifies end-to-end plumbing with real DB/auth.
 
 - [ ] 7. Coverage and CI (deps: 3,4,5)
-  - [ ] 7.1 GitHub Actions workflow with pnpm caching; jobs: unit+screen (MSW) and optional live (deps: 1.1)
+  - [x] 7.1 GitHub Actions workflow with pnpm caching; jobs: unit+screen (MSW) and optional live (deps: 1.1)
     - What: Add workflow running `pnpm -w test` and optional live job; cache pnpm store and node_modules.
     - Why: Fast, reliable CI feedback and reproducible builds.
   - [ ] 7.2 Coverage thresholds: shared 80% lines, apps 60% initially; upload artifacts (deps: 7.1)

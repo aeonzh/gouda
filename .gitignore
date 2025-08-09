@@ -39,3 +39,6 @@ yarn-error.*
 # supabase
 supabase/*
 !supabase/migrations/
+
+# tmp
+tmp/

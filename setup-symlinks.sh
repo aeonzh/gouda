@@ -28,10 +28,36 @@ if [ ! -f "$SOURCE_MCP_FILE" ]; then
     exit 1
 fi
 
-# Function to create symlink
+# Compute a relative path from the target's directory to the source file
+relpath() {
+    local source_path="$1"
+    local target_dir="$2"
+
+    # Prefer python3; fallback to perl; else return absolute path
+    if command -v python3 >/dev/null 2>&1; then
+        python3 - "$source_path" "$target_dir" <<'PY'
+import os, sys
+src = os.path.abspath(sys.argv[1])
+dst_dir = os.path.abspath(sys.argv[2])
+print(os.path.relpath(src, dst_dir))
+PY
+    elif command -v perl >/dev/null 2>&1; then
+        perl -MFile::Spec -e 'use Cwd qw(abs_path); print File::Spec->abs2rel(abs_path($ARGV[0]), abs_path($ARGV[1]))' "$source_path" "$target_dir"
+    else
+        # Fallback to absolute path if no helper available
+        echo "$source_path"
+    fi
+}
+
+# Function to create symlink using a relative target
 create_symlink() {
     local source_file="$1"
     local target_file="$2"
+
+    # Ensure target directory exists
+    local target_dir
+    target_dir="$(dirname "$target_file")"
+    mkdir -p "$target_dir"
 
     # Remove existing file or symlink if it exists
     if [ -e "$target_file" ] || [ -L "$target_file" ]; then
@@ -39,9 +65,13 @@ create_symlink() {
         rm -f "$target_file"
     fi
 
-    # Create symlink
-    echo "Creating symlink: $target_file -> $source_file"
-    ln -s "$source_file" "$target_file"
+    # Compute relative path from target directory to source file
+    local relative_target
+    relative_target="$(relpath "$source_file" "$target_dir")"
+
+    # Create symlink using relative path
+    echo "Creating symlink: $target_file -> $relative_target"
+    ln -s "$relative_target" "$target_file"
 }
 
 # Process rules files for .cursor (md -> mdc)

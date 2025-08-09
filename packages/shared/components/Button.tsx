@@ -64,6 +64,30 @@ export const Button: React.FC<ButtonProps> = ({
       break;
   }
 
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <ActivityIndicator
+          testID='activity-indicator'
+          color={variant === 'primary' ? 'white' : 'gray'}
+        />
+      );
+    }
+
+    if (children !== undefined && children !== null) {
+      if (typeof children === 'string' || typeof children === 'number') {
+        return <Text className={`${textClasses}`}>{children}</Text>;
+      }
+      return children;
+    }
+
+    if (title) {
+      return <Text className={`${textClasses}`}>{title}</Text>;
+    }
+
+    return null;
+  };
+
   return (
     <TouchableOpacity
       accessibilityRole='button'
@@ -73,11 +97,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || isLoading}
       onPress={onPress}
     >
-      {isLoading ? (
-        <ActivityIndicator color={variant === 'primary' ? 'white' : 'gray'} />
-      ) : (
-        children || <Text className={`${textClasses}`}>{title}</Text>
-      )}
+      {renderContent()}
     </TouchableOpacity>
   );
 };

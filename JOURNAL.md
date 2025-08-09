@@ -380,3 +380,28 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   3. Added `placingOrder` state in `apps/b2c/app/cart.tsx` to disable the button and show a spinner during submission.
   4. Hardened `apps/b2c/app/orders/[id].tsx` to fall back to `created_at` for the date and render addresses only if present.
 - **Why the change addresses the root cause**: Ensures correct navigation to confirmation, visible progress during order submission, and accurate, authenticated order fetching for the Orders tab while preventing UI crashes on optional fields.
+
+### Session: Saturday, August 9, 2025
+
+#### Monorepo Jest Testing Setup for Expo RN (B2C and Shared)
+
+- **What were we trying to do**: Establish a working Jest setup for the Expo React Native monorepo so that tests run in `apps/b2c` and `packages/shared` under pnpm.
+
+- **What was changed/decided and why (root cause/reason)**:
+  1. Tests failed with `SyntaxError: Cannot use import statement outside a module` from Expo's Winter runtime (`expo/src/winter/index.ts`) because Expo packages were not being transformed by Babel in Jest.
+  2. Jest config attempted to map `@react-native/js-polyfills/error-guard`, but the mock file did not exist at the repository root, causing a configuration error.
+  3. Shared package tests encountered resolution issues for `NativeAnimatedHelper` and a failing assertion when rendering string children in `Button` without a wrapping `Text`.
+
+- **How the change addresses the root cause**:
+  1. Updated `transformIgnorePatterns` in both `apps/b2c/jest.config.js` and `packages/shared/jest.config.js` to include `expo` and `@expo` alongside RN-related packages, ensuring Expo sources are transformed by `babel-jest`.
+  2. Added a root mock module at `__mocks__/@react-native/js-polyfills/error-guard.js` and mapped it in both Jest configs to satisfy RN's test setup.
+  3. Hardened `packages/shared/jest-setup.js` to optionally mock `react-native/Libraries/Animated/NativeAnimatedHelper` without crashing if resolution fails under pnpm.
+  4. Adjusted `packages/shared/components/Button.tsx` so string/number children are wrapped in a `Text` component, allowing reliable text queries in tests.
+
+- **Why the change addresses the root cause**:
+  1. Transforming Expo modules removes the ESM parsing error under Jest.
+  2. Providing the error-guard mock resolves RN's setup requirement across workspaces.
+  3. Making the NativeAnimatedHelper mock resilient avoids environment-specific resolution errors.
+  4. Wrapping string children in `Text` matches RN expectations and enables deterministic testing with React Native Testing Library.
+
+- **Verification**: `pnpm test` passes across workspaces; `apps/b2c` and `packages/shared` suites are green.

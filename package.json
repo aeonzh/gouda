@@ -14,7 +14,9 @@
     "format": "eslint . --fix",
     "db:reset": "supabase db reset",
     "db:reset:seed": "supabase db reset && pnpx tsx seed.ts",
-    "clean-install": "pnpm i --frozen-lockfile"
+    "clean-install": "pnpm i --frozen-lockfile",
+    "test": "pnpm -r --if-present test",
+    "test:b2c": "pnpm --filter b2c test"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",

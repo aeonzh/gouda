@@ -2,7 +2,8 @@
 
 ## Current Work Focus
 
-Recent changes: Re-applied fix for cart displaying "Unknown product" by refining product data parsing from Supabase to correctly handle product as an array.Next steps: None, task completed.
+Recent changes: Jest testing configured and passing for Expo RN monorepo (B2C and shared). Fixed Expo transform errors, added RN error-guard mock, stabilized shared setup, and adjusted `Button` to wrap string children in `Text` for testing.
+Next steps: Add real tests in B2C (components/screens) and optionally enable coverage/CI.
 
 ---
 

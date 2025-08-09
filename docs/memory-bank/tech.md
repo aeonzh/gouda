@@ -186,7 +186,17 @@ To set up the local development environment, follow these steps:
 
 ### 3.3. Testing
 
-- **Current Status**: No explicit test command is configured in `package.json`. The testing framework and single test execution commands depend on the chosen testing setup (e.g., Jest).
+- Tooling: Jest with `jest-expo` preset, `@testing-library/react-native`, `@testing-library/jest-native`.
+- Monorepo commands (root `package.json`):
+  - `pnpm -r --if-present test` (root `pnpm test`)
+  - `CI=1 pnpm -r --if-present test -- --ci --runInBand` (root `pnpm test:ci`)
+  - `pnpm -r --if-present test -- --coverage` (root `pnpm test:coverage`)
+- Key config points:
+  - `transformIgnorePatterns` includes `expo|@expo|react-native|@react-native|expo-router|@react-navigation|@supabase/supabase-js|@react-native-picker/picker|expo-modules-core`.
+  - Map `^@react-native/js-polyfills/error-guard$` to `__mocks__/@react-native/js-polyfills/error-guard.js`.
+  - `setupFilesAfterEnv` loads `@testing-library/jest-native/extend-expect`.
+  - `packages/shared/jest-setup.js` mocks `expo-constants` to avoid ESM parse issues in tests.
+  - Supabase is mocked in unit tests by stubbing `createClient` to a local mock client.
 
 ## 4. Technical Constraints & Considerations
 

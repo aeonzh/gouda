@@ -1,5 +1,7 @@
 import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient, mockSupabaseModule } from '../../testing/supabase.mock';
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
+import { createClient } from '@supabase/supabase-js';
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 // Helper to create a thenable query builder that works with `await query`
 function createThenableQuery<T>(result: { data: T; error: any }) {
@@ -21,13 +23,12 @@ describe('products API', () => {
 
   beforeEach(() => {
     client = createMockSupabaseClient();
-    mockSupabaseModule(client);
-    jest.resetModules();
+    (createClient as unknown as jest.Mock).mockReturnValue(client);
   });
 
   describe('getProducts', () => {
     it('returns [] and does not query when business_id is missing', async () => {
-      const { getProducts } = await import('../products');
+      const { getProducts } = require('../products');
       const result = await getProducts({});
       expect(result).toEqual([]);
       expect(client.from).not.toHaveBeenCalled();
@@ -41,7 +42,7 @@ describe('products API', () => {
         return qb;
       });
 
-      const { getProducts } = await import('../products');
+      const { getProducts } = require('../products');
       const result = await getProducts({ business_id: 'b1', status: 'published', page: 1, limit: 10 });
 
       // business_id filter applied
@@ -63,7 +64,7 @@ describe('products API', () => {
         return qb;
       });
 
-      const { getProductById } = await import('../products');
+      const { getProductById } = require('../products');
       const result = await getProductById('p2');
       expect(qb.eq).toHaveBeenCalledWith('id', 'p2');
       expect(qb.single).toHaveBeenCalled();
@@ -75,7 +76,7 @@ describe('products API', () => {
       const qb = createThenableQuery({ data: null, error: boom });
       (client.from as jest.Mock).mockImplementation(() => qb);
 
-      const { getProductById } = await import('../products');
+      const { getProductById } = require('../products');
       await expect(getProductById('p3')).rejects.toEqual(boom);
     });
   });

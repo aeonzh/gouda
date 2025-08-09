@@ -2,8 +2,13 @@
 
 ## Current Work Focus
 
-Recent changes: Jest testing configured and passing for Expo RN monorepo (B2C and shared). Fixed Expo transform errors, added RN error-guard mock, stabilized shared setup, and adjusted `Button` to wrap string children in `Text` for testing.
-Next steps: Add real tests in B2C (components/screens) and optionally enable coverage/CI.
+Recent changes: Continued stabilizing Jest in the monorepo while running tests at the root. For `packages/shared` tests, added an `expo-constants` mock to avoid ESM parse errors, removed any reliance on `@react-native-async-storage/async-storage` (no tests depend on it now), converted dynamic `import()` usage in tests to `require()` to avoid VM module flags, and standardized Supabase mocking by stubbing `createClient` to return a test client.
+
+Status: Shared package tests now mostly pass (3 passed, 2 failing). Remaining failures are expectation mismatches vs current implementation:
+- `getProducts` test expects no query when `business_id` is missing, but implementation calls `from('products')` before the guard.
+- `getCartItems` test expects `product` to be `undefined` for null relations; current code returns `null`.
+
+Next steps: Decide whether to align tests with current behavior (allow initial `from` call, expect `null`), or adjust implementation to match stricter test expectations. Proceed based on product intent for API semantics.
 
 ---
 

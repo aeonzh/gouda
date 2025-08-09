@@ -1,5 +1,7 @@
 import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient, mockSupabaseModule } from '../../testing/supabase.mock';
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
+import { createClient } from '@supabase/supabase-js';
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable<T>(result: { data: T; error: any }) {
   const qb: any = {
@@ -16,8 +18,7 @@ describe('profiles API', () => {
   let client: MockSupabaseClient;
   beforeEach(() => {
     client = createMockSupabaseClient();
-    mockSupabaseModule(client);
-    jest.resetModules();
+    (createClient as unknown as jest.Mock).mockReturnValue(client);
   });
 
   it('getBusinessIdForUser returns first membership when multiple exist', async () => {
@@ -30,7 +31,7 @@ describe('profiles API', () => {
       return qb;
     });
 
-    const { getBusinessIdForUser } = await import('../profiles');
+    const { getBusinessIdForUser } = require('../profiles');
     const result = await getBusinessIdForUser('u1');
     expect(result).toBe('b1');
   });

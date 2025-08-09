@@ -201,11 +201,11 @@ export async function getProducts({
   search_query?: string;
   status?: string;
 }): Promise<null | Product[]> {
-  let query = supabase.from('products').select('*');
-
   if (!business_id) {
     return [];
   }
+
+  let query = supabase.from('products').select('*');
   query = query.eq('business_id', business_id);
 
   if (status) {

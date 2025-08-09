@@ -412,3 +412,21 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   4. Wrapping string children in `Text` matches RN expectations and enables deterministic testing with React Native Testing Library.
 
 - **Verification**: `pnpm test` passes across workspaces; `apps/b2c` and `packages/shared` suites are green.
+
+### Session: Saturday, August 9, 2025
+
+#### Stabilize Jest for shared package; remove async-storage dependency in tests; mock expo-constants; align Supabase mocking
+
+- **What were we trying to do**: Run the monorepo tests from the root reliably and eliminate failures caused by RN/Expo ESM modules and unnecessary dependencies in the shared package tests.
+- **What was changed/decided and why (root cause/reason)**:
+  1. Shared tests failed resolving `@react-native-async-storage/async-storage`. We decided it’s not needed at this stage and removed any reliance on it in the shared setup.
+  2. ESM parse errors from `expo-constants` occurred in Jest. Added an explicit mock for `expo-constants` in `packages/shared/jest-setup.js` to avoid importing ESM modules under Jest.
+  3. Dynamic `import()` in tests triggered `--experimental-vm-modules` issues. Converted test imports to `require()` for stability.
+  4. Supabase mocking relied on a hoisted `jest.mock` factory capturing outer variables, which Jest disallows. Switched to `jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }))` and stubbing `createClient` to a local mock client per test.
+- **How the change addresses the root cause**:
+  1. Removing async-storage usage eliminates a brittle dependency and resolution errors.
+  2. Mocking `expo-constants` avoids ESM parsing at test time while preserving expected config shape.
+  3. Using CommonJS `require` sidesteps VM module flags in Jest.
+  4. Directly mocking `createClient` removes hoist-time variable capture, making Supabase mocks deterministic.
+- **Why the change addresses the root cause**: These adjustments target the exact compatibility issues between Expo/RN modules and Jest’s Node test runtime, resulting in stable test execution in the monorepo.
+- **Notes/Follow-up**: Two shared tests still fail due to expectation mismatches with current implementation (initial `from('products')` call before a guard; `null` vs `undefined` for absent joined product). Pending a product decision, either adjust implementation to be stricter or align tests with current behavior.

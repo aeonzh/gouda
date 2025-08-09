@@ -1,5 +1,7 @@
 import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient, mockSupabaseModule } from '../../testing/supabase.mock';
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
+import { createClient } from '@supabase/supabase-js';
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable<T>(result: { data: T; error: any }) {
   const qb: any = {
@@ -15,8 +17,7 @@ describe('organisations API', () => {
   let client: MockSupabaseClient;
   beforeEach(() => {
     client = createMockSupabaseClient();
-    mockSupabaseModule(client);
-    jest.resetModules();
+    (createClient as unknown as jest.Mock).mockReturnValue(client);
   });
 
   it('getAuthorizedBusinesses filters by user membership and approved status', async () => {
@@ -33,7 +34,7 @@ describe('organisations API', () => {
       throw new Error('Unexpected table ' + table);
     });
 
-    const { getAuthorizedBusinesses } = await import('../organisations');
+    const { getAuthorizedBusinesses } = require('../organisations');
     const result = await getAuthorizedBusinesses('u1');
     expect(result).toHaveLength(2);
   });

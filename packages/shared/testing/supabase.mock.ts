@@ -71,12 +71,5 @@ export function createMockSupabaseClient(overrides?: Partial<MockSupabaseClient>
   return { ...client, ...overrides } as MockSupabaseClient;
 }
 
-export function mockSupabaseModule(client: MockSupabaseClient) {
-  // Must be called before importing modules that call createClient
-  jest.mock('@supabase/supabase-js', () => ({
-    __esModule: true,
-    createClient: jest.fn(() => client),
-  }));
-}
-
-
+// Note: Avoid defining jest.mock factories that capture external variables here,
+// as Jest hoists mocks and disallows accessing out-of-scope variables at transform time.

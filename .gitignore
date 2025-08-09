@@ -42,3 +42,6 @@ supabase/*
 
 # tmp
 tmp/
+
+# coverage
+coverage/

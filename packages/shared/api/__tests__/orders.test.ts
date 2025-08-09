@@ -1,5 +1,7 @@
 import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient, mockSupabaseModule } from '../../testing/supabase.mock';
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
+import { createClient } from '@supabase/supabase-js';
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable<T>(result: { data: T; error: any }) {
   const qb: any = {
@@ -19,8 +21,7 @@ describe('orders API', () => {
 
   beforeEach(() => {
     client = createMockSupabaseClient();
-    mockSupabaseModule(client);
-    jest.resetModules();
+    (createClient as unknown as jest.Mock).mockReturnValue(client);
   });
 
   it('getCartItems maps product:products alias to product and handles array', async () => {
@@ -33,7 +34,7 @@ describe('orders API', () => {
       return createThenable({ data: raw as any, error: null });
     });
 
-    const { getCartItems } = await import('../orders');
+    const { getCartItems } = require('../orders');
     const items = await getCartItems('c1');
     expect(items?.[0].product?.id).toBe('p1');
     expect(items?.[1].product).toBeUndefined();
@@ -68,7 +69,7 @@ describe('orders API', () => {
       }
     });
 
-    const { createOrderFromCart } = await import('../orders');
+    const { createOrderFromCart } = require('../orders');
     const result = await createOrderFromCart('u1', 'b1');
     expect(result).toEqual(newOrder);
   });

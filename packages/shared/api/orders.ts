@@ -222,7 +222,6 @@ export async function createOrderFromCart(
     userId,
   });
 
-
   const { data: cart, error: cartError } = await supabase
     .from('carts')
     .select('id')
@@ -336,7 +335,6 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
   }
 
   console.log('getCartItems returned data:', data);
-  data.forEach(item => console.log('DEBUG: Raw Supabase item.product:', item.product));
 
   return data.map((item: RawCartItemFromSupabase) => ({
     ...item,

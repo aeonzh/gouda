@@ -24,7 +24,7 @@ export default function OrderConfirmationScreen() {
         </Text>
         <Button
           className='mb-4 rounded-lg bg-blue-600 px-6 py-3'
-          onPress={() => router.replace('/orders')}
+          onPress={() => router.replace('/(tabs)/orders')}
           title='View My Orders'
         />
         <Button

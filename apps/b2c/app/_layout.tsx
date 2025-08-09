@@ -53,6 +53,7 @@ export default function InitialLayout() {
       const inAuthGroup = segments[0] === '(auth)';
       const inTabsGroup = segments[0] === '(tabs)';
       const inStorefrontGroup = segments[0] === 'storefront';
+      const inOrdersGroup = segments[0] === 'orders';
       const inProductsDetailGroup =
         segments[0] === 'products' && segments[1] === '[id]';
 
@@ -63,10 +64,12 @@ export default function InitialLayout() {
           !inTabsGroup &&
           !inStorefrontGroup &&
           !inProductsDetailGroup &&
+          !inOrdersGroup &&
           segments[0] !== 'profile' &&
-          segments[0] !== 'cart'
+          segments[0] !== 'cart' &&
+          segments[0] !== 'order-confirmation'
         ) {
-          // If not in auth, tabs, storefront, products detail, or profile, redirect to tabs
+          // If not in auth, tabs, storefront, products detail, profile, cart, or order-confirmation, redirect to tabs
           router.replace('/(tabs)');
         }
       } else if (!inAuthGroup) {

@@ -28,6 +28,7 @@ interface CartItem {
 export default function CartScreen() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [placingOrder, setPlacingOrder] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const { businessId: paramBusinessId } = useLocalSearchParams();
   const router = useRouter();
@@ -104,21 +105,16 @@ export default function CartScreen() {
       }
 
       console.log('Cart items data:', cartItemsData);
-      cartItemsData.forEach((item) =>
-        console.log('DEBUG: Individual cart item product:', item.product),
-      );
-      console.log('Cart items data BEFORE filter:', cartItemsData);
       const items: CartItem[] = cartItemsData.map((item) => {
         const processedProduct = Array.isArray(item.product)
           ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
           : (item.product as Product | undefined);
-        console.log('DEBUG: Mapped item product:', processedProduct);
         return {
           ...item,
           product: processedProduct,
         };
       });
-      console.log('=== DEBUG: CartScreen - Processed cart items for state:', items);
+      console.log('Cart items processed and set in state');
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -342,7 +338,7 @@ export default function CartScreen() {
       return;
     }
 
-    setLoading(true);
+    setPlacingOrder(true);
     try {
       console.log('=== DEBUG: Creating order from cart ===');
       // Use the shared API to create order from cart
@@ -364,7 +360,7 @@ export default function CartScreen() {
       console.error('=== DEBUG: Error creating order ===', error);
       Alert.alert('Error', 'Failed to create order.');
     } finally {
-      setLoading(false);
+      setPlacingOrder(false);
     }
   };
 
@@ -429,6 +425,8 @@ export default function CartScreen() {
               className='mt-4 rounded-lg bg-blue-600 py-3'
               onPress={createOrder}
               title='Create Order'
+              isLoading={placingOrder}
+              disabled={placingOrder}
             />
           </View>
         )}

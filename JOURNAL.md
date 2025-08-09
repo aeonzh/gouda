@@ -332,14 +332,22 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 
 ### Session: Friday, August 9, 2025
 
-#### Cart Display Bug Re-fix (Product Type Regression)
+#### Cart Display Bug Final Resolution
 
-- **What were we trying to do**: Re-resolve a regression where cart items were again displayed as "Unknown product" in the B2C application, despite a previous fix. The user reported the issue returned after initial fix and a TypeScript error indicated a `Product[]` type was expected.
-- **What was changed/decided and why (root cause/reason)**: The Supabase query `product:products!left(...)` consistently returns an array of `Product` (even if it's a single element array `[Product]`) for the `product` field due to its join behavior, despite initial runtime observations suggesting a single object. The previous fix, which treated `product` as `Product | null`, was causing a type mismatch and runtime issues for the frontend, leading to the regression. The TypeScript error also explicitly indicated `Product[]` was being assigned.
+- **What were we trying to do**: Resolve the persistent "Unknown product" display issue in the B2C cart, which had been fixed and then regressed due to product type mismatches between Supabase API responses and TypeScript definitions.
+- **What was changed/decided and why (root cause/reason)**: The Supabase join query `product:products!left(...)` always returns the joined product data as an array structure, even when containing a single product. Initially, some fixes assumed a single object, which caused mismatches. The root cause was an inconsistent interface definition between the `RawCartItemFromSupabase` TypeScript type (expecting `Product | null`) and the actual API response data structure (returning `Product[]`). This mismatch led to `undefined` product values when the array logic was applied incorrectly.
 - **How the change addresses the root cause**:
-  1. The `RawCartItemFromSupabase` interface in `packages/shared/api/orders.ts` was reverted to `product: null | Product[];` to correctly reflect that the `product` field, when joined via Supabase's `!left` relationship, is always an array (potentially empty or with one element).
-  2. The mapping logic within the `getCartItems` function in `packages/shared/api/orders.ts` was changed back to `item.product && item.product.length > 0 ? (item.product[0] as Product) : undefined,`. This ensures that if the product array exists and is not empty, the first (and typically only) `Product` object is extracted, correctly aligning with the `CartItem` interface which expects a single `Product` object.
-- **Why the change addresses the root cause**: By correctly defining the `product` field as an array in `RawCartItemFromSupabase` and explicitly extracting the first element, we align the TypeScript types with the actual data structure returned by Supabase. This resolves the type incompatibility issues and ensures that the `CartScreen` component receives a valid `Product` object, allowing it to correctly display product names and enable quantity/removal functionalities without displaying "Unknown product".
+  1. **Robust Interface Definition**: Updated `RawCartItemFromSupabase.product` to `null | Product | Product[]` to handle all possible response variants from Supabase.
+  2. **Adaptive Mapping Logic**: Modified the `getCartItems` mapping logic to correctly extract products:
+     ```typescript
+     product: Array.isArray(item.product)
+       ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
+       : (item.product as Product | undefined),
+     ```
+  3. **Simplified Business Validation**: Removed redundant business association checks in `createOrderFromCart`, as cart operations already handle business relationships through unique constraints.
+- **Why the change addresses the root cause**: By handling both array and single object scenarios in the mapping logic, we ensured compatibility with Supabase's join behavior while maintaining TypeScript correctness. The cart now correctly displays product names by extracting the first product from an array or using a single product object when available. The streamlined business validation prevents errors while maintaining data integrity.
+
+**Verification**: Console logs confirm that `renderCartItem` now correctly receives and displays product names (e.g., "Fresh Rubber Shirt") instead of displaying "Unknown Product".
 
 ### Session: Saturday, August 9, 2025
 
@@ -357,3 +365,18 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   3. Mapped `price_at_time_of_order` to `price_at_order` in `getOrderDetails` for UI compatibility.
   4. Switched order history sorting to `created_at`.
 - **Why the change addresses the root cause**: Centralizes authorization in RLS (avoids false rejections), fixes column mismatch that caused insert failures, normalizes field naming for the UI, and prevents sort errors due to a missing column.
+
+#### B2C Order UX and Routing Fixes
+
+- **What were we trying to do**: Fix lack of feedback on “Create Order”, prevent redirect to Home after order creation, and make the Orders tab show actual user orders.
+- **What was changed/decided and why (root cause/reason)**:
+  1. `apps/b2c/app/_layout.tsx` redirected non-tab routes; `order-confirmation` and `orders` weren’t allow-listed, causing unexpected navigation to Home.
+  2. The Orders tab screen was a placeholder; the real list lived at `apps/b2c/app/orders/index.tsx` and used a hardcoded `'current_user_id'`, returning empty results.
+  3. The “Create Order” button didn’t show a loading state, so users couldn’t tell if submission succeeded.
+  4. Order details UI assumed always-present addresses and `order_date`.
+- **How the change addresses the root cause**:
+  1. Updated `_layout.tsx` to allow `order-confirmation` and `orders` routes for authenticated users.
+  2. Implemented the orders list in `apps/b2c/app/(tabs)/orders.tsx` using `supabase.auth.getUser()` and `getCustomerOrderHistory(user.id)` with loading/error/empty states; changed `apps/b2c/app/orders/index.tsx` to redirect to the tabbed screen.
+  3. Added `placingOrder` state in `apps/b2c/app/cart.tsx` to disable the button and show a spinner during submission.
+  4. Hardened `apps/b2c/app/orders/[id].tsx` to fall back to `created_at` for the date and render addresses only if present.
+- **Why the change addresses the root cause**: Ensures correct navigation to confirmation, visible progress during order submission, and accurate, authenticated order fetching for the Orders tab while preventing UI crashes on optional fields.

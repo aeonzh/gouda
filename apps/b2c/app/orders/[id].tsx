@@ -66,6 +66,8 @@ export default function OrderDetailsScreen() {
     );
   }
 
+  const orderDate = order.order_date || order.created_at;
+
   return (
     <View className="flex-1 bg-gray-100">
       <Stack.Screen options={{ title: `Order #${order.id}` }} />
@@ -91,7 +93,7 @@ export default function OrderDetailsScreen() {
             <Text className="text-base text-gray-700 mb-1">
               Date:{' '}
               <Text className="font-semibold">
-                {new Date(order.order_date).toLocaleDateString()}
+                {orderDate ? new Date(orderDate).toLocaleDateString() : '—'}
               </Text>
             </Text>
             <Text className="text-base text-gray-700 mb-1">
@@ -106,19 +108,23 @@ export default function OrderDetailsScreen() {
                 ${order.total_amount?.toFixed(2)}
               </Text>
             </Text>
-            <Text className="text-base text-gray-700 mt-2 font-bold">
-              Shipping Address:
-            </Text>
-            <Text className="text-sm text-gray-600">
-              {order.shipping_address.street}
-            </Text>
-            <Text className="text-sm text-gray-600">
-              {order.shipping_address.city}, {order.shipping_address.state}{' '}
-              {order.shipping_address.zip_code}
-            </Text>
-            <Text className="text-sm text-gray-600">
-              {order.shipping_address.country}
-            </Text>
+            {order.shipping_address && (
+              <>
+                <Text className="text-base text-gray-700 mt-2 font-bold">
+                  Shipping Address:
+                </Text>
+                <Text className="text-sm text-gray-600">
+                  {order.shipping_address.street}
+                </Text>
+                <Text className="text-sm text-gray-600">
+                  {order.shipping_address.city}, {order.shipping_address.state}{' '}
+                  {order.shipping_address.zip_code}
+                </Text>
+                <Text className="text-sm text-gray-600">
+                  {order.shipping_address.country}
+                </Text>
+              </>
+            )}
             {order.billing_address && (
               <>
                 <Text className="text-base text-gray-700 mt-2 font-bold">

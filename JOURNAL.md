@@ -383,6 +383,13 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 
 ### Session: Saturday, August 9, 2025
 
+#### Add testing plan documentation
+
+- **What were we trying to do**: Capture a clear, dependency-ordered plan to implement unit, integration, and screen tests tailored to the Expo RN monorepo.
+- **What was changed/decided and why (root cause/reason)**: Created `docs/test_setup.md` to centralize the test strategy, tooling, file structure, scripts, utilities, and a task checklist. This addresses prior ambiguity about how to structure tests across `apps/b2c` and `packages/shared` after Jest setup was stabilized.
+- **How the change addresses the root cause**: Provides concrete steps (with dependencies) to add testing utilities, write unit/integration/screen tests, and wire CI/coverage, reducing ramp-up time and ensuring consistent patterns.
+- **Why the change addresses the root cause**: A documented plan prevents ad-hoc test implementation, aligns contributors, and accelerates adding reliable tests without re-solving environment issues.
+
 #### Monorepo Jest Testing Setup for Expo RN (B2C and Shared)
 
 - **What were we trying to do**: Establish a working Jest setup for the Expo React Native monorepo so that tests run in `apps/b2c` and `packages/shared` under pnpm.

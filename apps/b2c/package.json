@@ -37,7 +37,8 @@
     "jest-expo": "^53.0.9",
     "@testing-library/react-native": "^13.2.2",
     "@testing-library/jest-native": "^5.4.3",
-    "babel-jest": "^29.7.0"
+    "babel-jest": "^29.7.0",
+    "msw": "^2.3.4"
   },
   "private": true
 }

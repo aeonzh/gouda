@@ -16,7 +16,10 @@
     "db:reset:seed": "supabase db reset && pnpx tsx seed.ts",
     "clean-install": "pnpm i --frozen-lockfile",
     "test": "pnpm -r --if-present test",
-    "test:b2c": "pnpm --filter b2c test"
+    "test:b2c": "pnpm --filter b2c test",
+    "test:shared": "pnpm --filter shared test",
+    "test:coverage": "pnpm -r --if-present test -- --coverage",
+    "test:ci": "CI=1 pnpm -r --if-present test -- --ci --runInBand"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",

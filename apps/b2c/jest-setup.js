@@ -52,3 +52,30 @@ jest.mock('@react-native/js-polyfills/error-guard', () => ({
   default: jest.fn(),
   reportFatalError: jest.fn(),
 }));
+
+// MSW server setup
+import { server } from './testing/msw/server';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+// Lightweight native/expo mocks
+jest.mock('expo-constants', () => ({
+  __esModule: true,
+  default: {
+    expoConfig: { extra: {} },
+  },
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+);
+
+jest.mock('react-native-reanimated', () => {
+  // Use official mock to avoid native bindings in Jest env
+  const Reanimated = require('react-native-reanimated/mock');
+  // Silence warnings for reanimated's .call in older versions
+  Reanimated.default.call = () => {};
+  return Reanimated;
+});

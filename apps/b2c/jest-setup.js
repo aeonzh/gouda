@@ -64,7 +64,7 @@ afterAll(() => server.close());
 jest.mock('expo-constants', () => ({
   __esModule: true,
   default: {
-    expoConfig: { extra: {} },
+    expoConfig: { extra: { supabaseUrl: 'https://msw.test', supabaseAnonKey: 'test_anon' } },
   },
 }));
 

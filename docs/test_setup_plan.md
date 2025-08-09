@@ -98,7 +98,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Avoids failure when users belong to multiple businesses.
 
 - [ ] 4. Integration tests – app flows with MSW (deps: 2)
-  - [ ] 4.1 Cart flow: add/update/remove → `getCartItems` reflects state (deps: 2.2)
+  - [x] 4.1 Cart flow: add/update/remove → `getCartItems` reflects state (deps: 2.2)
     - What: Handlers for cart endpoints; simulate add/update/delete; assert UI reflects server state.
     - Why: Validates end-to-end cart behavior without a live backend.
   - [ ] 4.2 Order creation: cart → `createOrderFromCart` → `getCustomerOrderHistory` (deps: 2.2)

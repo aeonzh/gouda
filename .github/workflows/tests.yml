@@ -48,7 +48,6 @@ jobs:
       - name: Reset DB and seed
         run: pnpm db:reset:seed
       - name: Live smoke tests (placeholder)
-        run: |
-          node -e "console.log('TODO: add live API smoke tests against local Supabase')"
+        run: node tasks/live-smoke.test.mjs
 
 

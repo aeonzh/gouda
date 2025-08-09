@@ -127,6 +127,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Add CI job to spin up Supabase containers, apply migrations/seed, run a lightweight suite.
     - Why: Catches schema/policy mismatches MSW/unit might miss.
   - [ ] 6.2 Smoke: list products, create cart item, create order; assert 2xx + shapes (deps: 6.1)
+  - [x] 6.2 Smoke: list products, create cart item, create order; assert 2xx + shapes (deps: 6.1)
     - What: Implement basic API calls and assertions against local PostgREST.
     - Why: Verifies end-to-end plumbing with real DB/auth.
 

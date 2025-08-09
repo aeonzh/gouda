@@ -78,21 +78,12 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
   - [x] 3.1 `products.ts`: `getProducts` status filtering; `getProductById` happy/error (deps: 2.3 or 2.2)
     - What: Tests for query param shaping, status filter behavior, and error surfaces.
     - Why: Guards product listing correctness and error handling.
-  - [ ] 3.2 `orders.ts`: `getCartItems` product alias mapping; `createOrderFromCart` payload fields and error surfacing (deps: 2.3)
-    - What: Assert `product:products` alias mapping to `product`, and payload uses `price_at_time_of_order`.
-    - Why: Prevents regressions that caused "Unknown product" and insert failures.
   - [x] 3.2 `orders.ts`: `getCartItems` product alias mapping; `createOrderFromCart` payload fields and error surfacing (deps: 2.3)
     - What: Assert `product:products` alias mapping to `product`, and payload uses `price_at_time_of_order`.
     - Why: Prevents regressions that caused "Unknown product" and insert failures.
-  - [ ] 3.3 `organisations.ts`: `getAuthorizedBusinesses` scoping (deps: 2.3)
-    - What: Validate filtering by user id and expected shape for vendors list.
-    - Why: Ensures correct vendor visibility per user.
   - [x] 3.3 `organisations.ts`: `getAuthorizedBusinesses` scoping (deps: 2.3)
     - What: Validate filtering by user id and expected shape for vendors list.
     - Why: Ensures correct vendor visibility per user.
-  - [ ] 3.4 `profiles.ts`: `getBusinessIdForUser` multi-membership handling (deps: 2.3)
-    - What: Cover `.limit(1).single()` path and multiple memberships.
-    - Why: Avoids failure when users belong to multiple businesses.
   - [x] 3.4 `profiles.ts`: `getBusinessIdForUser` multi-membership handling (deps: 2.3)
     - What: Cover `.limit(1).single()` path and multiple memberships.
     - Why: Avoids failure when users belong to multiple businesses.
@@ -102,9 +93,11 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Handlers for cart endpoints; simulate add/update/delete; assert UI reflects server state.
     - Why: Validates end-to-end cart behavior without a live backend.
   - [ ] 4.2 Order creation: cart → `createOrderFromCart` → `getCustomerOrderHistory` (deps: 2.2)
+  - [x] 4.2 Order creation: cart → `createOrderFromCart` → `getCustomerOrderHistory` (deps: 2.2)
     - What: Mock order creation then history fetch; assert new order appears.
     - Why: Ensures critical purchase flow works.
   - [ ] 4.3 Storefront visibility: only `published` products (deps: 2.2)
+  - [x] 4.3 Storefront visibility: only `published` products (deps: 2.2)
     - What: Handlers return mixed statuses; UI must filter to `published`.
     - Why: Prevents draft/rejected products from appearing.
 

@@ -81,10 +81,19 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
   - [ ] 3.2 `orders.ts`: `getCartItems` product alias mapping; `createOrderFromCart` payload fields and error surfacing (deps: 2.3)
     - What: Assert `product:products` alias mapping to `product`, and payload uses `price_at_time_of_order`.
     - Why: Prevents regressions that caused "Unknown product" and insert failures.
+  - [x] 3.2 `orders.ts`: `getCartItems` product alias mapping; `createOrderFromCart` payload fields and error surfacing (deps: 2.3)
+    - What: Assert `product:products` alias mapping to `product`, and payload uses `price_at_time_of_order`.
+    - Why: Prevents regressions that caused "Unknown product" and insert failures.
   - [ ] 3.3 `organisations.ts`: `getAuthorizedBusinesses` scoping (deps: 2.3)
     - What: Validate filtering by user id and expected shape for vendors list.
     - Why: Ensures correct vendor visibility per user.
+  - [x] 3.3 `organisations.ts`: `getAuthorizedBusinesses` scoping (deps: 2.3)
+    - What: Validate filtering by user id and expected shape for vendors list.
+    - Why: Ensures correct vendor visibility per user.
   - [ ] 3.4 `profiles.ts`: `getBusinessIdForUser` multi-membership handling (deps: 2.3)
+    - What: Cover `.limit(1).single()` path and multiple memberships.
+    - Why: Avoids failure when users belong to multiple businesses.
+  - [x] 3.4 `profiles.ts`: `getBusinessIdForUser` multi-membership handling (deps: 2.3)
     - What: Cover `.limit(1).single()` path and multiple memberships.
     - Why: Avoids failure when users belong to multiple businesses.
 

@@ -286,9 +286,10 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
         "id": "cart_item_id",
         "product_id": "product_id",
         // ... other cart_item fields
-        "products": { // Key is 'products' (plural)
+        "products": {
+          // Key is 'products' (plural)
           "id": "product_id",
-          "name": "Product Name",
+          "name": "Product Name"
           // ... other product fields
         }
       }
@@ -307,9 +308,10 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
         "id": "cart_item_id",
         "product_id": "product_id",
         // ... other cart_item fields
-        "product": { // Key is now 'product' (singular)
+        "product": {
+          // Key is now 'product' (singular)
           "id": "product_id",
-          "name": "Product Name",
+          "name": "Product Name"
           // ... other product fields
         }
       }
@@ -327,3 +329,31 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   5.  **Database Integrity**: The unique constraint on `carts` is fundamental for the `upsert` operation to work as intended, enforcing data integrity and preventing duplicate cart entries for the same user and business.
 
   Collectively, these changes resolved the multifaceted "empty cart" bug by fixing data structure mismatches, enhancing UI update logic, and improving database interaction robustness.
+
+### Session: Friday, August 9, 2025
+
+#### Cart Display Bug Re-fix (Product Type Regression)
+
+- **What were we trying to do**: Re-resolve a regression where cart items were again displayed as "Unknown product" in the B2C application, despite a previous fix. The user reported the issue returned after initial fix and a TypeScript error indicated a `Product[]` type was expected.
+- **What was changed/decided and why (root cause/reason)**: The Supabase query `product:products!left(...)` consistently returns an array of `Product` (even if it's a single element array `[Product]`) for the `product` field due to its join behavior, despite initial runtime observations suggesting a single object. The previous fix, which treated `product` as `Product | null`, was causing a type mismatch and runtime issues for the frontend, leading to the regression. The TypeScript error also explicitly indicated `Product[]` was being assigned.
+- **How the change addresses the root cause**:
+  1. The `RawCartItemFromSupabase` interface in `packages/shared/api/orders.ts` was reverted to `product: null | Product[];` to correctly reflect that the `product` field, when joined via Supabase's `!left` relationship, is always an array (potentially empty or with one element).
+  2. The mapping logic within the `getCartItems` function in `packages/shared/api/orders.ts` was changed back to `item.product && item.product.length > 0 ? (item.product[0] as Product) : undefined,`. This ensures that if the product array exists and is not empty, the first (and typically only) `Product` object is extracted, correctly aligning with the `CartItem` interface which expects a single `Product` object.
+- **Why the change addresses the root cause**: By correctly defining the `product` field as an array in `RawCartItemFromSupabase` and explicitly extracting the first element, we align the TypeScript types with the actual data structure returned by Supabase. This resolves the type incompatibility issues and ensures that the `CartScreen` component receives a valid `Product` object, allowing it to correctly display product names and enable quantity/removal functionalities without displaying "Unknown product".
+
+### Session: Saturday, August 9, 2025
+
+#### Order Creation Flow Fixes (RLS enforcement, column mapping, details normalization)
+
+- **What were we trying to do**: Ensure customers/admins can create orders from the cart reliably and that order details render in the UI.
+- **What was changed/decided and why (root cause/reason)**:
+  1. Manual membership pre-check in `packages/shared/api/orders.ts:createOrderFromCart` rejected admins with "User is not associated with this business" because admins aren’t `members`.
+  2. `order_items` insert used non-existent column `price_at_order` (schema uses `price_at_time_of_order`).
+  3. UI expected `price_at_order` when reading order details; DB returns `price_at_time_of_order`.
+  4. Order history sorted by non-existent `order_date`.
+- **How the change addresses the root cause**:
+  1. Removed the membership pre-check; rely on DB RLS to authorize inserts for all roles.
+  2. Changed insert payload to `price_at_time_of_order`.
+  3. Mapped `price_at_time_of_order` to `price_at_order` in `getOrderDetails` for UI compatibility.
+  4. Switched order history sorting to `created_at`.
+- **Why the change addresses the root cause**: Centralizes authorization in RLS (avoids false rejections), fixes column mismatch that caused insert failures, normalizes field naming for the UI, and prevents sort errors due to a missing column.

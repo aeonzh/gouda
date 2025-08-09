@@ -20,6 +20,7 @@ export interface CartItem {
   updated_at: string;
 }
 
+// Intermediate interface to match the structure returned by Supabase query
 export interface Order {
   id: string;
   user_id: string;
@@ -38,6 +39,17 @@ export interface OrderItem {
   product_id: string;
   price_at_order: number;
   product?: Product; // Optional: to include product details when fetching order
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface RawCartItemFromSupabase {
+  cart_id: string;
+  id: string;
+  product_id: string;
+  price_at_time_of_add: number;
+  product: null | Product | Product[];
   quantity: number;
   created_at: string;
   updated_at: string;
@@ -175,7 +187,7 @@ export async function createOrderForCustomer(
 
   const orderItemsToInsert = items.map((item) => ({
     order_id: newOrder.id,
-    price_at_order: item.priceAtOrder,
+    price_at_time_of_order: item.priceAtOrder,
     product_id: item.productId,
     quantity: item.quantity,
   }));
@@ -210,18 +222,6 @@ export async function createOrderFromCart(
     userId,
   });
 
-  // Verify user has business relationship
-  const { data: businessMembership, error: membershipError } = await supabase
-    .from('members')
-    .select('role_in_business')
-    .eq('profile_id', userId)
-    .eq('business_id', businessId)
-    .eq('deleted_at', null)
-    .single();
-
-  if (membershipError || !businessMembership) {
-    throw new Error('User is not associated with this business');
-  }
 
   const { data: cart, error: cartError } = await supabase
     .from('carts')
@@ -280,7 +280,7 @@ export async function createOrderFromCart(
 
   const orderItemsToInsert = cartItems.map((item) => ({
     order_id: newOrder.id,
-    price_at_order: item.price_at_time_of_add,
+    price_at_time_of_order: item.price_at_time_of_add,
     product_id: item.product_id,
     quantity: item.quantity,
   }));
@@ -336,9 +336,13 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
   }
 
   console.log('getCartItems returned data:', data);
-  return data.map((item) => ({
+  data.forEach(item => console.log('DEBUG: Raw Supabase item.product:', item.product));
+
+  return data.map((item: RawCartItemFromSupabase) => ({
     ...item,
-    product: item.product ? item.product[0] : undefined,
+    product: Array.isArray(item.product)
+      ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
+      : (item.product as Product | undefined),
   })) as CartItem[];
 }
 
@@ -356,7 +360,7 @@ export async function getCustomerOrderHistory(
     query = query.eq('user_id', userId);
   }
 
-  const { data, error } = await query.order('order_date', { ascending: false });
+  const { data, error } = await query.order('created_at', { ascending: false });
 
   if (error) {
     console.error('Error fetching customer order history:', error.message);
@@ -405,7 +409,7 @@ export async function getOrderDetails(orderId: string): Promise<null | Order> {
     .from('orders')
     .select(
       '*, order_items!left(*, product:products!left(id, name, description, price, stock_quantity, image_url, business_id, category_id, status))',
-    ) // Select order and join order_items with product details
+    )
     .eq('id', orderId)
     .single();
 
@@ -413,7 +417,21 @@ export async function getOrderDetails(orderId: string): Promise<null | Order> {
     console.error('Error fetching order details:', error.message);
     throw error;
   }
-  return data as Order;
+
+  if (!data) return null;
+
+  // Map DB field price_at_time_of_order to API field price_at_order for UI compatibility
+  const mapped = {
+    ...data,
+    order_items: Array.isArray((data as any).order_items)
+      ? (data as any).order_items.map((item: any) => ({
+          ...item,
+          price_at_order: item.price_at_time_of_order,
+        }))
+      : [],
+  } as unknown as Order;
+
+  return mapped;
 }
 
 /**

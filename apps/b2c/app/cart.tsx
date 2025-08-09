@@ -15,8 +15,14 @@ import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface CartItem {
-  product: Product;
+  cart_id: string;
+  id: string;
+  product_id: string;
+  price_at_time_of_add: number;
+  product?: Product; // Optional: to include product details when fetching cart
   quantity: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export default function CartScreen() {
@@ -102,16 +108,17 @@ export default function CartScreen() {
         console.log('DEBUG: Individual cart item product:', item.product),
       );
       console.log('Cart items data BEFORE filter:', cartItemsData);
-      const items: CartItem[] = cartItemsData
-        .filter((item) => item.product)
-        .map((item) => ({
-          product: item.product as Product,
-          quantity: item.quantity,
-        }));
-      console.log(
-        '=== DEBUG: CartScreen - Processed cart items for state:',
-        items,
-      );
+      const items: CartItem[] = cartItemsData.map((item) => {
+        const processedProduct = Array.isArray(item.product)
+          ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
+          : (item.product as Product | undefined);
+        console.log('DEBUG: Mapped item product:', processedProduct);
+        return {
+          ...item,
+          product: processedProduct,
+        };
+      });
+      console.log('=== DEBUG: CartScreen - Processed cart items for state:', items);
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -127,7 +134,7 @@ export default function CartScreen() {
 
   const calculateTotalPrice = useCallback(() => {
     const total = cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum, item) => sum + (item.product?.price || 0) * item.quantity,
       0,
     );
     setTotalPrice(total);
@@ -364,20 +371,31 @@ export default function CartScreen() {
   const renderCartItem = ({ item }: { item: CartItem }) => (
     <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
       <View className='flex-1'>
-        <Text className='text-lg font-bold'>{item.product.name}</Text>
-        <Text className='text-gray-600'>${item.product.price.toFixed(2)}</Text>
+        <Text className='text-lg font-bold'>
+          {item.product?.name || 'Unknown Product'}
+        </Text>
+        <Text className='text-gray-600'>
+          ${item.product?.price?.toFixed(2) || 'N/A'}
+        </Text>
       </View>
       <View className='flex-row items-center space-x-2'>
         <QuantitySelector
-          maxQuantity={item.product.stock_quantity}
-          onQuantityChange={(newQuantity) =>
-            updateCartItemQuantity(item.product.id, newQuantity)
+          maxQuantity={item.product?.stock_quantity || 0}
+          onQuantityChange={(newQuantity) => {
+            console.log('DEBUG: QuantitySelector - item.product.id:', item.product?.id, 'newQuantity:', newQuantity);
+            item.product?.id &&
+            updateCartItemQuantity(item.product.id, newQuantity);
+          }
           }
           quantity={item.quantity}
         />
         <TouchableOpacity
           className='ml-2 rounded-md bg-gray-300 p-2'
-          onPress={() => removeCartItem(item.product.id)}
+          onPress={() => {
+            console.log('DEBUG: Remove button - item.product.id:', item.product?.id);
+            item.product?.id && removeCartItem(item.product.id);
+          }
+          }
         >
           <Text className='text-gray-800'>Remove</Text>
         </TouchableOpacity>
@@ -397,7 +415,7 @@ export default function CartScreen() {
           <FlatList
             contentContainerClassName='pb-4'
             data={cartItems}
-            keyExtractor={(item) => item.product.id}
+            keyExtractor={(item) => item.id}
             renderItem={renderCartItem}
           />
         )}

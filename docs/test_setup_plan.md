@@ -49,7 +49,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
 
 ### Tasks and subtasks (dependency-ordered)
 
-- [ ] 1. Core config and scripts (deps: —)
+- 1. Core config and scripts (deps: —)
   - [x] 1.1 Add root scripts: `test`, `test:ci`, `test:coverage`, `test:b2c`, `test:shared` (deps: —)
     - What: Add scripts in root `package.json` to run tests across workspaces, enable coverage, and target specific packages.
     - Why: Provides a standard entry point for local/CI runs and faster scoped execution.
@@ -60,7 +60,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Include matcher setup in `setupFilesAfterEnv` and import in `jest-setup.js`.
     - Why: Enables expressive RN assertions (toBeOnTheScreen, toHaveTextContent, etc.).
 
-- [ ] 2. Testing utilities (deps: 1)
+- 2. Testing utilities (deps: 1)
   - [x] 2.1 Create `apps/b2c/testing/renderWithProviders.tsx` (AuthProvider, SafeArea, router mock) (deps: 1.2)
     - What: Export a helper that wraps UI with `AuthProvider` and `SafeAreaProvider` for tests.
     - Why: Removes per-test boilerplate and prevents provider-context errors.
@@ -74,7 +74,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Add Jest module mocks (or setup) to neutralize native bindings and provide sane defaults.
     - Why: Prevents runtime errors in Jest env for native modules used by UI/components.
 
-- [ ] 3. Unit tests – shared APIs (deps: 2)
+- 3. Unit tests – shared APIs (deps: 2)
   - [x] 3.1 `products.ts`: `getProducts` status filtering; `getProductById` happy/error (deps: 2.3 or 2.2)
     - What: Tests for query param shaping, status filter behavior, and error surfaces.
     - Why: Guards product listing correctness and error handling.
@@ -88,7 +88,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Cover `.limit(1).single()` path and multiple memberships.
     - Why: Avoids failure when users belong to multiple businesses.
 
-- [ ] 4. Integration tests – app flows with MSW (deps: 2)
+- 4. Integration tests – app flows with MSW (deps: 2)
   - [x] 4.1 Cart flow: add/update/remove → `getCartItems` reflects state (deps: 2.2)
     - What: Handlers for cart endpoints; simulate add/update/delete; assert UI reflects server state.
     - Why: Validates end-to-end cart behavior without a live backend.
@@ -101,7 +101,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Handlers return mixed statuses; UI must filter to `published`.
     - Why: Prevents draft/rejected products from appearing.
 
-- [ ] 5. Screen tests – B2C (deps: 2)
+- 5. Screen tests – B2C (deps: 2)
   - [x] 5.1 Home `(tabs)/index.tsx`: renders authorized vendors; search filter; navigates to storefront (deps: 2.1, 2.2)
     - What: Render with providers; MSW returns vendors; test search and navigation intent.
     - Why: Validates core discovery UX.
@@ -122,7 +122,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Mock auth endpoints; test success and form validation errors.
     - Why: Prevents auth UX regressions.
 
-- [ ] 6. Optional live-integration (Supabase local) (deps: 1)
+- 6. Optional live-integration (Supabase local) (deps: 1)
   - [x] 6.1 CI job: `supabase start` + `supabase db reset` + seed; run Node-based smoke suite (deps: 7.1)
     - What: Add CI job to spin up Supabase containers, apply migrations/seed, run a lightweight suite.
     - Why: Catches schema/policy mismatches MSW/unit might miss.
@@ -131,7 +131,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Implement basic API calls and assertions against local PostgREST.
     - Why: Verifies end-to-end plumbing with real DB/auth.
 
-- [ ] 7. Coverage and CI (deps: 3,4,5)
+- 7. Coverage and CI (deps: 3,4,5)
   - [x] 7.1 GitHub Actions workflow with pnpm caching; jobs: unit+screen (MSW) and optional live (deps: 1.1)
     - What: Add workflow running `pnpm -w test` and optional live job; cache pnpm store and node_modules.
     - Why: Fast, reliable CI feedback and reproducible builds.
@@ -140,7 +140,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Configure Jest coverage; fail below thresholds; upload HTML reports.
     - Why: Maintains baseline quality while allowing iterative growth.
 
-- [ ] 8. Documentation and examples (deps: 3–5)
+- 8. Documentation and examples (deps: 3–5)
   - [ ] 8.1 Add `docs/testing.md` with how-to, utilities, patterns (deps: 2)
   - [x] 8.1 Add `docs/testing.md` with how-to, utilities, patterns (deps: 2)
     - What: Document commands, when to use MSW vs jest mocks, render helpers, common pitfalls.

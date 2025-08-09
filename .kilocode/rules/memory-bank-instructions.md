@@ -1,0 +1,1 @@
+/home/zhh/src/gouda/rules/memory-bank-instructions.md

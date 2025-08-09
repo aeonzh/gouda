@@ -75,7 +75,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Prevents runtime errors in Jest env for native modules used by UI/components.
 
 - [ ] 3. Unit tests – shared APIs (deps: 2)
-  - [ ] 3.1 `products.ts`: `getProducts` status filtering; `getProductById` happy/error (deps: 2.3 or 2.2)
+  - [x] 3.1 `products.ts`: `getProducts` status filtering; `getProductById` happy/error (deps: 2.3 or 2.2)
     - What: Tests for query param shaping, status filter behavior, and error surfaces.
     - Why: Guards product listing correctness and error handling.
   - [ ] 3.2 `orders.ts`: `getCartItems` product alias mapping; `createOrderFromCart` payload fields and error surfacing (deps: 2.3)

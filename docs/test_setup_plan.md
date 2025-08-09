@@ -118,6 +118,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Handlers for orders list; cover non-empty, empty, and error.
     - Why: Robustness of order history UX.
   - [ ] 5.5 Auth screens: login/signup happy-path + validation errors (deps: 2.1, 2.2)
+  - [x] 5.5 Auth screens: login/signup happy-path + validation errors (deps: 2.1, 2.2)
     - What: Mock auth endpoints; test success and form validation errors.
     - Why: Prevents auth UX regressions.
 

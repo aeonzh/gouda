@@ -106,12 +106,15 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Render with providers; MSW returns vendors; test search and navigation intent.
     - Why: Validates core discovery UX.
   - [ ] 5.2 Storefront `/storefront/[id].tsx`: lists categories/products; only `published`; navigates to details (deps: 2.1, 2.2)
+  - [x] 5.2 Storefront `/storefront/[id].tsx`: lists categories/products; only `published`; navigates to details (deps: 2.1, 2.2)
     - What: Mock categories/products; assert filtering and navigation.
     - Why: Protects storefront UX from regressions.
   - [ ] 5.3 Cart `/cart.tsx`: add/remove/quantity updates; submit button disabled during submit; navigates to confirmation (deps: 2.1, 2.2)
+  - [x] 5.3 Cart `/cart.tsx`: add/remove/quantity updates; submit button disabled during submit; navigates to confirmation (deps: 2.1, 2.2)
     - What: Simulate cart item mutations and order submission; assert loading state and navigation.
     - Why: Ensures purchase action feedback and correctness.
   - [ ] 5.4 Orders tab `(tabs)/orders.tsx`: loads user orders; empty/error states (deps: 2.1, 2.2)
+  - [x] 5.4 Orders tab `(tabs)/orders.tsx`: loads user orders; empty/error states (deps: 2.1, 2.2)
     - What: Handlers for orders list; cover non-empty, empty, and error.
     - Why: Robustness of order history UX.
   - [ ] 5.5 Auth screens: login/signup happy-path + validation errors (deps: 2.1, 2.2)

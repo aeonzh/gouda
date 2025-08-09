@@ -1,1 +1,1 @@
-/home/zhh/src/gouda/.agents/rules/general-instructions.md
+../../.agents/rules/general-instructions.md

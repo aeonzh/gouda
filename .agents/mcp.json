@@ -19,7 +19,7 @@
         "--context",
         "ide-assistant",
         "--project",
-        "/home/zhh/src/gouda"
+        "/Users/zhh/src/personal/gouda"
       ],
       "env": {}
     },

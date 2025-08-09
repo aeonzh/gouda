@@ -1,1 +1,1 @@
-/home/zhh/src/gouda/.agents/rules/misc.md
+../../.agents/rules/misc.md

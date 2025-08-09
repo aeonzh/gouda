@@ -1,1 +1,1 @@
-/home/zhh/src/gouda/.agents/rules/memory-bank-instructions.md
+../../.agents/rules/memory-bank-instructions.md

@@ -1,26 +1,32 @@
 #!/bin/bash
 
-# Setup script to symlink files in rules/ to .kilocode/rules
+# Setup script to symlink .md files from .agents/rules to .mdc files in .cursor/rules and .md files in .kilocode/rules
+# Also symlink .agents/mcp.json to .cursor/ and .kilocode/
 
 set -e
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source and target directories
-SOURCE_DIR="$SCRIPT_DIR/rules"
-TARGET_DIR="$SCRIPT_DIR/.kilocode/rules"
+# Source directories and files
+SOURCE_RULES_DIR="$SCRIPT_DIR/.agents/rules"
+SOURCE_MCP_FILE="$SCRIPT_DIR/.agents/mcp.json"
 
-# Check if source directory exists
-if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Error: Source directory '$SOURCE_DIR' does not exist."
+# Target directories
+TARGET_CURSOR_RULES_DIR="$SCRIPT_DIR/.cursor/rules"
+TARGET_KILOCODE_RULES_DIR="$SCRIPT_DIR/.kilocode/rules"
+TARGET_ROOT_DIRS=("$SCRIPT_DIR/.cursor" "$SCRIPT_DIR/.kilocode")
+
+# Check if source directories/files exist
+if [ ! -d "$SOURCE_RULES_DIR" ]; then
+    echo "Error: Source directory '$SOURCE_RULES_DIR' does not exist."
     exit 1
 fi
 
-# Create target directory if it doesn't exist
-mkdir -p "$TARGET_DIR"
-
-echo "Setting up symlinks from $SOURCE_DIR to $TARGET_DIR"
+if [ ! -f "$SOURCE_MCP_FILE" ]; then
+    echo "Error: Source file '$SOURCE_MCP_FILE' does not exist."
+    exit 1
+fi
 
 # Function to create symlink
 create_symlink() {
@@ -38,14 +44,42 @@ create_symlink() {
     ln -s "$source_file" "$target_file"
 }
 
-# Process each file in the source directory
-for file in "$SOURCE_DIR"/*; do
+# Process rules files for .cursor (md -> mdc)
+echo "Setting up symlinks from $SOURCE_RULES_DIR to $TARGET_CURSOR_RULES_DIR"
+mkdir -p "$TARGET_CURSOR_RULES_DIR"
+
+for file in "$SOURCE_RULES_DIR"/*.md; do
     if [ -f "$file" ]; then
         filename=$(basename "$file")
-        target_path="$TARGET_DIR/$filename"
+        # Change extension from .md to .mdc for cursor
+        target_filename="${filename%.md}.mdc"
+        target_path="$TARGET_CURSOR_RULES_DIR/$target_filename"
         create_symlink "$file" "$target_path"
     fi
 done
 
+# Process rules files for .kilocode (keep .md)
+echo "Setting up symlinks from $SOURCE_RULES_DIR to $TARGET_KILOCODE_RULES_DIR"
+mkdir -p "$TARGET_KILOCODE_RULES_DIR"
+
+for file in "$SOURCE_RULES_DIR"/*.md; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        # Keep .md extension for kilocode
+        target_path="$TARGET_KILOCODE_RULES_DIR/$filename"
+        create_symlink "$file" "$target_path"
+    fi
+done
+
+# Process MCP file
+for TARGET_DIR in "${TARGET_ROOT_DIRS[@]}"; do
+    echo "Setting up symlink from $SOURCE_MCP_FILE to $TARGET_DIR/"
+
+    # Create symlink for mcp.json in the root target directory
+    target_path="$TARGET_DIR/mcp.json"
+    create_symlink "$SOURCE_MCP_FILE" "$target_path"
+done
+
 echo "Setup complete!"
-echo "Files in $SOURCE_DIR have been symlinked to $TARGET_DIR"
+echo ".md files from $SOURCE_RULES_DIR have been symlinked as .mdc files to .cursor/rules and as .md files to .kilocode/rules"
+echo "MCP configuration has been symlinked to both .cursor/ and .kilocode/"

@@ -1,3 +1,8 @@
+---
+description: Persistent documentation workflow for continuity across sessions; strict protocol for initializing, updating, and using the memory bank in docs/memory-bank.
+alwaysApply: true
+---
+
 # Memory Bank
 
 I am an expert software engineer with a unique characteristic: my memory resets completely between sessions. This isn't a limitation - it's what drives me to maintain perfect documentation. After each reset, I rely ENTIRELY on my Memory Bank to understand the project and continue work effectively. I MUST read ALL memory bank files at the start of EVERY task - this is not optional. The memory bank files are located in `docs/memory-bank` folder.
@@ -33,7 +38,6 @@ The Memory Bank consists of core files and optional context files, all in Markdo
    - Next steps
 
 4. `architecture.md`
-
    - System architecture
    - Source Code paths
    - Key technical decisions

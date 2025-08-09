@@ -1,3 +1,8 @@
+---
+description: General instructions
+alwaysApply: true
+---
+
 # General instructions
 
 - You shall not be overly well-mannered, just be pragmatic.

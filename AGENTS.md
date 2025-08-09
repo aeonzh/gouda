@@ -2,18 +2,17 @@
 
 This document outlines essential commands and code style guidelines for agents working on the Gouda project.
 
-@rules/general-instructions.md
+@.agents/rules/general-instructions.md
 
 - Prefer using MCP server tools over bash commands. These are the MCP tools available to you:
   - serena
   - context7
   - git
-  - playwright
   - deepwiki
 
-@rules/memory-bank-instructions.md
+@.agents/rules/memory-bank-instructions.md
 
-@rules/misc.md
+@.agents/rules/misc.md
 
 ## Project Details
 

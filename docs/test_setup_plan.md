@@ -135,14 +135,17 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - What: Add workflow running `pnpm -w test` and optional live job; cache pnpm store and node_modules.
     - Why: Fast, reliable CI feedback and reproducible builds.
   - [ ] 7.2 Coverage thresholds: shared 80% lines, apps 60% initially; upload artifacts (deps: 7.1)
+  - [x] 7.2 Coverage thresholds: shared 80% lines, apps 60% initially; upload artifacts (deps: 7.1)
     - What: Configure Jest coverage; fail below thresholds; upload HTML reports.
     - Why: Maintains baseline quality while allowing iterative growth.
 
 - [ ] 8. Documentation and examples (deps: 3–5)
   - [ ] 8.1 Add `docs/testing.md` with how-to, utilities, patterns (deps: 2)
+  - [x] 8.1 Add `docs/testing.md` with how-to, utilities, patterns (deps: 2)
     - What: Document commands, when to use MSW vs jest mocks, render helpers, common pitfalls.
     - Why: Onboarding and consistency across contributors.
   - [ ] 8.2 Add one sample test per layer as templates (deps: 3,4,5)
+  - [x] 8.2 Add one sample test per layer as templates (deps: 3,4,5)
     - What: Provide minimal examples for unit (shared), integration (MSW), and screen (RTL) tests.
     - Why: Accelerates adoption and standardizes style.
 

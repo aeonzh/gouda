@@ -12,6 +12,17 @@ module.exports = {
     '<rootDir>/jest-setup.js',
     '@testing-library/jest-native/extend-expect',
   ],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/api/**/*.{ts,tsx}',
+    '<rootDir>/components/**/*.{ts,tsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      lines: 0.8,
+      statements: 0.8,
+    },
+  },
   moduleNameMapper: {
     '^react-native$': 'react-native',
     '^@react-native/js-polyfills/error-guard$':

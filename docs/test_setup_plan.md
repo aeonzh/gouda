@@ -102,7 +102,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Prevents draft/rejected products from appearing.
 
 - [ ] 5. Screen tests – B2C (deps: 2)
-  - [ ] 5.1 Home `(tabs)/index.tsx`: renders authorized vendors; search filter; navigates to storefront (deps: 2.1, 2.2)
+  - [x] 5.1 Home `(tabs)/index.tsx`: renders authorized vendors; search filter; navigates to storefront (deps: 2.1, 2.2)
     - What: Render with providers; MSW returns vendors; test search and navigation intent.
     - Why: Validates core discovery UX.
   - [ ] 5.2 Storefront `/storefront/[id].tsx`: lists categories/products; only `published`; navigates to details (deps: 2.1, 2.2)

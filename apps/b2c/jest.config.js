@@ -5,7 +5,7 @@ module.exports = {
     '^.+\.tsx?$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((\\.pnpm/.+?/node_modules/)?(jest-expo|expo|@expo|react-native|@react-native|expo-router|@react-navigation|@supabase/supabase-js|@react-native-picker/picker|expo-modules-core|shared)/))',
+    'node_modules/(?!((\\.pnpm/.+?/node_modules/)?(jest-expo|expo|@expo|@expo/vector-icons|react-native|@react-native|react-native-css-interop|expo-router|@react-navigation|@supabase/supabase-js|@react-native-picker/picker|expo-modules-core|msw|shared)/))',
   ],
   setupFilesAfterEnv: [
     '<rootDir>/jest-setup.js',
@@ -23,7 +23,13 @@ module.exports = {
     },
   },
   moduleNameMapper: {
+    '^shared/components$': '<rootDir>/testing/mocks/shared-components.js',
+    '^packages/shared/components$': '<rootDir>/testing/mocks/shared-components.js',
+    '^packages/shared/components/AuthProvider$': '<rootDir>/testing/mocks/shared-components.js',
+    '^shared/components/AuthProvider$': '<rootDir>/testing/mocks/shared-components.js',
     '^shared/(.*)$': '<rootDir>/../../packages/shared/$1',
+    '^react-native-css-interop$': '<rootDir>/testing/mocks/react-native-css-interop.js',
+    '^@expo/vector-icons$': '<rootDir>/testing/mocks/vector-icons.js',
     '^@react-native/js-polyfills/error-guard$':
       '<rootDir>/../../__mocks__/@react-native/js-polyfills/error-guard.js',
   },

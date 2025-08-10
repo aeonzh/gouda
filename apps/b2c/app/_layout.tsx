@@ -1,6 +1,7 @@
 import '@expo/metro-runtime';
 import { Session } from '@supabase/supabase-js';
 import { Stack, useRouter, useSegments } from 'expo-router';
+import { isAllowedAuthedRoute, isAuthRoute } from './utils/routeGuards';
 import { supabase } from 'packages/shared/api/supabase';
 import { AuthProvider } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
@@ -47,31 +48,14 @@ export default function InitialLayout() {
     console.log('Segments:', segments);
 
     if (!loading) {
-      // Check if the current route is within the authentication group
-      const inAuthGroup = segments[0] === '(auth)';
-      const inTabsGroup = segments[0] === '(tabs)';
-      const inStorefrontGroup = segments[0] === 'storefront';
-      const inOrdersGroup = segments[0] === 'orders';
-      const inProductsDetailGroup =
-        segments[0] === 'products' && segments[1] === '[id]';
-
+      const inAuth = isAuthRoute(segments as unknown as string[]);
       if (session) {
-        if (inAuthGroup) {
+        if (inAuth) {
           router.replace('/(tabs)');
-        } else if (
-          !inTabsGroup &&
-          !inStorefrontGroup &&
-          !inProductsDetailGroup &&
-          !inOrdersGroup &&
-          segments[0] !== 'profile' &&
-          segments[0] !== 'cart' &&
-          segments[0] !== 'order-confirmation'
-        ) {
-          // If not in auth, tabs, storefront, products detail, profile, cart, or order-confirmation, redirect to tabs
+        } else if (!isAllowedAuthedRoute(segments as unknown as string[])) {
           router.replace('/(tabs)');
         }
-      } else if (!inAuthGroup) {
-        // User is not logged in and not in auth group, redirect to login
+      } else if (!inAuth) {
         router.replace('/(auth)/login');
       }
     }

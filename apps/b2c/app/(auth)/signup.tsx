@@ -25,7 +25,9 @@ export default function SignUpScreen() {
   return (
     <View className='flex-1 items-center justify-center bg-white p-4'>
       <Stack.Screen options={{ headerShown: false }} />
-      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Join Gouda!</Text>
+      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>
+        Join Gouda!
+      </Text>
 
       <TextInput
         autoCapitalize='words'
@@ -55,7 +57,9 @@ export default function SignUpScreen() {
         disabled={loading}
         onPress={handleSignUp}
       >
-        <Text className='text-center text-lg font-semibold text-white'>{loading ? 'Registering...' : 'Sign Up'}</Text>
+        <Text className='text-center text-lg font-semibold text-white'>
+          {loading ? 'Registering...' : 'Sign Up'}
+        </Text>
       </TouchableOpacity>
 
       <View className='mt-8 flex-row'>

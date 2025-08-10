@@ -23,9 +23,12 @@ export default function ForgotPasswordScreen() {
   return (
     <View className='flex-1 items-center justify-center bg-white p-4'>
       <Stack.Screen options={{ headerShown: false }} />
-      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Forgot Your Password?</Text>
+      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>
+        Forgot Your Password?
+      </Text>
       <Text className='mb-6 text-center text-lg text-gray-700'>
-        Enter your email address below and we'll send you a link to reset your password.
+        Enter your email address below and we'll send you a link to reset your
+        password.
       </Text>
 
       <TextInput

@@ -26,7 +26,9 @@ export default function LoginScreen() {
   return (
     <View className='flex-1 items-center justify-center bg-white p-4'>
       <Stack.Screen options={{ headerShown: false }} />
-      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>Welcome Back!</Text>
+      <Text className='mb-8 text-3xl font-extrabold text-gray-900'>
+        Welcome Back!
+      </Text>
 
       <TextInput
         autoCapitalize='none'
@@ -49,7 +51,9 @@ export default function LoginScreen() {
         disabled={loading}
         onPress={handleLogin}
       >
-        <Text className='text-center text-lg font-semibold text-white'>{loading ? 'Logging In...' : 'Login'}</Text>
+        <Text className='text-center text-lg font-semibold text-white'>
+          {loading ? 'Logging In...' : 'Login'}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity

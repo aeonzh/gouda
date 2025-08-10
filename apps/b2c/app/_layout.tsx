@@ -1,14 +1,13 @@
 import '@expo/metro-runtime';
 import { Session } from '@supabase/supabase-js';
-import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { supabase } from 'packages/shared/api/supabase';
 import { AuthProvider } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// Splash screen not used in tests/app; ensure no async hide/show calls
 
 /**
  * InitialLayout component handles user session management and redirection based on authentication status.
@@ -26,7 +25,6 @@ export default function InitialLayout() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
-      SplashScreen.hideAsync();
     });
 
     // Subscribe to authentication state changes

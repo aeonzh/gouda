@@ -99,7 +99,9 @@ export default function CartScreen() {
       console.log('Cart items data:', cartItemsData);
       const items: CartItem[] = cartItemsData.map((item) => {
         const processedProduct = Array.isArray(item.product)
-          ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
+          ? item.product.length > 0
+            ? (item.product[0] as Product)
+            : undefined
           : (item.product as Product | undefined);
         return {
           ...item,
@@ -336,20 +338,26 @@ export default function CartScreen() {
         <QuantitySelector
           maxQuantity={item.product?.stock_quantity || 0}
           onQuantityChange={(newQuantity) => {
-            console.log('DEBUG: QuantitySelector - item.product.id:', item.product?.id, 'newQuantity:', newQuantity);
+            console.log(
+              'DEBUG: QuantitySelector - item.product.id:',
+              item.product?.id,
+              'newQuantity:',
+              newQuantity,
+            );
             item.product?.id &&
-            updateCartItemQuantity(item.product.id, newQuantity);
-          }
-          }
+              updateCartItemQuantity(item.product.id, newQuantity);
+          }}
           quantity={item.quantity}
         />
         <TouchableOpacity
           className='ml-2 rounded-md bg-gray-300 p-2'
           onPress={() => {
-            console.log('DEBUG: Remove button - item.product.id:', item.product?.id);
+            console.log(
+              'DEBUG: Remove button - item.product.id:',
+              item.product?.id,
+            );
             item.product?.id && removeCartItem(item.product.id);
-          }
-          }
+          }}
         >
           <Text className='text-gray-800'>Remove</Text>
         </TouchableOpacity>

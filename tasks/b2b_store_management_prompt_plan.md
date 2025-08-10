@@ -1,30 +1,27 @@
 ## B2B Store Management Prompt Plan
 
-This document provides detailed prompts for each task in `b2b_store_management_plan.md`. Each prompt is optimized for:
+This document provides explicit, actionable prompts for each task in `@b2b_store_management_plan.md`. Prompts expand implicit requirements to avoid ambiguity and enumerate concrete steps.
 
+Optimized for:
 - Feature correctness
-- Security best practices (RLS, role checks, input validation)
-- Code maintainability (clear separation, DI seams, testability)
-- Performance (minimal round-trips, correct pagination, memoization)
-- React Native best practices (a11y, SafeArea, gesture-safe interactions)
-- React Native design patterns (container/presentational split, hooks)
-- Tests: unit for business logic and API shims; integration for screens/native modules
-- Memory leak detection (cleanup subscriptions, timers, listeners)
+- Security best practices (RLS-first, no client-side elevation, strict validation)
+- Maintainability (clear separation of concerns, test seams, typed APIs)
+- Performance (minimal round-trips, memoization, debounced inputs where relevant)
+- React Native a11y and ergonomics (SafeArea, large touch targets, SR labels)
+- Testing (unit for shared APIs, integration for screens and native modules)
+- Resource hygiene (cleanup subscriptions, timers, listeners)
 
-Use these prompts verbatim when creating features or ask for refinements as needed.
+Use these prompts verbatim when implementing features.
 
 ### Execution Instructions
 
-1. Open `@b2b_store_management_prompt_plan.md` and identify any prompts not marked as completed.
-2. For each incomplete prompt:
-   - Double-check if it's truly unfinished (if uncertain, ask for clarification).
-   - If you confirm it's already done, skip it.
-   - Otherwise, implement it as described.
-   - Make sure the tests pass, and the program builds/runs.
-   - Pause and wait for user review or feedback.
-   - Commit the changes to your repository with a clear commit message.
-   - Update `@b2b_store_management_prompt_plan.md` to mark this prompt as completed.
-3. Repeat with the next unfinished prompt as directed by the user.
+1) Consult `@b2b_store_management_plan.md` as the source of truth for scope and completion status. If the plan marks an item complete, treat this prompt as a verification/refactor guide rather than a net-new feature task.
+2) For each prompt below:
+   - Verify whether the feature exists and fully meets the requirements. If not, implement the missing parts.
+   - Ensure tests exist and pass. Add missing tests.
+   - Keep changes scoped. Stage only relevant files.
+   - Prepare a clear commit message (conventional commits) for review.
+3) After implementation or verification, update this file’s Tracking section accordingly.
 
 Tracking
 - [ ] 1) Add an item for a business (Product Create)
@@ -38,179 +35,244 @@ Tracking
 
 ### 1) Add an item for a business (Product Create)
 
-Prompt:
-
 """
-Implement a product create flow for the B2B app.
+Implement a complete product creation flow in the B2B app.
 
-Requirements
-- UI
-  - Screen: `apps/b2b/app/products/manage.tsx` in create mode when no `id` query is present.
-  - Fields: name (required), description (optional), price (required, > 0), category (optional), image_url (optional).
-  - UX: form validation with clear error messages; primary CTA disabled while submitting; success toast/alert and navigate back to products list.
-  - Accessibility: label each input, ensure touch targets ≥44x44, support keyboard navigation and screen readers; respect SafeAreas.
-  - Performance: avoid unnecessary re-renders; memoize derived values; no unbounded lists; debounce network calls when needed.
-- Data
-  - Use `packages/shared/api/products.createProduct` via the lazy `getSupabase()` client.
-  - Validate inputs before calling API; disallow 0/negative prices; trim strings.
-  - Security: rely on Supabase RLS; no client-side role elevation; do not expose secrets.
-- Code quality
-  - Separate presentational UI from data logic using hooks (e.g., `useCreateProduct`); keep functions small.
-  - Handle errors with actionable messages; log unexpected errors with context.
-- Tests
-  - Unit (shared): `createProduct` inserts and returns created entity; surfaces errors (mock `getSupabase()` and chainable builder).
-  - Integration (RN): render `manage.tsx` in create mode, fill fields, submit, assert API called with correct payload and success UI state.
-  - Native module integration: mock `@react-native-picker/picker`; assert selection reflects in payload.
-  - Memory leaks: verify no lingering timers/subscriptions; ensure `useEffect` cleanups are present and covered by tests.
+Scope
+- Screen operates in create mode when no `id` param is present: `apps/b2b/app/products/manage.tsx`.
+- Uses shared API: `packages/shared/api/products.ts` `createProduct(input)` with lazy `getSupabase()`.
+- Business context: actions are scoped to the authenticated user’s single `business_id` (B2B app assumption). Resolve via an existing hook/context or by calling a helper resolving membership. Do not hardcode.
 
-Deliverables
-- Validations in the form component
-- API invocation and error handling
-- Tests passing across shared and app
+UI Requirements
+- Form fields:
+  - `name` (required, trimmed, 2–120 chars)
+  - `description` (optional, trimmed, ≤ 2,000 chars)
+  - `price` (required, numeric, > 0, max two decimals)
+  - `category_id` (optional; via `@react-native-picker/picker` or similar)
+  - `image_url` (optional; valid URL format if provided)
+- Layout: Safe area aware; keyboard-aware scroll when fields focus; dismiss keyboard on submit.
+- Validation: Real-time and on-submit; disable submit while invalid or submitting; inline errors with accessible labels.
+- Feedback: On success, show toast/alert and navigate back to the products list. On error, show actionable message.
+- Accessibility: Labels/aria for all fields; touch targets ≥ 44x44; testIDs for inputs and submit.
+
+Data & Security
+- Input sanitation: trim strings, coerce price to string/decimal as needed by API; reject zero/negative or NaN.
+- Business ID: obtain from context/hook (e.g., `useBusinessId`) or via a dedicated helper. Never accept business_id from user input.
+- Call `createProduct({ business_id, name, description, price, category_id, image_url })` and rely on RLS for authorization.
+
+Code Quality
+- Split presentation and logic:
+  - `useCreateProduct()` hook encapsulating form state, validation schema, submit, loading/error state.
+  - `ProductForm` component for inputs + errors + submit.
+- Keep functions small; avoid side effects during render.
+- Memoize handlers (`useCallback`) and derived values (`useMemo`).
+
+Tests
+- Unit (shared):
+  - Add/ensure tests for `createProduct` using a chainable/awaitable Supabase mock via `jest.isolateModules` and `jest.doMock('../supabase', ...)`.
+  - Assert insert payload shape, success return, and error propagation.
+- Integration (RN):
+  - Render `manage.tsx` with no `id`. Fill fields, select category, submit.
+  - Assert API called with sanitized payload (trimmed strings, decimal price) and business_id injected from context.
+  - Verify disabled state during submit and success navigation/toast on completion.
+- Native modules: mock `@react-native-picker/picker`.
+- Resource hygiene: unmount and assert no state updates after unmount; clean timers/subscriptions.
+
+Actionable Steps
+1. Ensure `packages/shared/api/products.ts` exports `createProduct` using `getSupabase()` (lazy) and returns created row or throws on error.
+2. In `apps/b2b/app/products/manage.tsx`, detect create mode (`!id`).
+3. Implement `useCreateProduct` with validation schema and submit logic that resolves `business_id` from context.
+4. Build `ProductForm` with labeled inputs, error rendering, disabled submit while invalid/submitting, and success/error feedback.
+5. Wire navigation back on success; trigger a list refresh signal if applicable.
+6. Write/extend unit tests in shared; write integration test for create path (mock Picker).
+7. Run tests and verify app build.
 """
 
 ---
 
 ### 2) Update an item for a business (Product Update)
 
-Prompt:
-
 """
-Implement a product update flow for the B2B app.
+Implement a robust product update flow in the B2B app.
 
-Requirements
-- UI
-  - Screen: `apps/b2b/app/products/manage.tsx` in edit mode when `id` query is present.
-  - Prefill form by fetching `getProductById(id)`; render a loading state; show not-found error and navigate back if missing.
-  - Validate inputs on change and before submit; disable submit while pending; show success and navigate back.
-- Data
-  - Use `packages/shared/api/products.updateProduct(id, partial)` with lazy `getSupabase()`.
-  - Only send changed fields when practical; preserve server-authoritative fields.
-  - Security: rely on RLS; do not trust client roles; reject invalid price values.
-- Maintainability
-  - Extract `useProductForm` hook for shared create/update logic where reasonable.
-  - Keep side-effects in effects and actions, not render paths.
-- Tests
-  - Unit (shared): `updateProduct` updates fields; chains `eq('id', ...)`; surfaces errors.
-  - Integration (RN): prefill with existing product; modify fields; submit; assert success; ensure Picker interaction is covered.
-  - Memory leaks: ensure any listeners/timeouts are cleaned on unmount; test with RTL unmount + assertions.
+Scope
+- Screen operates in edit mode when `id` param exists: `apps/b2b/app/products/manage.tsx`.
+- Shared APIs: `getProductById(id)` and `updateProduct(id, partial)` with lazy `getSupabase()`.
 
-Deliverables
-- Edit path with prefill, validations, and update
-- Passing unit and integration tests
+UI Requirements
+- On mount: fetch product by `id`; show loading spinner; if not found, show error and navigate back.
+- Prefill form with existing values; same validation rules as create.
+- Submit path: disable during submit; show success and navigate back.
+- Accessibility: Same as create; ensure readout of loading/error states.
+
+Data & Security
+- Only send changed fields if straightforward; otherwise send minimal safe payload.
+- Do not allow changes to `business_id` or server-controlled fields.
+- Rely on RLS for authorization; surface errors clearly.
+
+Maintainability
+- Extract `useProductForm` shared hook (create/update) for form state and validation to reduce duplication.
+- Keep effects in `useEffect`; avoid data fetching in render.
+
+Tests
+- Unit (shared):
+  - `updateProduct` chains `from('products').update(...).eq('id', id).select('*').single()`; asserts success/error.
+- Integration (RN):
+  - Render edit mode, wait for prefill, modify fields, submit; assert API called with expected partial/payload and success navigate.
+  - Cover category Picker interactions.
+- Resource hygiene: unmount during in-flight request and assert no warnings/state leaks.
+
+Actionable Steps
+1. Ensure shared `getProductById` and `updateProduct` exist and are using `getSupabase()` lazily.
+2. In `manage.tsx`, detect edit mode (`id` present); implement fetch with loading/not-found handling.
+3. Reuse `useProductForm` for state/validation; initialize with fetched data.
+4. Implement submit to call `updateProduct(id, partial)`; map UI to API field names.
+5. Add/extend unit tests; add integration test for edit flow.
+6. Verify tests green and screen behavior in app.
 """
 
 ---
 
 ### 3) Delete item for a business (Product Delete)
 
-Prompt:
-
 """
-Implement product deletion from the products list with confirmation.
+Implement secure product deletion from the products list with user confirmation.
 
-Requirements
-- UI
-  - Screen: `apps/b2b/app/(tabs)/products.tsx` list view.
-  - On delete icon press: show confirm Alert; on confirm call API; refresh list; show success or error toast.
-  - Accessibility: ensure buttons are labeled; destructive action clearly indicated.
-- Data
-  - Use `packages/shared/api/products.deleteProduct(id)`.
-  - Security: RLS ensures only authorized roles can delete products.
-- Performance
-  - Optionally perform optimistic UI removal with rollback on failure.
-  - Avoid refetch storm; coalesce refreshes.
-- Tests
-  - Unit (shared): `deleteProduct` issues correct delete chain and surfaces errors.
-  - Integration (RN): simulate press -> confirm -> API call -> refetch/refresh list, assert item removed.
-  - Native: mock alert/confirm and ensure flows are covered.
-  - Memory leaks: no stale state updates after unmount; ensure async flows are cancelled.
+Scope
+- List screen: `apps/b2b/app/(tabs)/products.tsx`.
+- Shared API: `deleteProduct(id)`.
 
-Deliverables
-- Confirmed delete with robust error handling
-- Tests covering happy/error paths
+UI Requirements
+- Provide a visible delete affordance per row (icon/button).
+- On press: open a confirm dialog that clearly states the product name and destructive nature; include Cancel/Confirm.
+- After confirm: disable the row’s delete control while pending; show success/error toast; refresh list.
+- Accessibility: Ensure SR labels for delete buttons; confirmation dialog is accessible.
+
+Data & Security
+- Call `deleteProduct(id)`; rely on RLS. Do not attempt client-side role elevation.
+- Avoid duplicate deletes with a pending guard.
+
+Performance
+- Optional optimistic removal with rollback on API failure.
+- Coalesce refreshes to avoid refetch storms.
+
+Tests
+- Unit (shared): correctness of delete chain and error surfacing.
+- Integration (RN): simulate delete press → confirm → API call → list refresh; verify removal and error path handling.
+- Native: mock Alert/confirm module and assert dialog flow.
+- Resource hygiene: ensure no setState after unmount.
+
+Actionable Steps
+1. Ensure `deleteProduct` exists in shared API and is tested.
+2. Add delete UI to the products list; wire accessible labels and testIDs.
+3. Implement confirm flow; call API; refresh data source (or optimistic update with rollback).
+4. Add integration test covering happy and error paths.
 """
 
 ---
 
 ### 4) Add member for a business
 
-Prompt:
-
 """
-Implement adding a member to a business with role assignment.
+Implement adding a member with role assignment to the current business.
 
-Requirements
-- UI
-  - New screen: `apps/b2b/app/members/manage.tsx` in create mode; fields: profile_id (UUID), role_in_business (enum), business_id prefilled from context.
-  - Validate UUID format, role choices (`owner`, `sales_agent`, `customer`).
-  - Submit with disabled state; success toast and navigate back to members list.
-- Data
-  - Use `packages/shared/api/members.addMember({ profile_id, business_id, role_in_business })`.
-  - Security: rely on RLS; do not expose role elevation; validate input strictly; prevent duplicate membership client-side when possible.
-- Maintainability
-  - Create `useMemberForm` hook for shared create/update logic.
-- Tests
-  - Unit (shared): `addMember` inserts row and returns created entity; error surfaced.
-  - Integration (RN): fill form, submit, assert API payload and navigation; cover role Picker.
-  - Native modules: mock `@react-native-picker/picker`.
-  - Memory leaks: cleanup network subscriptions and timers in effects.
+Scope
+- New screen: `apps/b2b/app/members/manage.tsx` in create mode.
+- Shared API: `packages/shared/api/members.ts` `addMember({ profile_id, business_id, role_in_business })`.
 
-Deliverables
-- Member create form and API integration with tests
+UI Requirements
+- Fields: `profile_id` (UUID), `role_in_business` (enum: `owner`, `sales_agent`, `customer`).
+- `business_id` is prefilled from app context; not editable.
+- Validate UUID format and that a role is selected.
+- Submit button disabled while invalid/submitting; success toast and navigate back to `apps/b2b/app/members/index.tsx`.
+- Accessibility: proper labels, Picker SR support, testIDs.
+
+Data & Security
+- Resolve `business_id` from context/hook; never accept from user.
+- Before submit, optionally check for existing membership to avoid duplicate insert (best-effort client-side), but ultimately rely on backend constraints/RLS.
+- Rely on RLS to authorize insert; surface backend errors.
+
+Maintainability
+- Implement `useMemberForm` hook for create/update reuse (handles state, validation, submit, errors).
+
+Tests
+- Unit (shared): `addMember` inserts expected payload; error propagation.
+- Integration (RN): fill valid values, submit, assert API payload includes resolved `business_id` and navigates on success.
+- Native: mock Role Picker.
+- Resource hygiene: cleanup/abort in-flight requests on unmount.
+
+Actionable Steps
+1. Ensure `addMember` exists and uses `getSupabase()` lazily.
+2. Create `members/manage.tsx` (create mode) UI with validation and submit.
+3. Implement `useMemberForm` for state and submission.
+4. Add unit tests in shared and integration test for create flow.
 """
 
 ---
 
 ### 5) Update member for a business
 
-Prompt:
-
 """
-Implement updating a member's `role_in_business`.
+Implement updating a member’s `role_in_business` while preserving composite identity.
 
-Requirements
-- UI
-  - Screen: `apps/b2b/app/members/manage.tsx` edit mode (query has `profile_id` + `business_id`); prefill role; business/profile fields read-only.
-  - Validate role transitions if business rules require (e.g., at least one owner must remain).
-  - Submit with disabled state; success toast; navigate back.
-- Data
-  - Use `packages/shared/api/members.updateMemberRole(profile_id, business_id, role)`.
-  - Security: enforce allowed transitions in backend (RLS/constraints) and mirror in UI.
-- Tests
-  - Unit (shared): update chain calls and surfaces error.
-  - Integration (RN): change role and submit; assert payload; blocked transitions show UI error.
-  - Memory leaks: ensure no stale updates on unmount.
+Scope
+- Screen: `apps/b2b/app/members/manage.tsx` edit mode.
+- Route params must include `profile_id` and `business_id` to uniquely identify the member.
+- Shared API: `updateMemberRole(profile_id, business_id, role)`.
 
-Deliverables
-- Role update flow with constraints and tests
+UI Requirements
+- Prefill current role; display read-only `profile_id` and `business_id`.
+- Validate role transitions; optionally enforce “at least one owner must remain” at UI level (final authority is backend constraints/RLS).
+- Disable submit while pending; show success toast; navigate back to members list.
+
+Data & Security
+- Use composite key in API call; never change `profile_id`/`business_id` in edit mode.
+- Rely on RLS; map backend errors to user-friendly messages.
+
+Tests
+- Unit (shared): update call correctness and error propagation.
+- Integration (RN): change role and submit; assert success; error path when blocked transition.
+- Resource hygiene: ensure safe unmount.
+
+Actionable Steps
+1. Ensure `updateMemberRole` exists and is tested.
+2. Implement edit mode in `members/manage.tsx` reading params; prefill role and lock identities.
+3. Submit new role via API; handle success/error; navigate back.
+4. Add integration test for edit path and blocked transition scenario.
 """
 
 ---
 
 ### 6) Delete member for a business
 
-Prompt:
-
 """
-Implement removing a member from a business.
+Implement removing a member using a composite key with safeguards for ownership continuity.
 
-Requirements
-- UI
-  - From members list screen: confirm destructive action; prevent removing the only remaining `owner` (enforce via backend and UI check).
-  - Accessibility: destructive affordance is clearly labeled; confirmation dialog supports screen readers.
-- Data
-  - Use `packages/shared/api/members.deleteMember(profile_id, business_id)`.
-  - Security: rely on RLS; ensure backend prevents last-owner removal.
-- Performance
-  - Optionally optimistic removal with rollback on failure.
-- Tests
-  - Unit (shared): composite-key delete and error surface.
-  - Integration (RN): confirm dialog, API call, and list refresh; error path (attempt to remove last owner) shows blocking UI.
-  - Memory leaks: ensure no dangling async ops after unmount.
+Scope
+- Members list screen (e.g., `apps/b2b/app/members/index.tsx`).
+- Shared API: `deleteMember(profile_id, business_id)`.
 
-Deliverables
-- Safe member removal with appropriate guards and tests
+UI Requirements
+- For each member, provide a delete affordance with SR label.
+- Confirm dialog names the member and clarifies irreversibility; Cancel/Confirm options.
+- Prevent removing the only remaining `owner` with a pre-check if feasible; always rely on backend constraint.
+- On confirm, disable control while pending; show success/error toast; refresh list.
+
+Data & Security
+- Call delete with composite key; rely on RLS and DB constraints to block last owner removal.
+
+Performance
+- Optional optimistic UI with rollback on failure.
+
+Tests
+- Unit (shared): composite-key delete call correctness and error propagation.
+- Integration (RN): confirm → API → refresh; cover error path (attempt to remove last owner shows blocking UI message).
+- Resource hygiene: ensure no dangling async after unmount.
+
+Actionable Steps
+1. Ensure `deleteMember` exists and has unit tests.
+2. Add delete control to members list; wire confirm dialog and accessible labels.
+3. Implement API call and list refresh/optimistic update with rollback.
+4. Add integration tests for happy and last-owner error paths.
 """
-
 

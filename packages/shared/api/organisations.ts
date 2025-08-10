@@ -59,6 +59,35 @@ export async function getAuthorizedBusinesses(
 }
 
 /**
+ * Resolve an active business id for a user, preferring a provided id if the
+ * user is a member of that business; otherwise fall back to the first
+ * membership. Returns null if the user has no memberships.
+ */
+export async function resolveBusinessIdForUser(
+  userId: string,
+  preferredBusinessId?: string | null,
+): Promise<string | null> {
+  const { data: memberships, error } = await supabase
+    .from('members')
+    .select('business_id')
+    .eq('profile_id', userId);
+
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error resolving business id for user:', error.message);
+    throw error;
+  }
+
+  if (!memberships || memberships.length === 0) return null;
+
+  const authorised = memberships.map((m) => m.business_id);
+  if (preferredBusinessId && authorised.includes(preferredBusinessId)) {
+    return preferredBusinessId;
+  }
+  return authorised[0] ?? null;
+}
+
+/**
  * Fetches the business ID for a given customer profile ID.
  * @param {string} profileId - The ID of the customer profile.
  * @returns {Promise<string | null>} A promise that resolves to the business ID or null if not found/error.

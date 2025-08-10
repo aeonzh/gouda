@@ -8,7 +8,8 @@ function createThenable<T>(result: { data: T; error: any }) {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
     in: jest.fn().mockReturnThis(),
-    then: (onFulfilled: (v: typeof result) => any) => Promise.resolve(result).then(onFulfilled),
+    then: (onFulfilled: (v: typeof result) => any) =>
+      Promise.resolve(result).then(onFulfilled),
   };
   return qb;
 }
@@ -22,7 +23,10 @@ describe('organisations API', () => {
 
   it('getAuthorizedBusinesses filters by user membership and approved status', async () => {
     const memberRows = [{ business_id: 'b1' }, { business_id: 'b2' }];
-    const orgRows = [{ id: 'b1', name: 'A', status: 'approved' }, { id: 'b2', name: 'B', status: 'approved' }];
+    const orgRows = [
+      { id: 'b1', name: 'A', status: 'approved' },
+      { id: 'b2', name: 'B', status: 'approved' },
+    ];
 
     (client.from as jest.Mock).mockImplementation((table: string) => {
       if (table === 'members') {
@@ -38,6 +42,67 @@ describe('organisations API', () => {
     const result = await getAuthorizedBusinesses('u1');
     expect(result).toHaveLength(2);
   });
+
+  it('resolveBusinessIdForUser prefers preferred id if user is a member', async () => {
+    (client.from as jest.Mock).mockImplementation((table: string) => {
+      if (table === 'members') {
+        return createThenable({
+          data: [{ business_id: 'b1' }, { business_id: 'b2' }] as any,
+          error: null,
+        });
+      }
+      throw new Error('Unexpected table ' + table);
+    });
+
+    jest.isolateModules(async () => {
+      jest.doMock('../supabase', () => ({
+        getSupabase: () => client,
+        supabase: client,
+      }));
+      const { resolveBusinessIdForUser } = require('../organisations');
+      const result = await resolveBusinessIdForUser('u1', 'b2');
+      expect(result).toBe('b2');
+    });
+  });
+
+  it('resolveBusinessIdForUser falls back to first membership when preferred not a member', async () => {
+    (client.from as jest.Mock).mockImplementation((table: string) => {
+      if (table === 'members') {
+        return createThenable({
+          data: [{ business_id: 'b1' }, { business_id: 'b2' }] as any,
+          error: null,
+        });
+      }
+      throw new Error('Unexpected table ' + table);
+    });
+
+    jest.isolateModules(async () => {
+      jest.doMock('../supabase', () => ({
+        getSupabase: () => client,
+        supabase: client,
+      }));
+      const { resolveBusinessIdForUser } = require('../organisations');
+      const result = await resolveBusinessIdForUser('u1', 'bX');
+      expect(result).toBe('b1');
+    });
+  });
+
+  it('resolveBusinessIdForUser returns null with no memberships', async () => {
+    (client.from as jest.Mock).mockImplementation((table: string) => {
+      if (table === 'members') {
+        return createThenable({ data: [] as any, error: null });
+      }
+      throw new Error('Unexpected table ' + table);
+    });
+
+    jest.isolateModules(async () => {
+      jest.doMock('../supabase', () => ({
+        getSupabase: () => client,
+        supabase: client,
+      }));
+      const { resolveBusinessIdForUser } = require('../organisations');
+      const result = await resolveBusinessIdForUser('u1', 'b2');
+      expect(result).toBeNull();
+    });
+  });
 });
-
-

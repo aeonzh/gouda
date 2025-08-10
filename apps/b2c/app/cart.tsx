@@ -10,9 +10,10 @@ import { Product } from 'packages/shared/api/products';
 import { supabase } from 'packages/shared/api/supabase';
 import { Button } from 'packages/shared/components';
 import { QuantitySelector } from 'packages/shared/components/QuantitySelector';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { resolveBusinessIdForUser } from 'packages/shared/api/organisations';
 
 interface CartItem {
   cart_id: string;
@@ -29,7 +30,6 @@ export default function CartScreen() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [placingOrder, setPlacingOrder] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
   const { businessId: paramBusinessId } = useLocalSearchParams();
   const router = useRouter();
 
@@ -45,32 +45,23 @@ export default function CartScreen() {
       return;
     }
 
-    console.log(
-      '=== DEBUG: CartScreen - Fetching cart items for user:',
+    if (__DEV__) {
+      console.log('=== DEBUG: Fetching cart items for user:', user.id);
+    }
+
+    const businessId = await resolveBusinessIdForUser(
       user.id,
+      (paramBusinessId as string) || null,
     );
-
-    // Get the user's authorized businesses
-    const { data: businesses, error: businessesError } = await supabase
-      .from('members')
-      .select('business_id')
-      .eq('profile_id', user.id);
-
-    if (businessesError || !businesses || businesses.length === 0) {
+    if (!businessId) {
       setCartItems([]);
       setLoading(false);
       return;
     }
 
-    console.log(
-      '=== DEBUG: CartScreen - Authorized businesses:',
-      businesses.map((b) => b.business_id),
-    );
-
-    // For now, use the first authorized business
-    const businessId = (paramBusinessId as string) || businesses[0].business_id;
-    console.log('=== DEBUG: CartScreen - Using businessId:', businessId); // Added log
-    console.log('Businesses from members table:', businesses); // Added log
+    if (__DEV__) {
+      console.log('=== DEBUG: Using businessId:', businessId);
+    }
 
     try {
       // Get or create cart using the shared API function
@@ -80,15 +71,17 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('=== DEBUG: CartScreen - Found cart:', cart);
+      if (__DEV__) console.log('=== DEBUG: Found cart:', cart);
 
       // Get cart items using the shared API function
-      console.log(
-        '=== DEBUG: CartScreen - About to fetch cart items for cartId:',
-        cart.id,
-        'with businessId:',
-        cart.business_id,
-      );
+      if (__DEV__) {
+        console.log(
+          '=== DEBUG: About to fetch cart items for cartId:',
+          cart.id,
+          'with businessId:',
+          cart.business_id,
+        );
+      }
       const cartItemsData = await getCartItems(cart.id);
       if (!cartItemsData) {
         console.log('=== DEBUG: CartScreen - No cart items found ===');
@@ -96,7 +89,7 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('Cart items data:', cartItemsData);
+      if (__DEV__) console.log('Cart items data:', cartItemsData);
       const items: CartItem[] = cartItemsData.map((item) => {
         const processedProduct = Array.isArray(item.product)
           ? item.product.length > 0
@@ -108,7 +101,7 @@ export default function CartScreen() {
           product: processedProduct,
         };
       });
-      console.log('Cart items processed and set in state');
+      if (__DEV__) console.log('Cart items processed and set in state');
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
@@ -121,47 +114,36 @@ export default function CartScreen() {
     fetchCartItems();
   }, [fetchCartItems]);
 
-  const calculateTotalPrice = useCallback(() => {
-    const total = cartItems.reduce(
-      (sum, item) => sum + (item.product?.price || 0) * item.quantity,
-      0,
-    );
-    setTotalPrice(total);
-  }, [cartItems]);
-
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [calculateTotalPrice]);
+  const totalPrice = useMemo(
+    () =>
+      cartItems.reduce(
+        (sum, item) => sum + (item.product?.price || 0) * item.quantity,
+        0,
+      ),
+    [cartItems],
+  );
 
   const updateCartItemQuantity = async (
     productId: string,
     newQuantity: number,
   ) => {
-    console.log('=== DEBUG: updateCartItemQuantity started ===');
-    console.log('Product ID:', productId);
-    console.log('New quantity:', newQuantity);
-    console.log('Current cart items:', cartItems);
+    if (__DEV__) console.log('=== DEBUG: updateCartItemQuantity started ===');
+    if (__DEV__) {
+      console.log('Product ID:', productId);
+      console.log('New quantity:', newQuantity);
+      console.log('Current cart items:', cartItems);
+    }
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Get the user's authorized businesses
-    const { data: businesses, error: businessesError } = await supabase
-      .from('members')
-      .select('business_id')
-      .eq('profile_id', user.id);
-
-    if (businessesError || !businesses || businesses.length === 0) return;
-
-    console.log(
-      'Authorized businesses:',
-      businesses.map((b) => b.business_id),
+    const targetBusinessId = await resolveBusinessIdForUser(
+      user.id,
+      (paramBusinessId as string) || null,
     );
-
-    const targetBusinessId =
-      (paramBusinessId as string) || businesses[0].business_id;
+    if (!targetBusinessId) return;
 
     if (newQuantity <= 0) {
       console.log('Quantity <= 0, removing item');
@@ -178,7 +160,7 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('Found cart for update:', cart.id);
+      if (__DEV__) console.log('Found cart for update:', cart.id);
 
       // Get the cart items to find the cart item ID
       const cartItemsData = await getCartItems(cart.id);
@@ -187,7 +169,7 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('Cart items data from API:', cartItemsData);
+      if (__DEV__) console.log('Cart items data from API:', cartItemsData);
 
       const cartItem = cartItemsData.find(
         (item) => item.product_id === productId,
@@ -201,30 +183,41 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('Found cart item for update:', cartItem.id);
-      console.log('Current quantity in cart item:', cartItem.quantity);
+      if (__DEV__) {
+        console.log('Found cart item for update:', cartItem.id);
+        console.log('Current quantity in cart item:', cartItem.quantity);
+      }
 
       // Use the shared API to update quantity
       const updatedItem = await updateCartItemQuantityApi(
         cartItem.id,
         newQuantity,
       );
-      console.log('API response from updateCartItemQuantityApi:', updatedItem);
+      if (__DEV__)
+        console.log(
+          'API response from updateCartItemQuantityApi:',
+          updatedItem,
+        );
 
       if (updatedItem) {
-        console.log('Successfully updated quantity');
+        if (__DEV__) console.log('Successfully updated quantity');
         fetchCartItems();
       }
-      console.log(
-        '=== DEBUG: updateCartItemQuantity completed successfully ===',
-      );
+      if (__DEV__)
+        console.log(
+          '=== DEBUG: updateCartItemQuantity completed successfully ===',
+        );
     } catch (error) {
-      console.error('=== DEBUG: Error updating cart item quantity ===', error);
+      if (__DEV__)
+        console.error(
+          '=== DEBUG: Error updating cart item quantity ===',
+          error,
+        );
     }
   };
 
   const removeCartItem = async (productId: string) => {
-    console.log('Removing product from cart:', productId);
+    if (__DEV__) console.log('Removing product from cart:', productId);
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -233,17 +226,11 @@ export default function CartScreen() {
       return;
     }
 
-    // Get the user's authorized businesses
-    const { data: businesses, error: businessesError } = await supabase
-      .from('members')
-      .select('business_id')
-      .eq('profile_id', user.id);
-
-    if (businessesError || !businesses || businesses.length === 0) return;
-
-    // Use provided business_id or first authorized business
-    const targetBusinessId =
-      (paramBusinessId as string) || businesses[0].business_id;
+    const targetBusinessId = await resolveBusinessIdForUser(
+      user.id,
+      (paramBusinessId as string) || null,
+    );
+    if (!targetBusinessId) return;
 
     try {
       // First get the user's cart
@@ -253,7 +240,7 @@ export default function CartScreen() {
         return;
       }
 
-      console.log('Found cart for removal:', cart.id);
+      if (__DEV__) console.log('Found cart for removal:', cart.id);
 
       // Find the cart item ID for the product
       const cartItemsData = await getCartItems(cart.id);
@@ -272,53 +259,52 @@ export default function CartScreen() {
 
       // Use the shared API to remove the item
       await removeCartItemApi(cartItem.id);
-      console.log('Successfully removed item');
+      if (__DEV__) console.log('Successfully removed item');
       fetchCartItems();
     } catch (error) {
-      console.error('Error removing cart item:', error);
+      if (__DEV__) console.error('Error removing cart item:', error);
     }
   };
 
   const createOrder = async () => {
-    console.log('=== DEBUG: createOrder called ===');
-    console.log('Current cart items:', cartItems);
-    console.log('Total price:', totalPrice);
+    if (__DEV__) {
+      console.log('=== DEBUG: createOrder called ===');
+      console.log('Current cart items:', cartItems);
+      console.log('Total price:', totalPrice);
+    }
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Get the user's authorized businesses
-    const { data: businesses, error: businessesError } = await supabase
-      .from('members')
-      .select('business_id')
-      .eq('profile_id', user.id);
-
-    if (businessesError || !businesses || businesses.length === 0) return;
+    const businessId = await resolveBusinessIdForUser(
+      user.id,
+      (paramBusinessId as string) || null,
+    );
+    if (!businessId) return;
 
     if (cartItems.length === 0) return;
 
     setPlacingOrder(true);
     try {
-      console.log('=== DEBUG: Creating order from cart ===');
+      if (__DEV__) console.log('=== DEBUG: Creating order from cart ===');
       // Use the shared API to create order from cart
-      const order = await createOrderFromCart(
-        user.id,
-        (paramBusinessId as string) || businesses[0].business_id,
-      );
+      const order = await createOrderFromCart(user.id, businessId);
       if (!order) {
-        console.log('=== DEBUG: Failed to create order - order is null ===');
+        if (__DEV__)
+          console.log('=== DEBUG: Failed to create order - order is null ===');
         throw new Error('Failed to create order');
       }
 
-      console.log('=== DEBUG: Successfully created order ===', order);
+      if (__DEV__)
+        console.log('=== DEBUG: Successfully created order ===', order);
       router.push({
         params: { orderId: order.id, total: totalPrice.toFixed(2) },
         pathname: '/order-confirmation',
       });
     } catch (error) {
-      console.error('=== DEBUG: Error creating order ===', error);
+      if (__DEV__) console.error('=== DEBUG: Error creating order ===', error);
     } finally {
       setPlacingOrder(false);
     }

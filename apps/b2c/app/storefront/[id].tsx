@@ -8,7 +8,7 @@ import {
 } from 'packages/shared/api/products';
 import { Input } from 'packages/shared/components';
 import { useAuth } from 'packages/shared/components/AuthProvider';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -19,36 +19,54 @@ import {
 } from 'react-native';
 
 export default function StorefrontPage() {
-  const { id: storeId } = useLocalSearchParams();
-  console.log('Current storeId from params:', storeId);
+  const { id: rawStoreId } = useLocalSearchParams();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<null | string>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
   const [storeName, setStoreName] = useState<string>('Store');
   const { session } = useAuth();
+
+  // Normalize storeId: must be a non-empty string
+  const storeId = useMemo(() => {
+    if (typeof rawStoreId !== 'string' || rawStoreId.trim().length === 0) return null;
+    return rawStoreId;
+  }, [rawStoreId]);
+
+  console.log('Current storeId from params:', storeId);
+
+  // Debounce search input to reduce queries
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedQuery(searchQuery), 300);
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
 
   useEffect(() => {
     const fetchStoreData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch store name (assuming storeId is business_id)
+        // Validate authorization and fetch store name
         const organizations = await getAuthorizedBusinesses(
           session?.user?.id || '',
         );
         const currentOrg = organizations?.find((org) => org.id === storeId);
-        if (currentOrg) {
-          setStoreName(currentOrg.name);
+        if (!currentOrg) {
+          setProducts([]);
+          setCategories([]);
+          setError('Unauthorized storefront.');
+          return;
         }
+        setStoreName(currentOrg.name);
 
         const fetchedProducts = await getProducts({
           business_id: storeId as string,
           category_id: selectedCategory || undefined,
-          search_query: searchQuery || undefined,
+          search_query: debouncedQuery || undefined,
           status: 'published',
         });
         setProducts(fetchedProducts || []);
@@ -70,14 +88,38 @@ export default function StorefrontPage() {
       }
     };
 
-    if (storeId && session?.user?.id) {
+    if (!storeId) {
+      setLoading(false);
+      setError('Invalid store.');
+      return;
+    }
+    if (session?.user?.id) {
       fetchStoreData();
     }
-  }, [storeId, selectedCategory, searchQuery, session?.user?.id]);
+  }, [storeId, selectedCategory, debouncedQuery, session?.user?.id]);
 
   const handleProductPress = (productId: string) => {
     router.push(`/products/${productId}`);
   };
+
+  const renderProductItem = useCallback(({ item }: { item: Product }) => (
+    <TouchableOpacity
+      className='flex-row items-center border-b border-gray-200 p-4'
+      onPress={() => handleProductPress(item.id)}
+    >
+      {item.image_url && (
+        <Image
+          className='mr-4 h-16 w-16 rounded'
+          source={{ uri: item.image_url }}
+        />
+      )}
+      <View className='flex-1'>
+        <Text className='text-lg font-bold'>{item.name}</Text>
+        <Text className='text-gray-600'>${item.price.toFixed(2)}</Text>
+        <Text className='text-gray-500'>{item.description}</Text>
+      </View>
+    </TouchableOpacity>
+  ), []);
 
   if (loading) {
     return (
@@ -143,24 +185,7 @@ export default function StorefrontPage() {
         <FlatList
           data={products}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className='flex-row items-center border-b border-gray-200 p-4'
-              onPress={() => handleProductPress(item.id)}
-            >
-              {item.image_url && (
-                <Image
-                  className='mr-4 h-16 w-16 rounded'
-                  source={{ uri: item.image_url }}
-                />
-              )}
-              <View className='flex-1'>
-                <Text className='text-lg font-bold'>{item.name}</Text>
-                <Text className='text-gray-600'>${item.price.toFixed(2)}</Text>
-                <Text className='text-gray-500'>{item.description}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={renderProductItem}
         />
       )}
     </View>

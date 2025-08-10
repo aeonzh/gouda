@@ -1,14 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { getAuthorizedBusinesses } from 'packages/shared/api/organisations';
-import {
-  Category,
-  getCategories,
-  getProducts,
-  Product,
-} from 'packages/shared/api/products';
 import { Input } from 'packages/shared/components';
 import { useAuth } from 'packages/shared/components/AuthProvider';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -17,86 +10,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useStorefront } from './useStorefront';
 
 export default function StorefrontPage() {
   const { id: rawStoreId } = useLocalSearchParams();
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<null | string>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [debouncedQuery, setDebouncedQuery] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null);
-  const [storeName, setStoreName] = useState<string>('Store');
   const { session } = useAuth();
-
-  // Normalize storeId: must be a non-empty string
-  const storeId = useMemo(() => {
-    if (typeof rawStoreId !== 'string' || rawStoreId.trim().length === 0) return null;
-    return rawStoreId;
-  }, [rawStoreId]);
-
-  console.log('Current storeId from params:', storeId);
-
-  // Debounce search input to reduce queries
-  useEffect(() => {
-    const handle = setTimeout(() => setDebouncedQuery(searchQuery), 300);
-    return () => clearTimeout(handle);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const fetchStoreData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Validate authorization and fetch store name
-        const organizations = await getAuthorizedBusinesses(
-          session?.user?.id || '',
-        );
-        const currentOrg = organizations?.find((org) => org.id === storeId);
-        if (!currentOrg) {
-          setProducts([]);
-          setCategories([]);
-          setError('Unauthorized storefront.');
-          return;
-        }
-        setStoreName(currentOrg.name);
-
-        const fetchedProducts = await getProducts({
-          business_id: storeId as string,
-          category_id: selectedCategory || undefined,
-          search_query: debouncedQuery || undefined,
-          status: 'published',
-        });
-        setProducts(fetchedProducts || []);
-
-        const fetchedCategories = await getCategories({
-          business_id: storeId as string,
-        });
-        setCategories([
-          { id: null, name: 'All' },
-          ...(fetchedCategories || []),
-        ]);
-        console.log('Fetched Categories:', fetchedCategories);
-        console.log('Fetched Products:', fetchedProducts);
-      } catch (err) {
-        console.error('Failed to fetch data:', err);
-        setError('Failed to load products or categories.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!storeId) {
-      setLoading(false);
-      setError('Invalid store.');
-      return;
-    }
-    if (session?.user?.id) {
-      fetchStoreData();
-    }
-  }, [storeId, selectedCategory, debouncedQuery, session?.user?.id]);
+  const [state, actions] = useStorefront({
+    rawStoreId,
+    userId: session?.user?.id ?? null,
+  });
+  const {
+    loading,
+    error,
+    products,
+    categories,
+    selectedCategoryId,
+    storeName,
+    searchQuery,
+  } = state;
+  const { setSearchQuery, setSelectedCategoryId } = actions;
 
   const handleProductPress = (productId: string) => {
     router.push(`/products/${productId}`);
@@ -164,11 +97,11 @@ export default function StorefrontPage() {
           keyExtractor={(item) => item.id || 'all'}
           renderItem={({ item }) => (
             <TouchableOpacity
-              className={`mr-2 rounded-full px-3 py-1 ${selectedCategory === item.id ? 'bg-blue-500' : 'bg-gray-200'}`}
-              onPress={() => setSelectedCategory(item.id)}
+              className={`mr-2 rounded-full px-3 py-1 ${selectedCategoryId === item.id ? 'bg-blue-500' : 'bg-gray-200'}`}
+              onPress={() => setSelectedCategoryId(item.id)}
             >
               <Text
-                className={`${selectedCategory === item.id ? 'text-white' : 'text-gray-800'}`}
+                className={`${selectedCategoryId === item.id ? 'text-white' : 'text-gray-800'}`}
               >
                 {item.name}
               </Text>

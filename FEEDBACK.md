@@ -116,6 +116,53 @@ Scope: Based on `tasks/b2c_app_review_plan.md`. Organized per task with findings
 
 ---
 
+ 
+
+## 11. Product details visibility and stock enforcement
+
+- Files: `apps/b2c/app/products/[id].tsx`, `packages/shared/api/products.ts`
+- Findings
+  - PDP does not explicitly validate `productId` type and vendor authorization before fetching/acting.
+  - Visibility rules for unpublished products are enforced in storefront, but PDP may still allow direct access via deep links.
+  - No explicit client-side stock enforcement on quantity controls beyond server-side checks.
+- Risks/Issues
+  - Invalid/array `productId` values can cause runtime errors or unintended queries.
+  - Users may see or add unpublished products via deep links if PDP does not guard appropriately.
+  - Over-adding beyond `stock_quantity` degrades UX and causes server-side failures.
+- Recommendations
+  - Validate `productId` (string UUID) and reject array/undefined; render "Product not found" for invalid IDs.
+  - Fetch product with business scoping; if product is not `published` or user is unauthorized, block actions and show a clear state.
+  - Enforce `stock_quantity` limits in `QuantitySelector` (disable increment at max); re-validate on Add to Cart/Order create.
+  - Tests: unit for product fetch/guards; screen tests for invalid/unpublished/unauthorized PDP states and stock limit behavior.
+
+## 12. Single-vendor cart policy and context persistence
+
+- Files: `apps/b2c/app/cart.tsx`, `apps/b2c/app/storefront/[id].tsx`, `apps/b2c/app/products/[id].tsx`, `packages/shared/api/orders.ts`
+- Findings
+  - The closed-discovery single-vendor model requires explicit UX when adding items from a different vendor.
+  - Persistence of the active vendor context across app sessions is unspecified.
+- Risks/Issues
+  - Cross-vendor cart mixes confuse users and violate the single-vendor constraint.
+  - On relaunch, stale context can descope cart or cause unexpected clearing.
+- Recommendations
+  - When attempting to add from a vendor different than the current cart's, prompt to clear cart and confirm; otherwise block.
+  - Persist last active vendor in a lightweight store; on session restore, verify membership and reconcile or clear.
+  - Tests: adding across vendors (list, PDP, deep link), persistence across relaunch, and membership-change reconciliation.
+
+## 13. Order cancellation (pending)
+
+- Files: `apps/b2c/app/(tabs)/orders.tsx`, `apps/b2c/app/orders/[id].tsx`, `packages/shared/api/orders.ts` (+ RPC if adopted)
+- Findings
+  - Customers currently cannot cancel a `pending` order from the app.
+- Risks/Issues
+  - Lack of cancellation increases support load; accidental orders cannot be reversed by users.
+- Recommendations
+  - Add a "Cancel Order" action for `pending` status only; confirm via dialog; update status to `cancelled`.
+  - Prefer an RPC to ensure atomic status update and any related compensations; rely on RLS for authorization.
+  - Tests: integration (RPC happy/failure paths) and screen tests for list/detail actions and state updates.
+
+---
+
 ## High-priority fixes (actionable)
 1) Fix `packages/shared/api/products.ts` to consistently access Supabase (import `supabase` or use `getSupabase()` everywhere) and add any missing imports.
 2) Implement addresses API in `packages/shared/api/profiles.ts` (types + CRUD) or gate/remove addresses routes until ready.
@@ -124,3 +171,8 @@ Scope: Based on `tasks/b2c_app_review_plan.md`. Organized per task with findings
 5) Consider moving order creation to a DB RPC for atomicity; add error handling for partial failures and idempotency where relevant.
 6) Extract business-id resolution helper and reuse in cart/order flows to reduce duplication; memoize screen handlers to improve performance.
 7) Add cleanup for auth subscriptions and protect async effects from updating state after unmount (use `isMounted`/AbortController patterns).
+8) Enforce single-vendor cart policy: when adding from a different vendor, prompt to clear existing cart or block; cover list, PDP, and deep-link paths with tests.
+9) Product details visibility rules: validate `productId`; hide or disable actions for unpublished/unauthorized products; add tests for invalid/unpublished/unauthorized cases.
+10) Stock and quantity validation: cap quantity by `stock_quantity`, disable increment at max, and re-validate on submit; add unit/screen tests.
+11) Order cancellation (pending): allow customers to cancel orders while status is `pending`; update UI/API, rely on RLS; add tests.
+12) Persist single-vendor context across app relaunch; reconcile on membership changes; ensure cart remains scoped and consistent.

@@ -294,3 +294,80 @@ Acceptance criteria:
 
 Deliverables:
 - Updated Memory Bank files and journal entry.
+
+---
+
+### 11. Product details page visibility & validation
+Objective:
+- Ensure PDP enforces visibility rules, validates parameters, and respects stock constraints.
+
+Inputs:
+- `apps/b2c/app/products/[id].tsx`, `packages/shared/api/products.ts`.
+
+Preconditions:
+- Storefront/product flows available; navigation guards validated.
+
+Steps:
+1) Validate `productId` from `useLocalSearchParams()`; reject array/undefined/invalid UUID and render a safe "Product not found" state.
+2) Fetch product scoped to vendor and enforce visibility:
+   - If not `published` or user unauthorized, disable Add to Cart and show an appropriate message (no data leak); rely on RLS as backstop.
+3) Enforce stock bounds:
+   - `QuantitySelector` disables increment at `stock_quantity`; re-validate on submit.
+4) Tests:
+   - Unit: product fetch/guards; stock enforcement; error states.
+   - Screen: PDP invalid/unpublished/unauthorized states; stock limit behavior; deep-link handling.
+
+Acceptance criteria:
+- PDP rejects invalid IDs, hides or disables interactions for unpublished/unauthorized products, and enforces stock bounds; tests pass.
+
+Deliverables:
+- PDP updates, unit/screen tests.
+
+---
+
+### 12. Single-vendor cart policy and context persistence
+Objective:
+- Enforce single-vendor cart UX and persist active vendor context across sessions.
+
+Inputs:
+- `apps/b2c/app/cart.tsx`, `apps/b2c/app/storefront/[id].tsx`, `apps/b2c/app/products/[id].tsx`, `packages/shared/api/orders.ts`.
+
+Preconditions:
+- Cart flows functional; storefront/PDP navigation stable.
+
+Steps:
+1) Cross-vendor add guard: if cart contains vendor A and user adds from vendor B, show a confirmation dialog to clear the cart; proceed only on confirm.
+2) Persist active vendor context (e.g., lightweight storage) and restore on app launch; verify membership on restore and reconcile or clear.
+3) Tests:
+   - Add across vendors from list, PDP, and via deep link; persistence across relaunch; membership change reconciliation.
+
+Acceptance criteria:
+- Cross-vendor adds are blocked without confirmation; context persists and remains consistent after relaunch; tests pass.
+
+Deliverables:
+- UX changes, persistence wiring, tests.
+
+---
+
+### 13. Order cancellation (pending)
+Objective:
+- Let customers cancel their own pending orders safely and atomically.
+
+Inputs:
+- `(tabs)/orders.tsx`, `orders/[id].tsx`, `packages/shared/api/orders.ts`, DB RPC (if adopted).
+
+Preconditions:
+- Orders list/detail functional; RLS covers role-based access.
+
+Steps:
+1) UI: add "Cancel Order" for `pending` only; confirm via dialog; disable for other statuses.
+2) API: implement cancellation endpoint; prefer RPC transaction for status update and related effects; rely on RLS for auth.
+3) Tests:
+   - Integration: RPC success/failure; ensure state consistency; no partial updates.
+   - Screen: list/detail reflect cancelled status; actions disabled appropriately.
+
+Acceptance criteria:
+- Pending orders can be cancelled; unauthorized statuses are blocked; tests pass; state remains consistent.
+
+Deliverables:
+- UI/API (or RPC) changes, tests.

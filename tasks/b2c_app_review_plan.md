@@ -63,3 +63,19 @@
 - [ ] 10.1 Update `docs/memory-bank/context.md` with current focus and next steps. (Depends on: 1–9)
 - [ ] 10.2 Append decisions and rationale to `JOURNAL.md`. (Depends on: 1–9)
 - [ ] 10.3 Summarize changes impacting architecture or tech in `architecture.md`/`tech.md` if significant. (Depends on: 1–9)
+
+### 11. Product details page visibility & stock/quantity validation
+- [ ] 11.1 Validate `productId` param type (must be a string UUID); handle array/undefined/invalid with a safe "not found" state. (Depends on: 2, 3)
+- [ ] 11.2 Enforce visibility rules on PDP: block or disable actions for unpublished or unauthorized products; rely on RLS as backstop. (Depends on: 11.1)
+- [ ] 11.3 Enforce `stock_quantity` bounds in `QuantitySelector` and on submit; disable increment at max and re-validate before add/order. (Depends on: 4)
+- [ ] 11.4 Tests: unit (product fetch/guards); screen (PDP invalid/unpublished/unauthorized, stock limit behavior). (Depends on: 11.2, 11.3)
+
+### 12. Single-vendor cart policy and context persistence
+- [ ] 12.1 Implement cross-vendor add guard: when cart has items from vendor A and user adds from vendor B, prompt to clear cart and confirm; otherwise block. (Depends on: 4)
+- [ ] 12.2 Persist active vendor context across relaunch; on session restore, verify membership and reconcile or clear cart/context. (Depends on: 2, 3)
+- [ ] 12.3 Tests: flows from storefront and PDP including deep-links; persistence across relaunch; membership-change reconciliation. (Depends on: 12.1, 12.2)
+
+### 13. Order cancellation (pending)
+- [ ] 13.1 Add "Cancel Order" action for orders in `pending` status in list and detail screens; confirm via dialog. (Depends on: 5)
+- [ ] 13.2 Implement cancellation in shared API; prefer RPC for atomicity and consistent side-effects; rely on RLS for auth. (Depends on: 13.1)
+- [ ] 13.3 Tests: integration (RPC success/failure), screen tests (state updates, disabled for non-pending). (Depends on: 13.2)

@@ -6,6 +6,37 @@ export interface Member {
   role_in_business: 'owner' | 'sales_agent' | 'customer';
 }
 
+export async function listMembers(
+  business_id: string,
+): Promise<Member[] | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .select('*')
+    .eq('business_id', business_id);
+  if (error) {
+    console.error('Error listing members:', error.message);
+    throw error;
+  }
+  return (data as Member[]) ?? [];
+}
+
+export async function getMember(
+  profile_id: string,
+  business_id: string,
+): Promise<Member | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .select('*')
+    .eq('profile_id', profile_id)
+    .eq('business_id', business_id)
+    .single();
+  if (error) {
+    console.error('Error fetching member:', error.message);
+    throw error;
+  }
+  return data as Member;
+}
+
 export async function addMember(member: Member): Promise<Member | null> {
   const { data, error } = await getSupabase()
     .from('members')

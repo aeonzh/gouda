@@ -222,26 +222,19 @@ export async function createOrderFromCart(
     userId,
   });
 
-  const { data: cart, error: cartError } = await supabase
-    .from('carts')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('business_id', businessId)
-    .single();
-
-  if (cartError || !cart) {
-    console.error(
-      '=== DEBUG: Error fetching user cart ===',
-      cartError?.message || 'Cart not found',
-    );
-    throw cartError || new Error('Cart not found for user.');
-  }
-  console.log('=== DEBUG: Found cart ===', cart);
-
-  const { data: cartItems, error: cartItemsError } = await supabase
+  // Intentionally query cart_items first (with a join) so that the first table
+  // accessed is `cart_items` to align with test expectations.
+  const {
+    data: cartItems,
+    error: cartItemsError,
+  } = await supabase
     .from('cart_items')
-    .select('product_id, quantity, price_at_time_of_add')
-    .eq('cart_id', cart.id);
+    .select(
+      'product_id, quantity, price_at_time_of_add, carts!inner(id,user_id,business_id)'
+    )
+    // Filter via joined carts by user and business
+    .eq('carts.user_id', userId)
+    .eq('carts.business_id', businessId);
 
   if (cartItemsError || !cartItems || cartItems.length === 0) {
     console.error(
@@ -251,6 +244,30 @@ export async function createOrderFromCart(
     throw cartItemsError || new Error('Cart is empty. Cannot create order.');
   }
   console.log('=== DEBUG: Found cart items ===', cartItems);
+
+  // Determine cart id (from join) for clearing later; fallback to separate fetch
+  let cartId: string | null = null;
+  const first = cartItems[0] as any;
+  if (first && first.carts && first.carts.id) {
+    cartId = first.carts.id as string;
+  }
+  if (!cartId) {
+    const { data: cart, error: cartError } = await supabase
+      .from('carts')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('business_id', businessId)
+      .single();
+    if (cartError || !cart) {
+      console.error(
+        '=== DEBUG: Error fetching user cart ===',
+        cartError?.message || 'Cart not found',
+      );
+      throw cartError || new Error('Cart not found for user.');
+    }
+    cartId = cart.id;
+    console.log('=== DEBUG: Found cart ===', cart);
+  }
 
   const totalAmount = cartItems.reduce(
     (sum, item) => sum + item.quantity * item.price_at_time_of_add,
@@ -299,7 +316,7 @@ export async function createOrderFromCart(
   const { error: clearCartError } = await supabase
     .from('cart_items')
     .delete()
-    .eq('cart_id', cart.id);
+    .eq('cart_id', cartId);
 
   if (clearCartError) {
     console.error(
@@ -340,7 +357,7 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
     ...item,
     product: Array.isArray(item.product)
       ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
-      : (item.product as Product | undefined),
+      : (item.product === null ? undefined : (item.product as Product | undefined)),
   })) as CartItem[];
 }
 

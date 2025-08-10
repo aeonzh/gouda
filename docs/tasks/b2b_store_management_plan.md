@@ -2,21 +2,21 @@
 
 Checklist of features for the B2B app. Each item includes implementation and tests. Mark items as completed once merged and green.
 
-- [ ] 1. Add an item for a business
+- [x] 1. Add an item for a business
   - What: Implement create-product flow for B2B: shared API `createProduct`, B2B `products/manage.tsx` create path, and unit tests for shared API.
   - Why: Allow admins/owners to add new products to their catalog.
   - Tests:
     - Unit (shared): `createProduct` inserts row and returns created entity; error surfaces.
   - Deps: none
 
-- [ ] 2. Update an item for a business
+- [x] 2. Update an item for a business
   - What: Implement update-product flow: shared API `updateProduct` and B2B `products/manage.tsx` edit path; add unit tests.
   - Why: Allow updating product details.
   - Tests:
     - Unit (shared): `updateProduct` updates fields and returns updated entity; error surfaces.
   - Deps: 1
 
-- [ ] 3. Delete item for a business
+- [x] 3. Delete item for a business
   - What: Implement delete-product flow: shared API `deleteProduct`, hook up B2B products list deletion; add unit tests.
   - Why: Remove obsolete items from catalog.
   - Tests:

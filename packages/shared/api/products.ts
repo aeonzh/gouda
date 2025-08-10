@@ -33,6 +33,7 @@ export async function adjustInventoryLevel(
   productId: string,
   newQuantity: number,
 ): Promise<null | Product> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
     .update({ stock_quantity: newQuantity })
@@ -55,6 +56,7 @@ export async function adjustInventoryLevel(
 export async function createCategory(
   categoryData: Category,
 ): Promise<Category | null> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('categories')
     .insert([categoryData])
@@ -76,6 +78,7 @@ export async function createCategory(
 export async function createProduct(
   productData: Product,
 ): Promise<null | Product> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
     .insert([productData])
@@ -95,6 +98,7 @@ export async function createProduct(
  * @returns {Promise<void>} A promise that resolves when the category is deleted or rejects on error.
  */
 export async function deleteCategory(id: string): Promise<void> {
+  const supabase = getSupabase();
   const { error } = await supabase.from('categories').delete().eq('id', id);
 
   if (error) {
@@ -109,6 +113,7 @@ export async function deleteCategory(id: string): Promise<void> {
  * @returns {Promise<void>} A promise that resolves when the product is deleted or rejects on error.
  */
 export async function deleteProduct(id: string): Promise<void> {
+  const supabase = getSupabase();
   const { error } = await supabase.from('products').delete().eq('id', id);
 
   if (error) {
@@ -126,6 +131,7 @@ export async function getCategories({
 }: {
   business_id?: string;
 }): Promise<Category[] | null> {
+  const supabase = getSupabase();
   let query = supabase.from('categories').select('*');
 
   if (!business_id) {
@@ -147,6 +153,7 @@ export async function getCategories({
  * @returns {Promise<Product[] | null>} A promise that resolves to an array of products with stock quantities or null on error.
  */
 export async function getInventoryLevels(): Promise<InventoryProduct[] | null> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
     .select('id, name, stock_quantity'); // Select only relevant fields
@@ -249,6 +256,7 @@ export async function updateCategory(
   id: string,
   categoryData: Partial<Category>,
 ): Promise<Category | null> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('categories')
     .update(categoryData)
@@ -273,6 +281,7 @@ export async function updateProduct(
   id: string,
   productData: Partial<Product>,
 ): Promise<null | Product> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
     .update(productData)

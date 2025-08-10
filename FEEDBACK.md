@@ -8,213 +8,119 @@ Scope: Based on `tasks/b2c_app_review_plan.md`. Organized per task with findings
 - Findings
   - App structure aligns with Expo Router conventions: `apps/b2c/app` with `(auth)`, `(tabs)`, `products/[id]`, `storefront/[id]`, `orders`, `profile/*`.
   - Shared logic centralized under `packages/shared` with `api` and `components`.
-  - Supabase client provided via lazy `getSupabase()` and a `supabase` proxy.
+  - Supabase client provided via lazy getter `getSupabase()` and a `supabase` proxy.
 - Risks/Issues
-  - Numerous verbose console logs in production paths (auth/layout, cart, product details) may leak identifiers and increase noise.
-  - Address flows in `apps/b2c/app/profile/addresses*.tsx` reference API functions that do not exist in `packages/shared/api/profiles.ts` (missing `Address` types + `getAddresses`, `addAddress`, `updateAddress`, `deleteAddress`).
+  - Verbose console logs in production paths (auth/layout, cart, product details) may leak identifiers and hurt performance.
+  - Addresses flows under `profile/addresses*.tsx` reference API functions not present in `packages/shared/api/profiles.ts` (missing `Address` types + CRUD).
 - Recommendations
-  - Gate debug logs behind `__DEV__` or remove for production builds.
-  - Implement addresses API in shared package or re-scope feature until API is ready.
+  - Feature correctness & security: Implement addresses API in shared package or temporarily remove addresses routes until ready.
+  - Performance & RN best practices: Gate debug logs behind `__DEV__` and scrub sensitive data.
+  - Maintainability: Keep `getSupabase()` as the single access path or consistently import `supabase` across APIs (see §7).
 
 ## 2. Navigation and auth correctness
-- Files reviewed: `apps/b2c/app/_layout.tsx`, `(tabs)/_layout.tsx`
+- Files: `apps/b2c/app/_layout.tsx`, `(tabs)/_layout.tsx`
 - Findings
-  - `_layout.tsx` prevents auto-hide splash until session resolved; hides after initial `getSession()` → ok.
-  - Redirection allow-list includes `(tabs)`, `storefront`, `products/[id]`, `orders`, `profile`, `cart`, `order-confirmation` for authenticated users.
-  - Unauthenticated users are redirected to `(auth)/login`.
+  - Splash gated until initial `getSession()` resolves; redirects based on allow-list for authenticated routes; unauthenticated users sent to `(auth)/login`.
 - Risks/Issues
-  - Allow-list relies on `segments` indices (e.g., `segments[1] === '[id]'`) which can be brittle if route structure changes.
-  - Missing explicit `<Stack.Screen name='products' />` is fine with Expo Router auto-registration, but default `headerShown: false` at stack-level requires per-screen overrides (already present in product details). Keep consistent.
+  - Allow-list logic depends on `segments` indices (e.g., `segments[1] === '[id]'`), brittle on route changes.
+  - Missing abstraction for route guards; hard to unit test.
 - Recommendations
-  - Extract route checks into small helpers for maintainability and unit testability.
-  - Add basic screen tests covering redirects for protected routes.
+  - Maintainability & design patterns: Extract route checks into helpers (e.g., `isAuthRoute`, `isAllowedAuthedRoute`) and unit test them.
+  - Feature correctness: Add screen tests for redirect rules (auth vs unauth) using `renderWithProviders` and Expo Router mocks.
+  - Memory leaks: Ensure any listeners added in layout (none currently) are cleaned up; leave as watch item.
 
 ## 3. Storefront product listing integrity
-- Files reviewed: `apps/b2c/app/storefront/[id].tsx`, `packages/shared/api/products.ts`
+- Files: `apps/b2c/app/storefront/[id].tsx`, `packages/shared/api/products.ts`
 - Findings
-  - `getProducts` called with `status: 'published'` and `business_id: storeId`.
-  - `getCategories` guards missing `business_id` and returns `[]`.
-  - Category list injects `All` sentinel with `id: null`; `Category.id` type explicitly allows `null`.
+  - `getProducts` called with `status: 'published'` and `business_id: storeId`; `getCategories` guards missing `business_id` and returns `[]`.
+  - UI sentinel category "All" uses `id: null` and is handled.
 - Risks/Issues
-  - `storeId` from `useLocalSearchParams()` is cast to `string` without validation; could be array/undefined.
-  - `getAuthorizedBusinesses(session.user.id)` used for store name; for unauthorized deep links, name remains default. RLS should still restrict product/category reads, but UX message may be misleading.
+  - `storeId` from `useLocalSearchParams()` cast to `string` without validation (could be array/undefined).
+  - Unauthorized deep links show default store title; UX may mislead; RLS will still protect data.
 - Recommendations
-  - Validate `storeId` type and handle array/invalid input.
-  - If org not found in authorized list, show a clear “unauthorized store” message.
-  - Debounce search input; consider memoizing filtered results for long lists.
+  - Feature correctness & security: Validate `storeId` type; if user not authorized for store, show an “unauthorized storefront” message and block fetch.
+  - Performance & RN best practices: Debounce search; memoize `renderItem` and handlers; consider `getItemLayout` for large lists; gate logs with `__DEV__`.
+  - Testing: Unit-test `getProducts` filters (status/category/search) and storefront UI for empty/unauthorized cases.
 
 ## 4. Cart data shape and UX consistency
-- Files reviewed: `apps/b2c/app/cart.tsx`, `packages/shared/api/orders.ts`
+- Files: `apps/b2c/app/cart.tsx`, `packages/shared/api/orders.ts`
 - Findings
-  - Mapping for `product: products!left(...)` correctly handles `null | Product | Product[]`.
-  - After quantity updates/removals, UI refreshes from server via `fetchCartItems()`.
+  - Mapping for `product: products!left(...)` handles `null | Product | Product[]`; UI refreshes from server post-mutations.
 - Risks/Issues
-  - `paramBusinessId` is trusted if present; no check against authorized businesses before upsert cart.
-  - Multiple member queries in component; duplication of business resolution logic.
+  - `paramBusinessId` is trusted; no client-side membership check. Duplicate membership queries in component.
 - Recommendations
-  - Validate `paramBusinessId` by checking membership via shared function or rely on server RLS and adjust UX for denials.
-  - Extract “resolve businessId for user” into a shared helper (e.g., prefer route param if authorized else fallback) to reduce duplication.
+  - Security & UX: Validate `paramBusinessId` against membership (via shared helper) or rely on RLS and surface clear error to user when denied.
+  - Maintainability: Extract business-id resolution helper (prefer route param if authorized else fallback to first membership).
+  - Performance: Memoize callbacks/renderers; reduce repeated network calls; gate logs with `__DEV__`.
+  - Testing: Unit-test cart item mapping; screen-test quantity update/removal and error paths.
 
 ## 5. Order creation and history
-- Files reviewed: `(tabs)/orders.tsx`, `orders/[id].tsx`, `packages/shared/api/orders.ts`
+- Files: `(tabs)/orders.tsx`, `orders/[id].tsx`, `packages/shared/api/orders.ts`
 - Findings
-  - `createOrderFromCart` computes total from cart items, inserts order and `order_items`, clears cart.
-  - History sorted by `created_at`; details map `price_at_time_of_order` → `price_at_order` for UI.
+  - Multi-step order creation: compute total → insert order → insert `order_items` → clear cart; history sorted by `created_at`; mapping `price_at_time_of_order` → `price_at_order` for UI.
 - Risks/Issues
-  - No retry/rollback on partial failures beyond basic logging (e.g., order created but order_items insert fails). RLS should ensure authorization, but transactional semantics are not guaranteed here.
+  - Not atomic; partial failure could leave inconsistent state.
 - Recommendations
-  - Consider moving multi-step order creation into a DB RPC for atomicity.
-  - Improve UI error messages for partial failures; optionally add idempotency keys.
+  - Security & correctness: Move order creation to a DB RPC (transaction) for atomicity and rely on RLS for auth.
+  - UX: Improve error surfaces for partial failure; consider idempotency keys for re-tries.
+  - Testing: Integration-style tests to simulate success and failure of `order_items` insertion; verify cart clearing behavior.
 
 ## 6. Profile and addresses routes
-- Files reviewed: `profile/_layout.tsx`, `profile/index.tsx`, `profile/edit.tsx`, `profile/addresses*.tsx`
+- Files: `profile/_layout.tsx`, `profile/index.tsx`, `profile/edit.tsx`, `profile/addresses*.tsx`
 - Findings
-  - Profile view/edit flows are sound; use `getProfile`/`updateProfile`.
-  - Addresses screens are present but rely on missing shared API.
+  - Profile view/edit via shared API is sound; addresses screens implemented but API missing.
 - Risks/Issues
-  - Compilation/runtime errors likely due to missing exports for addresses in `packages/shared/api/profiles.ts`.
+  - Likely compile/runtime errors due to missing addresses API.
 - Recommendations
-  - Implement addresses CRUD in shared API (types + functions) or remove routes until ready.
+  - Feature correctness: Implement `Address` types and CRUD in `packages/shared/api/profiles.ts` or remove routes until available.
+  - RN best practices & memory leaks: Ensure async effects handle unmount (set an `isMounted` ref or AbortController) to avoid state updates after unmount.
 
 ## 7. Types, schema, and RLS alignment
-- Files reviewed: `packages/shared/api/products.ts`, `orders.ts`, `organisations.ts`, `profiles.ts`
+- Files: `packages/shared/api/{products,orders,organisations,profiles}.ts`
 - Findings
-  - Products API mixes `getSupabase()` usage with direct `supabase` references.
+  - `products.ts` mixes `getSupabase()` and implicit `supabase` usage; several functions call `supabase` without import.
 - Risks/Issues
-  - Critical: `products.ts` references `supabase` without importing it in several functions (`adjustInventoryLevel`, `createCategory`, `deleteCategory`, `getInventoryLevels`, `updateCategory`, `updateProduct`). This will fail at runtime/TS.
-  - `createCategory` may pass `id: null` if callers reuse `Category` type used for UI sentinel; DB expects `id` default or not null.
+  - Runtime/TS failures from missing import; potential to pass UI sentinel `id: null` into DB writes.
 - Recommendations
-  - Import `supabase` from `./supabase` where used, or consistently use `getSupabase()` to avoid eager init.
-  - Separate `Category` used for DB (no `id: null`) from UI sentinel type. Do not send `id` in inserts to allow DB defaults.
+  - Maintainability: Standardize Supabase access (prefer `getSupabase()` or import `supabase` consistently) and fix missing imports in `products.ts`.
+  - Correctness & security: Separate UI Category sentinel type from DB insert/update types; avoid sending `id` on inserts so DB defaults set the primary key.
+  - Testing: Add unit tests for product/category CRUD to assert correct column usage and error handling.
 
-## 8. Performance, errors, and UX polish
+## 8. Performance, errors, UX polish, and memory leaks
 - Findings
-  - Repetitive console logs with large payloads (cart/items, products) across screens.
+  - FlatList usage is appropriate; many large console logs and inline handlers.
 - Risks/Issues
-  - Excessive logging can impact performance and leak data in production.
+  - Logging overhead; potential state updates after unmount in async effects; image loading not optimized.
 - Recommendations
-  - Wrap logs with `if (__DEV__)`.
-  - Add simple skeleton loaders to storefront and orders list.
+  - Performance: Gate logs with `__DEV__`; debounce search; memoize handlers; consider `getItemLayout` and image caching strategy.
+  - Memory leaks: Add cleanup for auth subscriptions and async effects (see §10 cross-cutting); prefer AbortController where supported.
+  - UX: Add skeleton loaders for storefront and orders list; centralize error toasts/snackbars.
 
 ## 9. Testing strategy expansion (B2C + shared)
-- Files reviewed: `apps/b2c/jest.config.js`, `apps/b2c/testing/*`, `packages/shared/jest.config.js`, `packages/shared/jest-setup.js`
+- Files: `apps/b2c/jest.config.js`, `apps/b2c/testing/*`, `packages/shared/jest.config.js`, `packages/shared/jest-setup.js`
 - Findings
-  - Monorepo Jest configs transform Expo/RN packages; error-guard mock mapped.
-  - `renderWithProviders` provides `AuthProvider` + `SafeAreaProvider`.
+  - Monorepo Jest configs handle Expo/RN module transforms; providers mocked; MSW handlers present.
 - Risks/Issues
-  - `apps/b2c/jest.config.js` has `testMatch: ['<rootDir>/simple.test.ts']` which likely excludes real tests under `__tests__` or other paths.
-  - Coverage thresholds in b2c config use `0.6` which equals 0.6% (Jest expects integer percentages). Probably unintended.
+  - `apps/b2c/jest.config.js` `testMatch` overly narrow (`simple.test.ts`); coverage thresholds use decimals (interpreted as <1%).
 - Recommendations
-  - Update `testMatch` to include intended test patterns (e.g., `**/__tests__/**/*.(test|spec).(ts|tsx)`), or remove to rely on defaults.
-  - Set coverage thresholds to integer percentages (e.g., 50) or remove if not needed.
+  - Unit tests for business logic: Add tests for `orders.ts` mapping, `products.ts` filters, `organisations.ts` membership logic.
+  - Integration tests for native modules: Render screens with `renderWithProviders` to cover SafeArea, Expo Router navigation, and lazy Supabase init via `expo-constants` extras (mocked).
+  - Config: Update `testMatch` to include `**/__tests__/**/*.(test|spec).(ts|tsx)` and set integer coverage thresholds (e.g., 50).
+  - Memory leak detection: Add tests that assert `onAuthStateChange` unsubscribe is called; use timers/cleanup assertions to catch state updates after unmount.
 
 ## 10. Documentation and Memory Bank updates
 - Findings
-  - Plan captured in `tasks/b2c_app_review_plan.md`.
-  - Memory Bank current and comprehensive.
+  - Plan captured in `tasks/b2c_app_review_plan.md`; Memory Bank current.
 - Recommendations
-  - After addressing above items, update `docs/memory-bank/context.md` and append decisions to `JOURNAL.md`.
+  - After implementing fixes, update `docs/memory-bank/context.md` and append decisions to `JOURNAL.md`; consider adding a `tasks.md` recipe for address API CRUD and order RPC pattern.
 
 ---
 
 ## High-priority fixes (actionable)
-1) Fix `packages/shared/api/products.ts` to import/use `supabase` consistently, or convert all calls to `getSupabase()`.
-2) Implement addresses API in `packages/shared/api/profiles.ts` (types + CRUD) or gate routes until ready.
-3) Add “published-only” guard in `apps/b2c/app/products/[id].tsx` to prevent adding unpublished products to cart.
-4) Harden param validation for `storeId` and `productId` from `useLocalSearchParams()`.
-5) Reduce production logs and gate with `__DEV__`.
-6) Adjust `apps/b2c/jest.config.js` `testMatch` and coverage thresholds to intended values.
-
-## Nice-to-haves
-- Extract business resolution to a shared helper.
-- Consider DB RPC for atomic order creation.
-- Add skeletons and debounce search.
-
----
-
-## Concept alignment audit
-
-### Feature correctness
-- Coverage
-  - Storefront filters published products and respects business scoping; product details, cart flows, and orders history operate end-to-end.
-- Gaps
-  - Missing validation for `storeId`/`productId` route params; addresses feature references non-existent APIs.
-- Actions
-  - Validate and guard params from `useLocalSearchParams()`; show unauthorized/invalid messages.
-  - Implement addresses API or temporarily remove addresses routes.
-
-### Security best practices
-- Coverage
-  - Data access relies on Supabase RLS; no direct secrets in repo; auth redirects present.
-- Gaps
-  - Excessive console logs may leak identifiers; lack of authorization checks for `paramBusinessId` (rely on RLS but UX should handle denials); need input validation pre-DB writes.
-- Actions
-  - Gate logs with `__DEV__`; scrub sensitive payloads.
-  - Validate `paramBusinessId` against membership (or handle RLS denials with clear errors).
-  - Ensure `profiles.ts`/`orders.ts` sanitize inputs; avoid passing UI sentinel values (e.g., `id: null`).
-
-### Code maintainability
-- Coverage
-  - Auth context centralization; shared APIs; Expo Router structure.
-- Gaps
-  - Mixed use of `getSupabase()` and `supabase` in `products.ts`; duplicated business resolution logic; UI sentinel shares DB type.
-- Actions
-  - Standardize Supabase access (prefer `getSupabase()` or import `supabase` consistently) and fix missing imports in `products.ts`.
-  - Extract business-id resolution helper to shared module.
-  - Separate UI `Category` sentinel type from DB `Category` insert/update types.
-
-### Performance
-- Coverage
-  - FlatList used throughout; basic memoization via `useCallback` in cart.
-- Gaps
-  - Many inline arrow functions and large logs; no search debounce; repeated queries in cart flows; image loading not optimized.
-- Actions
-  - Wrap logs with `__DEV__`; debounce storefront search; memoize renderItem/handlers; consider `getItemLayout` where possible.
-  - Evaluate image caching strategy (e.g., `Image` caching or libraries suited for Expo).
-
-### React Native best practices
-- Coverage
-  - `SafeAreaProvider` at root; proper loading/error/empty states; Tailwind/NativeWind classes.
-- Gaps
-  - Missing cleanup for auth subscription in `AuthProvider`; inline handlers everywhere.
-- Actions
-  - Add cleanup for `supabase.auth.onAuthStateChange` in `AuthProvider`.
-  - Prefer stable callbacks and move complex logic to hooks/services.
-
-### React Native design patterns
-- Coverage
-  - Context for auth; screens as containers.
-- Gaps
-  - Business logic embedded in screens; no dedicated hooks for data fetching; inconsistent route guard abstraction.
-- Actions
-  - Introduce feature hooks (e.g., `useStorefront`, `useCart`), separating data from view.
-  - Extract route guard helpers for `_layout.tsx`.
-
-### Unit tests for business logic
-- Coverage
-  - Shared Jest setup stable; MSW infra available.
-- Gaps
-  - Limited tests by config (`testMatch`); missing unit tests for `orders.ts` mapping, `products.ts` filters, `organisations.ts` membership logic.
-- Actions
-  - Fix `apps/b2c/jest.config.js` `testMatch` and integer coverage thresholds.
-  - Add unit tests: product status filter, category guards, cart mapping (array/object/null), order mapping `price_at_time_of_order` → `price_at_order`.
-
-### Integration tests for native modules
-- Coverage
-  - Providers mocked in tests; error-guard mapped; `react-native-safe-area-context` mocked.
-- Gaps
-  - No explicit integration tests that exercise real native module boundaries (within Jest constraints) or navigation back-stack behavior.
-- Actions
-  - Add tests that render screens with `renderWithProviders` verifying SafeArea padding behavior and navigation transitions via Expo Router.
-  - Verify `getSupabase()` reads `expo-constants` extras (mock values in test) and lazy initialization occurs once.
-  - Consider adding Detox/E2E later for true native module integration if needed.
-
-### Memory leak detection
-- Coverage
-  - `_layout.tsx` unsubscribes auth listener; some effects are simple fetches.
-- Gaps
-  - `AuthProvider` lacks cleanup for auth subscription; async effects may set state after unmount.
-- Actions
-  - Add cleanup in `AuthProvider` to unsubscribe on unmount.
-  - Use an `isMounted` ref or AbortController pattern in async effects to avoid setting state after unmount.
-  - During dev, profile with Flipper/Leaks; add test utilities to ensure subscriptions are cleaned (spy on unsubscribe called).
+1) Fix `packages/shared/api/products.ts` to consistently access Supabase (import `supabase` or use `getSupabase()` everywhere) and add any missing imports.
+2) Implement addresses API in `packages/shared/api/profiles.ts` (types + CRUD) or gate/remove addresses routes until ready.
+3) Add validation for `storeId`/`productId` route params and show unauthorized/invalid messages; gate all production logs with `__DEV__`.
+4) Update `apps/b2c/jest.config.js` `testMatch` and set integer coverage thresholds; add unit tests for products/orders/organisations and screen tests for auth redirects, storefront filters, cart, orders.
+5) Consider moving order creation to a DB RPC for atomicity; add error handling for partial failures and idempotency where relevant.
+6) Extract business-id resolution helper and reuse in cart/order flows to reduce duplication; memoize screen handlers to improve performance.
+7) Add cleanup for auth subscriptions and protect async effects from updating state after unmount (use `isMounted`/AbortController patterns).

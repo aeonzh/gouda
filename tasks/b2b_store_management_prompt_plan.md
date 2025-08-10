@@ -13,6 +13,27 @@ This document provides detailed prompts for each task in `b2b_store_management_p
 
 Use these prompts verbatim when creating features or ask for refinements as needed.
 
+### Execution Instructions
+
+1. Open `@b2b_store_management_prompt_plan.md` and identify any prompts not marked as completed.
+2. For each incomplete prompt:
+   - Double-check if it's truly unfinished (if uncertain, ask for clarification).
+   - If you confirm it's already done, skip it.
+   - Otherwise, implement it as described.
+   - Make sure the tests pass, and the program builds/runs.
+   - Pause and wait for user review or feedback.
+   - Commit the changes to your repository with a clear commit message.
+   - Update `@b2b_store_management_prompt_plan.md` to mark this prompt as completed.
+3. Repeat with the next unfinished prompt as directed by the user.
+
+Tracking
+- [ ] 1) Add an item for a business (Product Create)
+- [ ] 2) Update an item for a business (Product Update)
+- [ ] 3) Delete item for a business (Product Delete)
+- [ ] 4) Add member for a business
+- [ ] 5) Update member for a business
+- [ ] 6) Delete member for a business
+
 ---
 
 ### 1) Add an item for a business (Product Create)

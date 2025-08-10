@@ -135,7 +135,7 @@ Status:
 
 ---
 
-### 4. Cart data shape and UX consistency
+### 4. Cart data shape and UX consistency (Completed)
 
 Objective:
 
@@ -172,6 +172,14 @@ Acceptance criteria:
 Deliverables:
 
 - Code updates, helper function, tests.
+
+Status:
+
+- Centralized business-id resolution via `resolveBusinessIdForUser` in `packages/shared/api/organisations.ts` and adopted in `apps/b2c/app/cart.tsx`.
+- Kept server-truth workflow for add/update/remove (mutate, then refetch) in `cart.tsx`.
+- Robust mapping for `product: products!left(...)` covered in shared tests; UI maps array/object/null safely.
+- Memoized total price with `useMemo`; gated cart debug logs behind `__DEV__`.
+- Tests green: shared unit tests for resolver; existing cart screen/integration cover render, total, increment, remove.
 
 ---
 

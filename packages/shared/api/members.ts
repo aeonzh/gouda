@@ -1,0 +1,56 @@
+import { getSupabase } from './supabase';
+
+export interface Member {
+  profile_id: string;
+  business_id: string;
+  role_in_business: 'owner' | 'sales_agent' | 'customer';
+}
+
+export async function addMember(member: Member): Promise<Member | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .insert([member])
+    .select()
+    .single();
+  if (error) {
+    console.error('Error adding member:', error.message);
+    throw error;
+  }
+  return data as Member;
+}
+
+export async function updateMemberRole(
+  profile_id: string,
+  business_id: string,
+  role_in_business: Member['role_in_business'],
+): Promise<Member | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .update({ role_in_business })
+    .eq('profile_id', profile_id)
+    .eq('business_id', business_id)
+    .select()
+    .single();
+  if (error) {
+    console.error('Error updating member role:', error.message);
+    throw error;
+  }
+  return data as Member;
+}
+
+export async function deleteMember(
+  profile_id: string,
+  business_id: string,
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from('members')
+    .delete()
+    .eq('profile_id', profile_id)
+    .eq('business_id', business_id);
+  if (error) {
+    console.error('Error deleting member:', error.message);
+    throw error;
+  }
+}
+
+

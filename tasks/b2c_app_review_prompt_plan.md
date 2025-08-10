@@ -49,7 +49,7 @@ Status:
 - Smoke test added at `apps/b2c/__tests__/smoke.test.tsx`.
 - Logging audit and Supabase access policy captured in baseline doc.
 - Journal updated for this session.
- - Prioritized issues documented at `docs/b2c/issues.md`.
+- Prioritized issues documented at `docs/b2c/issues.md`.
 
 ---
 

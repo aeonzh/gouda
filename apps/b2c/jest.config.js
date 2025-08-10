@@ -27,5 +27,5 @@ module.exports = {
     '^@react-native/js-polyfills/error-guard$':
       '<rootDir>/../../__mocks__/@react-native/js-polyfills/error-guard.js',
   },
-  testMatch: ['<rootDir>/simple.test.ts'],
+  testMatch: ['<rootDir>/**/__tests__/**/*.(test|spec).(ts|tsx|js)'],
 };

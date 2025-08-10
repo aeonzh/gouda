@@ -24,7 +24,7 @@ Use these prompts verbatim when implementing features.
 3) After implementation or verification, update this file’s Tracking section accordingly.
 
 Tracking
-- [ ] 1) Add an item for a business (Product Create)
+- [x] 1) Add an item for a business (Product Create)
 - [ ] 2) Update an item for a business (Product Update)
 - [ ] 3) Delete item for a business (Product Delete)
 - [ ] 4) Add member for a business

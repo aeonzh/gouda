@@ -24,6 +24,7 @@ describe('products API', () => {
   beforeEach(() => {
     client = createMockSupabaseClient();
     (createClient as unknown as jest.Mock).mockReturnValue(client);
+    jest.resetModules();
   });
 
   describe('getProducts', () => {
@@ -42,7 +43,11 @@ describe('products API', () => {
         return qb;
       });
 
-      const { getProducts } = require('../products');
+      let getProducts: any;
+      jest.isolateModules(() => {
+        jest.doMock('../supabase', () => ({ getSupabase: () => client }));
+        ({ getProducts } = require('../products'));
+      });
       const result = await getProducts({ business_id: 'b1', status: 'published', page: 1, limit: 10 });
 
       // business_id filter applied
@@ -59,12 +64,17 @@ describe('products API', () => {
     it('returns the product on success', async () => {
       const product = { id: 'p2', business_id: 'b1', name: 'P2', price: 2, stock_quantity: 5, status: 'published' as const };
       const qb = createThenableQuery({ data: product, error: null });
+      (client.from as jest.Mock).mockReset();
       (client.from as jest.Mock).mockImplementation((table: string) => {
         expect(table).toBe('products');
         return qb;
       });
 
-      const { getProductById } = require('../products');
+      let getProductById: any;
+      jest.isolateModules(() => {
+        jest.doMock('../supabase', () => ({ getSupabase: () => client }));
+        ({ getProductById } = require('../products'));
+      });
       const result = await getProductById('p2');
       expect(qb.eq).toHaveBeenCalledWith('id', 'p2');
       expect(qb.single).toHaveBeenCalled();
@@ -74,9 +84,17 @@ describe('products API', () => {
     it('throws on error', async () => {
       const boom = { message: 'boom' };
       const qb = createThenableQuery({ data: null, error: boom });
-      (client.from as jest.Mock).mockImplementation(() => qb);
+      (client.from as jest.Mock).mockReset();
+      (client.from as jest.Mock).mockImplementation((table: string) => {
+        expect(table).toBe('products');
+        return qb;
+      });
 
-      const { getProductById } = require('../products');
+      let getProductById: any;
+      jest.isolateModules(() => {
+        jest.doMock('../supabase', () => ({ getSupabase: () => client }));
+        ({ getProductById } = require('../products'));
+      });
       await expect(getProductById('p3')).rejects.toEqual(boom);
     });
   });

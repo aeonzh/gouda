@@ -37,21 +37,21 @@ export interface MockSupabaseClient {
 export function createMockQueryBuilder<T = any>(
   resolved: unknown = { data: [], error: null }
 ): MockSupabaseQueryBuilder<T> {
-  const chainable = {
+  const builder: any = {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
-    limit: jest.fn().mockReturnThis(),
+    or: jest.fn().mockReturnThis(),
+    range: jest.fn().mockReturnThis(),
+    order: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue(resolved),
     insert: jest.fn().mockResolvedValue(resolved),
     update: jest.fn().mockResolvedValue(resolved),
     delete: jest.fn().mockResolvedValue(resolved),
-    order: jest.fn().mockReturnThis(),
     rpc: jest.fn().mockResolvedValue(resolved),
-  } as unknown as MockSupabaseQueryBuilder<T>;
-
-  // When select is awaited directly, return resolved shape
-  (chainable.select as any).mockResolvedValue?.(resolved);
-  return chainable;
+    then: (onFulfilled: (v: any) => any, onRejected?: (e: any) => any) =>
+      Promise.resolve(resolved).then(onFulfilled, onRejected),
+  };
+  return builder as MockSupabaseQueryBuilder<T>;
 }
 
 export function createMockSupabaseClient(overrides?: Partial<MockSupabaseClient>): MockSupabaseClient {

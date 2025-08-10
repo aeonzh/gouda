@@ -1,21 +1,36 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 
-const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl;
-const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
+let cachedClient: any;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error(
-    'Supabase URL or Anon Key is not defined in app.json extra field.',
-  );
-  // Fallback for development or error handling
-  // In a production app, you might want to throw an error or prevent app load
+export function getSupabase() {
+  if (!cachedClient) {
+    const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl;
+    const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error(
+        'Supabase URL or Anon Key is not defined in app.json extra field.',
+      );
+    }
+    cachedClient = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return cachedClient;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Backward-compatible proxy so existing imports of `supabase` continue to work
+// without forcing eager initialization at module load.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase = new Proxy({} as any, {
+  get(_target, property) {
+    const client = getSupabase();
+    // @ts-expect-error dynamic access passthrough
+    return client[property as any];
+  },
+}) as any;
 
 export async function resetPasswordForEmail(email: string) {
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+  const { data, error } = await getSupabase().auth.resetPasswordForEmail(email, {
     redirectTo: 'http://localhost:8081/reset-password', // This should be a deep link or web URL for the password reset page
   });
 
@@ -27,7 +42,7 @@ export async function resetPasswordForEmail(email: string) {
 }
 
 export async function signInWithEmail(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await getSupabase().auth.signInWithPassword({
     email,
     password,
   });
@@ -40,7 +55,7 @@ export async function signInWithEmail(email: string, password: string) {
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await getSupabase().auth.signOut();
   if (error) {
     console.error('Error signing out:', error.message);
     throw error;
@@ -52,7 +67,7 @@ export async function signUpWithEmail(
   password: string,
   fullName: string,
 ) {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await getSupabase().auth.signUp({
     email,
     options: {
       data: {
@@ -69,7 +84,7 @@ export async function signUpWithEmail(
 
   // If user is successfully created, insert into profiles table
   if (data.user) {
-    const { error: profileError } = await supabase.from('profiles').insert([
+    const { error: profileError } = await getSupabase().from('profiles').insert([
       {
         full_name: fullName,
         id: data.user.id,

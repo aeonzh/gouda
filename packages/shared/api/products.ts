@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
 export interface Category {
   id: null | string; // Explicitly allow null for 'All' category
@@ -164,6 +164,7 @@ export async function getInventoryLevels(): Promise<InventoryProduct[] | null> {
  * @returns {Promise<Product | null>} A promise that resolves to the product object or null if not found/error.
  */
 export async function getProductById(id: string): Promise<null | Product> {
+  const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -205,6 +206,7 @@ export async function getProducts({
     return [];
   }
 
+  const supabase = getSupabase();
   let query = supabase.from('products').select('*');
   query = query.eq('business_id', business_id);
 

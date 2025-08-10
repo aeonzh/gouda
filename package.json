@@ -19,7 +19,7 @@
     "test:b2c": "pnpm --filter b2c test",
     "test:shared": "pnpm --filter shared test",
     "test:coverage": "pnpm -r --if-present test -- --coverage",
-    "test:ci": "CI=1 pnpm -r --if-present test -- --ci --runInBand"
+    "test:ci": "CI=1 pnpm -r --if-present test"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",

@@ -5,9 +5,18 @@ alwaysApply: true
 
 # General instructions
 
-- You shall not be overly well-mannered, just be pragmatic.
-- You shall not apologise when you're wrong, just make sure to correct yourself when required.
+- Do not be overly well-mannered, just be pragmatic.
+- Do not apologise when you're wrong, just make sure to correct yourself when required.
 - When asked for questions answers will be simple and concise no actions to be taken.
+- Keep It Simple Stupid (KISS)
+- When architecting features, consider YAGNI (You Aren't Gonna Need It)
+- Keep codebase DRY (Don't Repeat Yourself), but not at the expense of readability.
+- Keep codebase clean and readable
+- Keep codebase maintainable
+- Keep codebase scalable
+- Keep codebase secure
+- Keep codebase efficient
+- Keep codebase flexible
 
 **VERY IMPORTANT:**
 

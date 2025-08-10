@@ -11,7 +11,7 @@ import { supabase } from 'packages/shared/api/supabase';
 import { Button } from 'packages/shared/components';
 import { QuantitySelector } from 'packages/shared/components/QuantitySelector';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface CartItem {
@@ -41,8 +41,6 @@ export default function CartScreen() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) {
-      console.log('No user found - not logged in');
-      Alert.alert('Error', 'User not logged in.');
       setLoading(false);
       return;
     }
@@ -59,10 +57,6 @@ export default function CartScreen() {
       .eq('profile_id', user.id);
 
     if (businessesError || !businesses || businesses.length === 0) {
-      console.log(
-        '=== DEBUG: CartScreen - No authorized businesses found for user ===',
-      );
-      Alert.alert('Error', 'No authorized businesses found.');
       setCartItems([]);
       setLoading(false);
       return;
@@ -82,8 +76,6 @@ export default function CartScreen() {
       // Get or create cart using the shared API function
       const cart = await getOrCreateCart(user.id, businessId);
       if (!cart) {
-        console.log('=== DEBUG: CartScreen - Failed to get/create cart ===');
-        Alert.alert('Error', 'Failed to create cart.');
         setLoading(false);
         return;
       }
@@ -118,7 +110,6 @@ export default function CartScreen() {
       setCartItems(items);
     } catch (error) {
       console.error('Error fetching cart items:', error);
-      Alert.alert('Error', 'Failed to fetch cart items.');
     } finally {
       setLoading(false);
     }
@@ -152,11 +143,7 @@ export default function CartScreen() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) {
-      console.log('No user found for update');
-      Alert.alert('Error', 'User not authenticated.');
-      return;
-    }
+    if (!user) return;
 
     // Get the user's authorized businesses
     const { data: businesses, error: businessesError } = await supabase
@@ -164,12 +151,7 @@ export default function CartScreen() {
       .select('business_id')
       .eq('profile_id', user.id);
 
-    if (businessesError || !businesses || businesses.length === 0) {
-      console.log('No authorized businesses found for update');
-      console.log('Business error:', businessesError);
-      Alert.alert('Error', 'No authorized businesses found.');
-      return;
-    }
+    if (businessesError || !businesses || businesses.length === 0) return;
 
     console.log(
       'Authorized businesses:',
@@ -236,7 +218,6 @@ export default function CartScreen() {
       );
     } catch (error) {
       console.error('=== DEBUG: Error updating cart item quantity ===', error);
-      Alert.alert('Error', 'Failed to update item quantity.');
     }
   };
 
@@ -256,11 +237,7 @@ export default function CartScreen() {
       .select('business_id')
       .eq('profile_id', user.id);
 
-    if (businessesError || !businesses || businesses.length === 0) {
-      console.log('No authorized businesses found for removal');
-      Alert.alert('Error', 'No authorized businesses found.');
-      return;
-    }
+    if (businessesError || !businesses || businesses.length === 0) return;
 
     // Use provided business_id or first authorized business
     const targetBusinessId =
@@ -297,7 +274,6 @@ export default function CartScreen() {
       fetchCartItems();
     } catch (error) {
       console.error('Error removing cart item:', error);
-      Alert.alert('Error', 'Failed to remove item from cart.');
     }
   };
 
@@ -309,11 +285,7 @@ export default function CartScreen() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) {
-      console.log('=== DEBUG: No user found for order creation ===');
-      Alert.alert('Error', 'User not logged in.');
-      return;
-    }
+    if (!user) return;
 
     // Get the user's authorized businesses
     const { data: businesses, error: businessesError } = await supabase
@@ -321,22 +293,9 @@ export default function CartScreen() {
       .select('business_id')
       .eq('profile_id', user.id);
 
-    if (businessesError || !businesses || businesses.length === 0) {
-      console.log(
-        '=== DEBUG: No authorized businesses found for order creation ===',
-      );
-      Alert.alert('Error', 'No authorized businesses found.');
-      return;
-    }
+    if (businessesError || !businesses || businesses.length === 0) return;
 
-    if (cartItems.length === 0) {
-      console.log('=== DEBUG: Cart is empty, cannot create order ===');
-      Alert.alert(
-        'Cart Empty',
-        'Please add items to your cart before creating an order.',
-      );
-      return;
-    }
+    if (cartItems.length === 0) return;
 
     setPlacingOrder(true);
     try {
@@ -358,7 +317,6 @@ export default function CartScreen() {
       });
     } catch (error) {
       console.error('=== DEBUG: Error creating order ===', error);
-      Alert.alert('Error', 'Failed to create order.');
     } finally {
       setPlacingOrder(false);
     }

@@ -9,7 +9,6 @@ import { Button, QuantitySelector } from 'packages/shared/components';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   ScrollView,
   Text,
@@ -40,11 +39,7 @@ export default function ProductDetailsScreen() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) {
-        console.log('No user found for cart addition');
-        Alert.alert('Error', 'Please log in to add items to cart.');
-        return;
-      }
+      if (!user) return;
 
       console.log(
         '=== DEBUG: ProductDetails - Adding to cart for user:',
@@ -82,12 +77,10 @@ export default function ProductDetailsScreen() {
       console.log('API result from addOrUpdateCartItem:', result);
 
       console.log('Product successfully added to cart');
-      Alert.alert('Success', 'Product added to cart!');
       setSelectedQuantity(1); // Reset quantity selector
       console.log('=== DEBUG: handleAddToCart completed successfully ===');
     } catch (error) {
       console.error('=== DEBUG: Error adding to cart ===', error);
-      Alert.alert('Error', 'Failed to add product to cart.');
     } finally {
       setAddingToCart(false);
     }

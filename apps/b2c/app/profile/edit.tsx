@@ -8,7 +8,6 @@ import { supabase } from 'packages/shared/api/supabase';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Button,
   Text,
   TextInput,
@@ -43,7 +42,7 @@ export default function EditProfileScreen() {
           }
         }
       } catch (error: any) {
-        Alert.alert('Error', `Failed to fetch profile: ${error.message}`);
+        console.error('Failed to fetch profile:', error?.message || error);
       } finally {
         setLoading(false);
       }
@@ -53,10 +52,7 @@ export default function EditProfileScreen() {
   }, []);
 
   const handleUpdateProfile = async () => {
-    if (!profile) {
-      Alert.alert('Error', 'Profile data not loaded.');
-      return;
-    }
+    if (!profile) return;
 
     setLoading(true);
     try {
@@ -65,10 +61,9 @@ export default function EditProfileScreen() {
         username,
       };
       await updateProfile(profile.id, updatedData);
-      Alert.alert('Success', 'Profile updated successfully!');
       router.back();
     } catch (error: any) {
-      Alert.alert('Error', `Failed to update profile: ${error.message}`);
+      console.error('Failed to update profile:', error?.message || error);
     } finally {
       setLoading(false);
     }

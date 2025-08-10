@@ -4,7 +4,6 @@ import { useAuth } from 'packages/shared/components/AuthProvider';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Button,
   Text,
   TouchableOpacity,
@@ -26,7 +25,7 @@ export default function ProfileScreen() {
       setProfile(fetchedProfile);
       console.log('Profile fetched:', fetchedProfile);
     } catch (error: any) {
-      Alert.alert('Error', `Failed to fetch profile: ${error.message}`);
+      console.error('Failed to fetch profile:', error?.message || error);
       console.error('Error fetching profile:', error);
     } finally {
       setProfileLoading(false);
@@ -48,13 +47,10 @@ export default function ProfileScreen() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
-      Alert.alert('Logged out', 'You have been successfully logged out.');
+      if (error) throw error;
       router.replace('/login'); // Redirect to login screen
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      console.error('Logout error:', error?.message || error);
     } finally {
       setLoading(false);
     }

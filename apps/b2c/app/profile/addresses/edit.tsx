@@ -8,7 +8,6 @@ import { supabase } from 'packages/shared/api/supabase';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   Switch,
   Text,
@@ -32,20 +31,13 @@ export default function EditAddressScreen() {
 
   useEffect(() => {
     const fetchAddress = async () => {
-      if (!addressId) {
-        Alert.alert('Error', 'Address ID is missing.');
-        router.back();
-        return;
-      }
+      if (!addressId) return router.back();
       setLoading(true);
       try {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (!user) {
-          Alert.alert('Error', 'User not logged in.');
-          return;
-        }
+        if (!user) return;
 
         const fetchedAddresses = await getAddresses(user.id);
         const addressToEdit = fetchedAddresses?.find(
@@ -61,11 +53,10 @@ export default function EditAddressScreen() {
           setCountry(addressToEdit.country);
           setIsDefault(addressToEdit.is_default);
         } else {
-          Alert.alert('Error', 'Address not found.');
           router.back();
         }
       } catch (error: any) {
-        Alert.alert('Error', `Failed to fetch address: ${error.message}`);
+        console.error('Failed to fetch address:', error?.message || error);
       } finally {
         setLoading(false);
       }
@@ -75,10 +66,7 @@ export default function EditAddressScreen() {
   }, [addressId, router]);
 
   const handleUpdateAddress = async () => {
-    if (!addressId) {
-      Alert.alert('Error', 'Address ID is missing.');
-      return;
-    }
+    if (!addressId) return;
 
     setLoading(true);
     try {
@@ -95,10 +83,9 @@ export default function EditAddressScreen() {
       };
 
       await updateAddress(addressId, updatedAddress);
-      Alert.alert('Success', 'Address updated successfully!');
       router.back();
     } catch (error: any) {
-      Alert.alert('Error', `Failed to update address: ${error.message}`);
+      console.error('Failed to update address:', error?.message || error);
     } finally {
       setLoading(false);
     }

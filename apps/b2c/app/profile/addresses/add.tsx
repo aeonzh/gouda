@@ -4,7 +4,6 @@ import { supabase } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Button,
   ScrollView,
   Switch,
@@ -31,10 +30,7 @@ export default function AddAddressScreen() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) {
-        Alert.alert('Error', 'User not logged in.');
-        return;
-      }
+      if (!user) return;
 
       const newAddress: Omit<Address, 'created_at' | 'id' | 'updated_at'> = {
         address_line1: addressLine1,
@@ -48,10 +44,9 @@ export default function AddAddressScreen() {
       };
 
       await addAddress(newAddress);
-      Alert.alert('Success', 'Address added successfully!');
       router.back();
     } catch (error: any) {
-      Alert.alert('Error', `Failed to add address: ${error.message}`);
+      console.error('Failed to add address:', error?.message || error);
     } finally {
       setLoading(false);
     }

@@ -28,7 +28,6 @@ const deleteAddress = async (addressId: string): Promise<void> => {
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   Text,
   TouchableOpacity,
@@ -53,7 +52,7 @@ export default function AddressesScreen() {
         setAddresses(fetchedAddresses);
       }
     } catch (error: any) {
-      Alert.alert('Error', `Failed to fetch addresses: ${error.message}`);
+      console.error('Failed to fetch addresses:', error?.message || error);
     } finally {
       setLoading(false);
     }
@@ -96,36 +95,17 @@ export default function AddressesScreen() {
   );
 
   const handleDeleteAddress = async (addressId: string) => {
-    Alert.alert(
-      'Delete Address',
-      'Are you sure you want to delete this address?',
-      [
-        {
-          style: 'cancel',
-          text: 'Cancel',
-        },
-        {
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await deleteAddress(addressId);
-              Alert.alert('Success', 'Address deleted successfully!');
-              if (userId) {
-                fetchAddresses(userId);
-              }
-            } catch (error: any) {
-              Alert.alert(
-                'Error',
-                `Failed to delete address: ${error.message}`,
-              );
-            } finally {
-              setLoading(false);
-            }
-          },
-          text: 'Delete',
-        },
-      ],
-    );
+    setLoading(true);
+    try {
+      await deleteAddress(addressId);
+      if (userId) {
+        fetchAddresses(userId);
+      }
+    } catch (error: any) {
+      console.error('Failed to delete address:', error?.message || error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderAddressItem = ({ item }: { item: Address }) => (

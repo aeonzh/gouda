@@ -53,7 +53,7 @@ Status:
 
 ---
 
-### 2. Navigation and auth correctness
+### 2. Navigation and auth correctness (Completed)
 
 Objective:
 
@@ -90,7 +90,7 @@ Deliverables:
 
 ---
 
-### 3. Storefront product listing integrity
+### 3. Storefront product listing integrity (Completed)
 
 Objective:
 
@@ -126,6 +126,12 @@ Acceptance criteria:
 Deliverables:
 
 - Code updates (including `useStorefront`), tests, and performance notes.
+
+Status:
+
+- `useStorefront` hook added at `apps/b2c/app/storefront/useStorefront.ts` and storefront page refactored to use it.
+- Storefront enforces published-only products, validates `storeId`, checks authorization, debounced search, and category filtering.
+- Tests are green across suites.
 
 ---
 

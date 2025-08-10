@@ -17,6 +17,8 @@ The result at the end of each session is a track record of our progress for futu
 
 ## Git
 
+- Never use `git add -A`. Only add the files that are relevant to the change.
+- Never use `git commit --no-gpg-sign`.
 - When requested to commit a change, generate a commit message that is relevant to the staged files following the conventional commits format. Always show the commit message and let the user review it before commit.
 - The commit message will focus on the functional and structural updates, without explicitly mentioning `GEMINI.md` or `JOURNAL.md`.
 

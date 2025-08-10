@@ -445,3 +445,12 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 - **How the change addresses the root cause**: Lazy initialization removes dependency on import order; tests inject the client deterministically. The chainable/awaitable builder mirrors Supabase’s API, allowing assertions on call order and args while supporting `await` on the final query.
 - **Why the change addresses the root cause**: Avoids brittle ESM/hoisting pitfalls, matches real API ergonomics, and keeps production code unwarped for tests.
 - **Verification**: All `packages/shared` products tests pass (status filtering, missing `business_id` short-circuit, `getProductById` success/error). Remaining mismatches are in `orders` tests (`product` null vs undefined; first table hit expectations).
+
+### Session: Sunday, August 10, 2025
+
+#### Expand B2B Store Management Prompts with Explicit, Actionable Steps
+
+- **What were we trying to do**: Make the B2B store management prompts unambiguous and implementation-ready, ensuring no implicit requirements are left unstated.
+- **What was changed/decided and why (root cause/reason)**: The original `tasks/b2b_store_management_prompt_plan.md` contained concise bullets that could lead to misinterpretation. We expanded each prompt (create/update/delete product; add/update/delete member) with detailed scope, UI/data/security requirements, testing guidance, and step-by-step actions, aligned to `@b2b_store_management_plan.md` as the source of truth.
+- **How the change addresses the root cause**: By enumerating explicit validation rules, accessibility needs, lazy Supabase usage, RLS reliance, separation of concerns, and exact testing expectations, developers can implement features without guessing hidden constraints.
+- **Why the change addresses the root cause**: Removing ambiguity reduces rework, improves consistency, and accelerates delivery. The prompts now function as precise implementation checklists wired to our architecture and testing setup.

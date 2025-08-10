@@ -385,6 +385,17 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 
 #### Add testing plan documentation
 
+### Session: Sunday, August 10, 2025
+
+#### B2C Baseline established and smoke test added
+
+- What were we trying to do: Complete Prompt 1 of the B2C App Review Plan by establishing a baseline of routes, API usage assumptions, logging audit, and add a smoke test to validate rendering with providers.
+- What was changed/decided and why (root cause/reason): Created `docs/b2c/baseline.md` capturing routes/flows, API assumptions (status filtering, join aliasing, early-return guards), logging audit, gaps/follow-ups, and Supabase access policy. Added `apps/b2c/__tests__/smoke.test.tsx` to ensure `Home` and `InitialLayout` render under providers. This provides a concrete starting point for subsequent prompts and ensures test infra correctness.
+- How the change addresses the root cause: Baseline documentation reduces ambiguity for next steps and highlights specific gaps to address. The smoke test validates the test environment and providers are wired correctly, catching regressions early.
+- Why the change addresses the root cause: Establishing a baseline aligns implementation work with current app state, and a smoke test provides continuous verification that core screens can render, reducing setup friction for further tests.
+
+- Added a prioritized issues list at `docs/b2c/issues.md` and will track progress against Prompt 2+ using this list.
+
 - **What were we trying to do**: Capture a clear, dependency-ordered plan to implement unit, integration, and screen tests tailored to the Expo RN monorepo.
 - **What was changed/decided and why (root cause/reason)**: Created `docs/test_setup.md` to centralize the test strategy, tooling, file structure, scripts, utilities, and a task checklist. This addresses prior ambiguity about how to structure tests across `apps/b2c` and `packages/shared` after Jest setup was stabilized.
 - **How the change addresses the root cause**: Provides concrete steps (with dependencies) to add testing utilities, write unit/integration/screen tests, and wire CI/coverage, reducing ramp-up time and ensuring consistent patterns.

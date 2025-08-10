@@ -2,13 +2,13 @@
 
 ## Current Work Focus
 
-Recent changes: Continued stabilizing Jest in the monorepo while running tests at the root. For `packages/shared` tests, added an `expo-constants` mock to avoid ESM parse errors, removed any reliance on `@react-native-async-storage/async-storage` (no tests depend on it now), converted dynamic `import()` usage in tests to `require()` to avoid VM module flags, and standardized Supabase mocking by stubbing `createClient` to return a test client.
+Recent changes: Introduced a lazy Supabase client getter `getSupabase()` in `packages/shared/api/supabase.ts` to avoid eager initialization at module load. Updated `packages/shared/api/products.ts` to use the getter for `getProducts` and `getProductById`. In tests, switched to mocking `getSupabase()` at module-load time using `jest.isolateModules` + `jest.doMock('../supabase', ...)`. Consolidated a chainable and awaitable Supabase query builder in `packages/shared/testing/supabase.mock.ts`. Removed reliance on `@react-native-async-storage/async-storage` in shared tests and added a lightweight `expo-constants` mock in `packages/shared/jest-setup.js`.
 
-Status: Shared package tests now mostly pass (3 passed, 2 failing). Remaining failures are expectation mismatches vs current implementation:
-- `getProducts` test expects no query when `business_id` is missing, but implementation calls `from('products')` before the guard.
-- `getCartItems` test expects `product` to be `undefined` for null relations; current code returns `null`.
+Status: All `packages/shared` products API tests pass (status filter, empty business_id short-circuit, getProductById success/error). Orders-related tests remain to be aligned.
 
-Next steps: Decide whether to align tests with current behavior (allow initial `from` call, expect `null`), or adjust implementation to match stricter test expectations. Proceed based on product intent for API semantics.
+Next steps: Address `orders` expectations vs implementation:
+- `getCartItems`: test expects `product` to be `undefined` when join is null; implementation returns `null`.
+- `createOrderFromCart`: test assumes first table hit is `cart_items`, implementation reads `carts` first.
 
 ---
 

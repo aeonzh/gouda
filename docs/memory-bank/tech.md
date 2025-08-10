@@ -196,7 +196,9 @@ To set up the local development environment, follow these steps:
   - Map `^@react-native/js-polyfills/error-guard$` to `__mocks__/@react-native/js-polyfills/error-guard.js`.
   - `setupFilesAfterEnv` loads `@testing-library/jest-native/extend-expect`.
   - `packages/shared/jest-setup.js` mocks `expo-constants` to avoid ESM parse issues in tests.
-  - Supabase is mocked in unit tests by stubbing `createClient` to a local mock client.
+  - Supabase mocking patterns:
+    - Prefer mocking `getSupabase` from `packages/shared/api/supabase` via `jest.doMock('../supabase', () => ({ getSupabase: () => client }))` inside `jest.isolateModules` prior to requiring modules under test.
+    - Chainable/awaitable query builder provided by `packages/shared/testing/supabase.mock.ts`.
 
 ## 4. Technical Constraints & Considerations
 

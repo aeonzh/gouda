@@ -430,3 +430,18 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
   4. Directly mocking `createClient` removes hoist-time variable capture, making Supabase mocks deterministic.
 - **Why the change addresses the root cause**: These adjustments target the exact compatibility issues between Expo/RN modules and Jest’s Node test runtime, resulting in stable test execution in the monorepo.
 - **Notes/Follow-up**: Two shared tests still fail due to expectation mismatches with current implementation (initial `from('products')` call before a guard; `null` vs `undefined` for absent joined product). Pending a product decision, either adjust implementation to be stricter or align tests with current behavior.
+
+### Session: Sunday, August 10, 2025
+
+#### Lazy Supabase getter, products API refactor, and deterministic module-level mocking in tests
+
+- **What were we trying to do**: Fix remaining `packages/shared` product API test failures caused by module-load timing and non-chainable query builder behavior while keeping production code clean.
+- **What was changed/decided and why (root cause/reason)**:
+  1. Root cause: importing a prebuilt `supabase` at module load made tests brittle (mocking `createClient` after import had no effect). Also, the mocked builder became non-chainable/thenable after `select('*')` in some paths.
+  2. Introduced `getSupabase()` lazy getter in `packages/shared/api/supabase.ts` to initialize the client on first use and avoid eager construction during module import.
+  3. Updated `packages/shared/api/products.ts` to use `getSupabase()` for `getProducts` and `getProductById`, and added a short-circuit for missing `business_id` before building queries.
+  4. Standardized a chainable and awaitable Supabase query builder in `packages/shared/testing/supabase.mock.ts`.
+  5. In tests, mocked `getSupabase()` at module-load time using `jest.isolateModules` + `jest.doMock('../supabase', () => ({ getSupabase: () => client }))` before requiring the module under test.
+- **How the change addresses the root cause**: Lazy initialization removes dependency on import order; tests inject the client deterministically. The chainable/awaitable builder mirrors Supabase’s API, allowing assertions on call order and args while supporting `await` on the final query.
+- **Why the change addresses the root cause**: Avoids brittle ESM/hoisting pitfalls, matches real API ergonomics, and keeps production code unwarped for tests.
+- **Verification**: All `packages/shared` products tests pass (status filtering, missing `business_id` short-circuit, `getProductById` success/error). Remaining mismatches are in `orders` tests (`product` null vs undefined; first table hit expectations).

@@ -129,3 +129,92 @@ Scope: Based on `tasks/b2c_app_review_plan.md`. Organized per task with findings
 - Extract business resolution to a shared helper.
 - Consider DB RPC for atomic order creation.
 - Add skeletons and debounce search.
+
+---
+
+## Concept alignment audit
+
+### Feature correctness
+- Coverage
+  - Storefront filters published products and respects business scoping; product details, cart flows, and orders history operate end-to-end.
+- Gaps
+  - Missing validation for `storeId`/`productId` route params; addresses feature references non-existent APIs.
+- Actions
+  - Validate and guard params from `useLocalSearchParams()`; show unauthorized/invalid messages.
+  - Implement addresses API or temporarily remove addresses routes.
+
+### Security best practices
+- Coverage
+  - Data access relies on Supabase RLS; no direct secrets in repo; auth redirects present.
+- Gaps
+  - Excessive console logs may leak identifiers; lack of authorization checks for `paramBusinessId` (rely on RLS but UX should handle denials); need input validation pre-DB writes.
+- Actions
+  - Gate logs with `__DEV__`; scrub sensitive payloads.
+  - Validate `paramBusinessId` against membership (or handle RLS denials with clear errors).
+  - Ensure `profiles.ts`/`orders.ts` sanitize inputs; avoid passing UI sentinel values (e.g., `id: null`).
+
+### Code maintainability
+- Coverage
+  - Auth context centralization; shared APIs; Expo Router structure.
+- Gaps
+  - Mixed use of `getSupabase()` and `supabase` in `products.ts`; duplicated business resolution logic; UI sentinel shares DB type.
+- Actions
+  - Standardize Supabase access (prefer `getSupabase()` or import `supabase` consistently) and fix missing imports in `products.ts`.
+  - Extract business-id resolution helper to shared module.
+  - Separate UI `Category` sentinel type from DB `Category` insert/update types.
+
+### Performance
+- Coverage
+  - FlatList used throughout; basic memoization via `useCallback` in cart.
+- Gaps
+  - Many inline arrow functions and large logs; no search debounce; repeated queries in cart flows; image loading not optimized.
+- Actions
+  - Wrap logs with `__DEV__`; debounce storefront search; memoize renderItem/handlers; consider `getItemLayout` where possible.
+  - Evaluate image caching strategy (e.g., `Image` caching or libraries suited for Expo).
+
+### React Native best practices
+- Coverage
+  - `SafeAreaProvider` at root; proper loading/error/empty states; Tailwind/NativeWind classes.
+- Gaps
+  - Missing cleanup for auth subscription in `AuthProvider`; inline handlers everywhere.
+- Actions
+  - Add cleanup for `supabase.auth.onAuthStateChange` in `AuthProvider`.
+  - Prefer stable callbacks and move complex logic to hooks/services.
+
+### React Native design patterns
+- Coverage
+  - Context for auth; screens as containers.
+- Gaps
+  - Business logic embedded in screens; no dedicated hooks for data fetching; inconsistent route guard abstraction.
+- Actions
+  - Introduce feature hooks (e.g., `useStorefront`, `useCart`), separating data from view.
+  - Extract route guard helpers for `_layout.tsx`.
+
+### Unit tests for business logic
+- Coverage
+  - Shared Jest setup stable; MSW infra available.
+- Gaps
+  - Limited tests by config (`testMatch`); missing unit tests for `orders.ts` mapping, `products.ts` filters, `organisations.ts` membership logic.
+- Actions
+  - Fix `apps/b2c/jest.config.js` `testMatch` and integer coverage thresholds.
+  - Add unit tests: product status filter, category guards, cart mapping (array/object/null), order mapping `price_at_time_of_order` → `price_at_order`.
+
+### Integration tests for native modules
+- Coverage
+  - Providers mocked in tests; error-guard mapped; `react-native-safe-area-context` mocked.
+- Gaps
+  - No explicit integration tests that exercise real native module boundaries (within Jest constraints) or navigation back-stack behavior.
+- Actions
+  - Add tests that render screens with `renderWithProviders` verifying SafeArea padding behavior and navigation transitions via Expo Router.
+  - Verify `getSupabase()` reads `expo-constants` extras (mock values in test) and lazy initialization occurs once.
+  - Consider adding Detox/E2E later for true native module integration if needed.
+
+### Memory leak detection
+- Coverage
+  - `_layout.tsx` unsubscribes auth listener; some effects are simple fetches.
+- Gaps
+  - `AuthProvider` lacks cleanup for auth subscription; async effects may set state after unmount.
+- Actions
+  - Add cleanup in `AuthProvider` to unsubscribe on unmount.
+  - Use an `isMounted` ref or AbortController pattern in async effects to avoid setting state after unmount.
+  - During dev, profile with Flipper/Leaks; add test utilities to ensure subscriptions are cleaned (spy on unsubscribe called).

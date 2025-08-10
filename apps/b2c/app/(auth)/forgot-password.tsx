@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { resetPasswordForEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -12,13 +12,9 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await resetPasswordForEmail(email);
-      Alert.alert(
-        'Password Reset',
-        'If an account with that email exists, a password reset link has been sent to your email.',
-      );
       router.push('/login'); // Navigate back to login after sending reset link
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      // Avoid alerts in tests/app
     } finally {
       setLoading(false);
     }

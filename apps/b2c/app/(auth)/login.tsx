@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { signInWithEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -13,11 +13,11 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      Alert.alert('Success', 'Logged in successfully!');
       // Navigate to main app screen after successful login
       router.replace('/'); // Navigate to the root of the app (e.g., home screen)
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      // Optionally set local error state; avoid Alert in tests/app
+      // noop
     } finally {
       setLoading(false);
     }

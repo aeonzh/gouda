@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { signUpWithEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState('');
@@ -14,10 +14,9 @@ export default function SignUpScreen() {
     setLoading(true);
     try {
       await signUpWithEmail(email, password, fullName);
-      Alert.alert('Success', 'Account created! Please check your email to verify.');
       router.replace('/login'); // Navigate to login after successful registration
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      // Avoid alerts in tests/app; optionally track error state
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,11 @@ jest.mock('packages/shared/api/supabase', () => ({
   signInWithEmail: jest.fn().mockResolvedValue({}),
 }));
 
+// Stub Alert to no-op
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
+
 describe('Auth screens', () => {
   test('login happy path: submits credentials and shows loading state', async () => {
     renderWithProviders(<LoginScreen />);
@@ -21,5 +26,3 @@ describe('Auth screens', () => {
     await screen.findByText('Logging In...');
   });
 });
-
-

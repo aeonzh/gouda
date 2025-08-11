@@ -118,24 +118,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
-        <Text className='mb-4 text-xl font-semibold text-gray-700'>
-          Shipping Addresses
-        </Text>
-        <TouchableOpacity
-          className='self-start rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
-          onPress={() => {
-            console.log('Navigating to /profile/addresses from tab profile');
-            console.log('Current route:', router.canGoBack());
-            console.log('Attempting to navigate to: /profile/addresses');
-            router.push('/profile/addresses');
-          }}
-        >
-          <Text className='text-base font-semibold text-white'>
-            Manage Addresses
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Addresses gated for now */}
 
       <View className='mt-auto border-t border-gray-200 pt-6'>
         <TouchableOpacity

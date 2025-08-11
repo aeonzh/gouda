@@ -228,7 +228,7 @@ Status:
 
 ---
 
-### 6. Profile and addresses routes
+### 6. Profile and addresses routes (Completed)
 
 Objective:
 
@@ -258,7 +258,10 @@ Acceptance criteria:
 
 Deliverables:
 
-- Shared API code, screen updates, tests.
+- For now, routes gated with placeholders; entry point removed from `apps/b2c/app/(tabs)/profile.tsx`.
+  - `apps/b2c/app/profile/addresses.tsx` now shows an “Addresses Unavailable” placeholder.
+  - `apps/b2c/app/profile/addresses/add.tsx` and `.../edit.tsx` show placeholder screens and navigate back.
+  - No backend or shared API added yet; to be implemented when feature is prioritized.
 
 ---
 

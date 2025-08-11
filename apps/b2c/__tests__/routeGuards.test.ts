@@ -19,5 +19,3 @@ describe('routeGuards', () => {
     expect(isAllowedAuthedRoute(['unknown'])).toBe(false);
   });
 });
-
-

@@ -5,14 +5,12 @@ import { AuthProvider } from 'shared/components';
 
 export function renderWithProviders(
   ui: React.ReactElement,
-  options?: Parameters<typeof render>[1]
+  options?: Parameters<typeof render>[1],
 ) {
   return render(
     <SafeAreaProvider>
       <AuthProvider>{ui}</AuthProvider>
     </SafeAreaProvider>,
-    options
+    options,
   );
 }
-
-

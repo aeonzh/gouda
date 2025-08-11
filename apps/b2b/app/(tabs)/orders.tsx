@@ -51,13 +51,13 @@ export default function OrdersScreen() {
 
   const renderOrderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
-      className="p-4 border-b border-gray-200 bg-white"
+      className='border-b border-gray-200 bg-white p-4'
       onPress={() =>
         router.push({ params: { id: item.id }, pathname: 'orders/[id]' })
       }
     >
-      <View className="flex-row justify-between items-center">
-        <Text className="text-lg font-semibold text-gray-800">
+      <View className='flex-row items-center justify-between'>
+        <Text className='text-lg font-semibold text-gray-800'>
           Order #{item.id.substring(0, 8)}
         </Text>
         <Text
@@ -72,13 +72,13 @@ export default function OrdersScreen() {
           {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Text>
       </View>
-      <Text className="text-sm text-gray-600 mt-1">
+      <Text className='mt-1 text-sm text-gray-600'>
         Total: ${item.total_amount.toFixed(2)}
       </Text>
-      <Text className="text-xs text-gray-500 mt-1">
+      <Text className='mt-1 text-xs text-gray-500'>
         Date: {new Date(item.order_date).toLocaleDateString()}
       </Text>
-      <Text className="text-xs text-gray-500 mt-1">
+      <Text className='mt-1 text-xs text-gray-500'>
         Customer ID: {item.customer_id.substring(0, 8)}
       </Text>
     </TouchableOpacity>
@@ -86,34 +86,43 @@ export default function OrdersScreen() {
 
   if (loading && !refreshing) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator color="#6366F1" size="large" />
-        <Text className="mt-4 text-gray-700">Loading orders...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator
+          color='#6366F1'
+          size='large'
+        />
+        <Text className='mt-4 text-gray-700'>Loading orders...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      
+    <SafeAreaView className='flex-1 bg-gray-50'>
       {orders.length === 0 && !loading ? (
-        <View className="flex-1 justify-center items-center p-4">
-          <Feather color="#9CA3AF" name="clipboard" size={60} />
-          <Text className="text-xl text-gray-600 mt-4 font-semibold">
+        <View className='flex-1 items-center justify-center p-4'>
+          <Feather
+            color='#9CA3AF'
+            name='clipboard'
+            size={60}
+          />
+          <Text className='mt-4 text-xl font-semibold text-gray-600'>
             No Orders Found
           </Text>
-          <Text className="text-gray-500 text-center mt-2">
+          <Text className='mt-2 text-center text-gray-500'>
             It looks like there are no orders yet.
           </Text>
         </View>
       ) : (
         <FlatList
-          className="flex-1"
+          className='flex-1'
           contentContainerStyle={{ paddingBottom: 20 }}
           data={orders}
           keyExtractor={(item) => item.id}
           refreshControl={
-            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            <RefreshControl
+              onRefresh={onRefresh}
+              refreshing={refreshing}
+            />
           }
           renderItem={renderOrderItem}
         />

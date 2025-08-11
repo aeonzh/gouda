@@ -1,14 +1,6 @@
 -- create_order_from_cart RPC with optional idempotency key
-create or replace function public.create_order_from_cart(
-  user_id uuid,
-  business_id uuid,
-  idempotency_key text default null
-)
-returns jsonb
-language plpgsql
-security definer
-set search_path = public
-as $$
+CREATE    OR REPLACE FUNCTION public.create_order_from_cart (user_id uuid, business_id uuid, idempotency_key text DEFAULT NULL) returns jsonb language plpgsql security definer
+SET       search_path = public AS $$
 declare
   v_cart_id uuid;
   v_order_id uuid;
@@ -54,6 +46,4 @@ begin
 end;
 $$;
 
-  -- Note: Idempotency key is currently ignored at DB level to avoid schema drift.
-
-
+-- Note: Idempotency key is currently ignored at DB level to avoid schema drift.

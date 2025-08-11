@@ -93,45 +93,51 @@ export default function ManageCustomerScreen() {
 
   if (initialLoadLoading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator color="#0000ff" size="large" />
+      <View className='flex-1 items-center justify-center'>
+        <ActivityIndicator
+          color='#0000ff'
+          size='large'
+        />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className='flex-1 bg-white p-4'>
       <Stack.Screen
         options={{ title: isEditing ? 'Edit Customer' : 'Add Customer' }}
       />
-      <ScrollView className="flex-1">
-        <View className="mb-4">
-          <Text className="text-lg font-semibold mb-2">Username</Text>
+      <ScrollView className='flex-1'>
+        <View className='mb-4'>
+          <Text className='mb-2 text-lg font-semibold'>Username</Text>
           <Input
-            autoCapitalize="none"
-            className="border border-gray-300 p-3 rounded-md"
+            autoCapitalize='none'
+            className='rounded-md border border-gray-300 p-3'
             onChangeText={setUsername}
-            placeholder="Enter username"
+            placeholder='Enter username'
             value={username}
           />
         </View>
 
-        <View className="mb-4">
-          <Text className="text-lg font-semibold mb-2">
+        <View className='mb-4'>
+          <Text className='mb-2 text-lg font-semibold'>
             Full Name (Optional)
           </Text>
           <Input
-            className="border border-gray-300 p-3 rounded-md"
+            className='rounded-md border border-gray-300 p-3'
             onChangeText={setFullName}
-            placeholder="Enter full name"
+            placeholder='Enter full name'
             value={fullName}
           />
         </View>
 
-        {error && <Text className="text-red-500 mb-4">{error}</Text>}
+        {error && <Text className='mb-4 text-red-500'>{error}</Text>}
 
-        <Button isLoading={loading} onPress={handleSaveCustomer}>
-          <Text className="text-white text-lg font-semibold">
+        <Button
+          isLoading={loading}
+          onPress={handleSaveCustomer}
+        >
+          <Text className='text-lg font-semibold text-white'>
             {isEditing ? 'Save Changes' : 'Add Customer'}
           </Text>
         </Button>

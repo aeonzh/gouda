@@ -3,17 +3,17 @@ import fetch from 'node-fetch';
 const base = process.env.SUPABASE_URL || 'http://127.0.0.1:54321';
 const anon = process.env.SUPABASE_ANON_KEY || 'anon-key';
 
-async function api(path, { method = 'GET', body } = {}) {
+async function api(path, { body, method = 'GET' } = {}) {
   const url = `${base}/rest/v1/${path}`;
   const res = await fetch(url, {
-    method,
+    body: body ? JSON.stringify(body) : undefined,
     headers: {
       apikey: anon,
       Authorization: `Bearer ${anon}`,
       'Content-Type': 'application/json',
       Prefer: 'return=representation',
     },
-    body: body ? JSON.stringify(body) : undefined,
+    method,
   });
   const text = await res.text();
   let data;
@@ -22,7 +22,7 @@ async function api(path, { method = 'GET', body } = {}) {
   } catch {
     data = text;
   }
-  return { status: res.status, data };
+  return { data, status: res.status };
 }
 
 async function main() {
@@ -33,13 +33,38 @@ async function main() {
   // create cart then item
   const userId = '00000000-0000-0000-0000-000000000000';
   const businessId = products.data?.[0]?.business_id || null;
-  await api('carts', { method: 'POST', body: [{ user_id: userId, business_id: businessId }] });
-  const carts = await api(`carts?user_id=eq.${userId}&business_id=eq.${businessId}&select=id&limit=1`);
+  await api('carts', {
+    body: [{ business_id: businessId, user_id: userId }],
+    method: 'POST',
+  });
+  const carts = await api(
+    `carts?user_id=eq.${userId}&business_id=eq.${businessId}&select=id&limit=1`,
+  );
   const cartId = carts.data?.[0]?.id;
-  await api('cart_items', { method: 'POST', body: [{ cart_id: cartId, product_id: products.data?.[0]?.id, quantity: 1, price_at_time_of_add: 1 }] });
+  await api('cart_items', {
+    body: [
+      {
+        cart_id: cartId,
+        price_at_time_of_add: 1,
+        product_id: products.data?.[0]?.id,
+        quantity: 1,
+      },
+    ],
+    method: 'POST',
+  });
 
   // create order (minimal smoke)
-  const order = await api('orders', { method: 'POST', body: [{ user_id: userId, business_id: businessId, status: 'pending', total_amount: 1 }] });
+  const order = await api('orders', {
+    body: [
+      {
+        business_id: businessId,
+        status: 'pending',
+        total_amount: 1,
+        user_id: userId,
+      },
+    ],
+    method: 'POST',
+  });
   if (order.status !== 201) throw new Error('Order create failed');
 
   console.log('Live smoke OK');
@@ -49,5 +74,3 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
-
-

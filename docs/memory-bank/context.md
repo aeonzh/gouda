@@ -7,6 +7,7 @@ Recent changes: Introduced a lazy Supabase client getter `getSupabase()` in `pac
 Status: All `packages/shared` products API tests pass (status filter, empty business_id short-circuit, getProductById success/error). Orders-related tests remain to be aligned.
 
 Next steps: Address `orders` expectations vs implementation:
+
 - `getCartItems`: test expects `product` to be `undefined` when join is null; implementation returns `null`.
 - `createOrderFromCart`: test assumes first table hit is `cart_items`, implementation reads `carts` first.
 

@@ -10,7 +10,7 @@ jest.mock('expo-constants', () => ({
 try {
   // Optional in some environments; wrap to avoid resolution errors under pnpm
   // and RN 0.79 directory structure changes
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+
   require('react-native/Libraries/Animated/NativeAnimatedHelper');
   jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 } catch (e) {
@@ -18,6 +18,6 @@ try {
 }
 
 jest.mock('react-native-safe-area-context', () => ({
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   SafeAreaProvider: ({ children }) => children,
+  useSafeAreaInsets: () => ({ bottom: 0, left: 0, right: 0, top: 0 }),
 }));

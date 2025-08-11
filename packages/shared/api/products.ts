@@ -19,8 +19,8 @@ export interface Product {
   description?: string;
   image_url?: string;
   price: number;
-  stock_quantity: number;
   status: 'draft' | 'published' | 'rejected';
+  stock_quantity: number;
 }
 
 /**

@@ -40,21 +40,24 @@ export default function CustomerDetailsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator color="#0000ff" size="large" />
+      <View className='flex-1 items-center justify-center'>
+        <ActivityIndicator
+          color='#0000ff'
+          size='large'
+        />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center p-4">
-        <Text className="text-red-500 text-center">{error}</Text>
+      <View className='flex-1 items-center justify-center p-4'>
+        <Text className='text-center text-red-500'>{error}</Text>
         <TouchableOpacity
-          className="mt-4 p-2 bg-blue-500 rounded"
+          className='mt-4 rounded bg-blue-500 p-2'
           onPress={() => fetchCustomerDetails(id as string)}
         >
-          <Text className="text-white">Retry</Text>
+          <Text className='text-white'>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -62,14 +65,14 @@ export default function CustomerDetailsScreen() {
 
   if (!customer) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-gray-500">Customer details not available.</Text>
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-gray-500'>Customer details not available.</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className='flex-1 bg-white p-4'>
       <Stack.Screen
         options={{
           headerRight: () => (
@@ -80,35 +83,38 @@ export default function CustomerDetailsScreen() {
                 pathname: '/customers/manage' as any,
               }}
             >
-              <TouchableOpacity className="p-2">
-                <TabBarIcon color="blue" name="create" />
+              <TouchableOpacity className='p-2'>
+                <TabBarIcon
+                  color='blue'
+                  name='create'
+                />
               </TouchableOpacity>
             </Link>
           ),
           title: customer.full_name || customer.username,
         }}
       />
-      <View className="mb-4">
-        <Text className="text-xl font-bold mb-2">
+      <View className='mb-4'>
+        <Text className='mb-2 text-xl font-bold'>
           {customer.full_name || 'N/A'}
         </Text>
-        <Text className="text-gray-700">
-          <Text className="font-semibold">Username:</Text> @{customer.username}
+        <Text className='text-gray-700'>
+          <Text className='font-semibold'>Username:</Text> @{customer.username}
         </Text>
-        <Text className="text-gray-700">
-          <Text className="font-semibold">Role:</Text> {customer.role}
+        <Text className='text-gray-700'>
+          <Text className='font-semibold'>Role:</Text> {customer.role}
         </Text>
-        <Text className="text-gray-700">
-          <Text className="font-semibold">Member Since:</Text>{' '}
+        <Text className='text-gray-700'>
+          <Text className='font-semibold'>Member Since:</Text>{' '}
           {new Date(customer.created_at).toLocaleDateString()}
         </Text>
       </View>
 
       {/* Add more customer details here as needed, e.g., addresses, order history summary */}
-      <Text className="text-lg font-semibold mt-4">
+      <Text className='mt-4 text-lg font-semibold'>
         Additional Details (Future)
       </Text>
-      <Text className="text-gray-500">
+      <Text className='text-gray-500'>
         Order history, addresses, etc. will be displayed here.
       </Text>
     </View>

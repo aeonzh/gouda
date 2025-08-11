@@ -20,7 +20,7 @@ export function getSupabase() {
 
 // Backward-compatible proxy so existing imports of `supabase` continue to work
 // without forcing eager initialization at module load.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const supabase = new Proxy({} as any, {
   get(_target, property) {
     const client = getSupabase();
@@ -30,9 +30,12 @@ export const supabase = new Proxy({} as any, {
 }) as any;
 
 export async function resetPasswordForEmail(email: string) {
-  const { data, error } = await getSupabase().auth.resetPasswordForEmail(email, {
-    redirectTo: 'http://localhost:8081/reset-password', // This should be a deep link or web URL for the password reset page
-  });
+  const { data, error } = await getSupabase().auth.resetPasswordForEmail(
+    email,
+    {
+      redirectTo: 'http://localhost:8081/reset-password', // This should be a deep link or web URL for the password reset page
+    },
+  );
 
   if (error) {
     console.error('Error resetting password:', error.message);
@@ -84,14 +87,16 @@ export async function signUpWithEmail(
 
   // If user is successfully created, insert into profiles table
   if (data.user) {
-    const { error: profileError } = await getSupabase().from('profiles').insert([
-      {
-        full_name: fullName,
-        id: data.user.id,
-        role: 'customer', // Default role for new sign-ups
-        username: email, // Using email as username for simplicity, can be changed later
-      },
-    ]);
+    const { error: profileError } = await getSupabase()
+      .from('profiles')
+      .insert([
+        {
+          full_name: fullName,
+          id: data.user.id,
+          role: 'customer', // Default role for new sign-ups
+          username: email, // Using email as username for simplicity, can be changed later
+        },
+      ]);
 
     if (profileError) {
       console.error('Error creating user profile:', profileError.message);

@@ -5,35 +5,111 @@ jest.mock('packages/shared/api/supabase', () => {
   // In-memory dataset for targeted tests
   const db = {
     members: [
-      { id: 'm1', profile_id: 'test-user', business_id: 'b1', role_in_business: 'customer' },
-      { id: 'm2', profile_id: 'test-user', business_id: 'b2', role_in_business: 'customer' },
+      {
+        id: 'm1',
+        profile_id: 'test-user',
+        business_id: 'b1',
+        role_in_business: 'customer',
+      },
+      {
+        id: 'm2',
+        profile_id: 'test-user',
+        business_id: 'b2',
+        role_in_business: 'customer',
+      },
     ],
     organisations: [
-      { id: 'b1', name: 'Alpha', status: 'approved', address_line1: 'a', city: 'x', postal_code: '1', country: 'c', state: 's', description: '', image_url: undefined },
-      { id: 'b2', name: 'Beta', status: 'approved', address_line1: 'b', city: 'y', postal_code: '2', country: 'c', state: 's', description: '', image_url: undefined },
+      {
+        id: 'b1',
+        name: 'Alpha',
+        status: 'approved',
+        address_line1: 'a',
+        city: 'x',
+        postal_code: '1',
+        country: 'c',
+        state: 's',
+        description: '',
+        image_url: undefined,
+      },
+      {
+        id: 'b2',
+        name: 'Beta',
+        status: 'approved',
+        address_line1: 'b',
+        city: 'y',
+        postal_code: '2',
+        country: 'c',
+        state: 's',
+        description: '',
+        image_url: undefined,
+      },
     ],
     carts: [
-      { id: 'c1', user_id: 'test-user', business_id: 'b1', created_at: '', updated_at: '' },
+      {
+        id: 'c1',
+        user_id: 'test-user',
+        business_id: 'b1',
+        created_at: '',
+        updated_at: '',
+      },
     ],
     products: [
-      { id: 'p1', business_id: 'b1', category_id: null, name: 'Prod A', description: '', image_url: undefined, price: 5, stock_quantity: 10, status: 'published' },
-      { id: 'p2', business_id: 'b1', category_id: null, name: 'Published', description: '', image_url: undefined, price: 1, stock_quantity: 10, status: 'published' },
+      {
+        id: 'p1',
+        business_id: 'b1',
+        category_id: null,
+        name: 'Prod A',
+        description: '',
+        image_url: undefined,
+        price: 5,
+        stock_quantity: 10,
+        status: 'published',
+      },
+      {
+        id: 'p2',
+        business_id: 'b1',
+        category_id: null,
+        name: 'Published',
+        description: '',
+        image_url: undefined,
+        price: 1,
+        stock_quantity: 10,
+        status: 'published',
+      },
     ],
-    categories: [
-      { id: 'c1', name: 'Cat', business_id: 'b1' },
-    ],
+    categories: [{ id: 'c1', name: 'Cat', business_id: 'b1' }],
     cart_items: [
-      { id: 'ci1', cart_id: 'c1', product_id: 'p1', quantity: 2, price_at_time_of_add: 5, created_at: '', updated_at: '' },
+      {
+        id: 'ci1',
+        cart_id: 'c1',
+        product_id: 'p1',
+        quantity: 2,
+        price_at_time_of_add: 5,
+        created_at: '',
+        updated_at: '',
+      },
     ],
     orders: [
-      { id: 'o1', user_id: 'test-user', order_date: new Date().toISOString(), status: 'pending', total_amount: 10, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      {
+        id: 'o1',
+        user_id: 'test-user',
+        order_date: new Date().toISOString(),
+        status: 'pending',
+        total_amount: 10,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
     ],
   };
 
   const authListeners = new Set();
   const mockAuth = {
-    getSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'test-user' } } } })),
-    getUser: jest.fn(() => Promise.resolve({ data: { user: { id: 'test-user' } } })),
+    getSession: jest.fn(() =>
+      Promise.resolve({ data: { session: { user: { id: 'test-user' } } } }),
+    ),
+    getUser: jest.fn(() =>
+      Promise.resolve({ data: { user: { id: 'test-user' } } }),
+    ),
     onAuthStateChange: jest.fn((_cb, _session) => {
       const subscription = { unsubscribe: jest.fn() };
       return { data: { subscription } };
@@ -50,34 +126,82 @@ jest.mock('packages/shared/api/supabase', () => {
         if (f.type === 'eq') return cell === f.value;
         if (f.type === 'in') return (f.values || []).includes(cell);
         return true;
-      })
+      }),
     );
   };
 
   const makeBuilder = (table) => {
-    const state = { table, filters: [], orderBy: null, op: 'select', payload: null };
+    const state = {
+      table,
+      filters: [],
+      orderBy: null,
+      op: 'select',
+      payload: null,
+    };
     const thenable = {
-      select() { return this; },
-      eq(key, value) { state.filters.push({ type: 'eq', key, value }); return this; },
-      in(key, values) { state.filters.push({ type: 'in', key, values }); return this; },
-      order(col, _opts) { state.orderBy = col; return this; },
-      range(_s, _e) { return this; },
-      single() { return this.then((r) => ({ data: Array.isArray(r.data) ? r.data[0] || null : r.data, error: null })); },
-      upsert(payload) { state.op = 'upsert'; state.payload = payload; return this; },
-      insert(payload) { state.op = 'insert'; state.payload = payload; return this; },
-      update(payload) { state.op = 'update'; state.payload = payload; return this; },
-      delete() { state.op = 'delete'; return this; },
+      select() {
+        return this;
+      },
+      eq(key, value) {
+        state.filters.push({ type: 'eq', key, value });
+        return this;
+      },
+      in(key, values) {
+        state.filters.push({ type: 'in', key, values });
+        return this;
+      },
+      order(col, _opts) {
+        state.orderBy = col;
+        return this;
+      },
+      range(_s, _e) {
+        return this;
+      },
+      single() {
+        return this.then((r) => ({
+          data: Array.isArray(r.data) ? r.data[0] || null : r.data,
+          error: null,
+        }));
+      },
+      upsert(payload) {
+        state.op = 'upsert';
+        state.payload = payload;
+        return this;
+      },
+      insert(payload) {
+        state.op = 'insert';
+        state.payload = payload;
+        return this;
+      },
+      update(payload) {
+        state.op = 'update';
+        state.payload = payload;
+        return this;
+      },
+      delete() {
+        state.op = 'delete';
+        return this;
+      },
       then(resolve) {
         let rows = db[state.table] ? [...db[state.table]] : [];
         rows = applyFilters(rows, state.filters);
 
         if (state.op === 'upsert') {
           if (state.table === 'carts') {
-            const existing = rows.find((r) => r.user_id === state.payload.user_id && r.business_id === state.payload.business_id);
+            const existing = rows.find(
+              (r) =>
+                r.user_id === state.payload.user_id &&
+                r.business_id === state.payload.business_id,
+            );
             if (existing) {
               return resolve({ data: existing, error: null });
             }
-            const newRow = { id: 'c' + (db.carts.length + 1), created_at: '', updated_at: '', ...state.payload };
+            const newRow = {
+              id: 'c' + (db.carts.length + 1),
+              created_at: '',
+              updated_at: '',
+              ...state.payload,
+            };
             db.carts.push(newRow);
             return resolve({ data: newRow, error: null });
           }
@@ -85,8 +209,12 @@ jest.mock('packages/shared/api/supabase', () => {
 
         if (state.op === 'insert') {
           const arr = db[state.table];
-          const payload = Array.isArray(state.payload) ? state.payload[0] : state.payload;
-          const id = payload.id || `${state.table.slice(0,2)}_${(arr?.length || 0) + 1}`;
+          const payload = Array.isArray(state.payload)
+            ? state.payload[0]
+            : state.payload;
+          const id =
+            payload.id ||
+            `${state.table.slice(0, 2)}_${(arr?.length || 0) + 1}`;
           const newRow = { id, ...payload };
           if (arr) arr.push(newRow);
           return resolve({ data: newRow, error: null });
@@ -95,7 +223,9 @@ jest.mock('packages/shared/api/supabase', () => {
         if (state.op === 'update') {
           const arr = db[state.table] || [];
           // Only support eq('id', ...) updates for tests
-          const idFilter = state.filters.find((f) => f.type === 'eq' && f.key === 'id');
+          const idFilter = state.filters.find(
+            (f) => f.type === 'eq' && f.key === 'id',
+          );
           if (idFilter) {
             const idx = arr.findIndex((r) => r.id === idFilter.value);
             if (idx >= 0) {
@@ -108,8 +238,12 @@ jest.mock('packages/shared/api/supabase', () => {
 
         if (state.op === 'delete') {
           const arr = db[state.table] || [];
-          const idFilter = state.filters.find((f) => f.type === 'eq' && f.key === 'id');
-          const cartIdFilter = state.filters.find((f) => f.type === 'eq' && f.key === 'cart_id');
+          const idFilter = state.filters.find(
+            (f) => f.type === 'eq' && f.key === 'id',
+          );
+          const cartIdFilter = state.filters.find(
+            (f) => f.type === 'eq' && f.key === 'cart_id',
+          );
           if (idFilter) {
             const idx = arr.findIndex((r) => r.id === idFilter.value);
             if (idx >= 0) arr.splice(idx, 1);
@@ -125,11 +259,14 @@ jest.mock('packages/shared/api/supabase', () => {
         if (state.table === 'cart_items') {
           // emulate join filter via carts!inner in createOrderFromCart
           const userJoin = state.filters.find((f) => f.key === 'carts.user_id');
-          const bizJoin = state.filters.find((f) => f.key === 'carts.business_id');
+          const bizJoin = state.filters.find(
+            (f) => f.key === 'carts.business_id',
+          );
           let filtered = rows;
           if (userJoin && bizJoin) {
             const cart = (db.carts || []).find(
-              (c) => c.user_id === userJoin.value && c.business_id === bizJoin.value,
+              (c) =>
+                c.user_id === userJoin.value && c.business_id === bizJoin.value,
             );
             filtered = cart ? rows.filter((r) => r.cart_id === cart.id) : [];
           }
@@ -309,7 +446,9 @@ afterAll(() => server.close());
 jest.mock('expo-constants', () => ({
   __esModule: true,
   default: {
-    expoConfig: { extra: { supabaseUrl: 'https://msw.test', supabaseAnonKey: 'test_anon' } },
+    expoConfig: {
+      extra: { supabaseUrl: 'https://msw.test', supabaseAnonKey: 'test_anon' },
+    },
   },
 }));
 

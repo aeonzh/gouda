@@ -29,18 +29,18 @@ export const Input = ({
     <View className={`w-full ${className}`}>
       {label && (
         <Text
-          className={`text-base font-medium text-gray-700 mb-1 ${labelClassName}`}
+          className={`mb-1 text-base font-medium text-gray-700 ${labelClassName}`}
         >
           {label}
         </Text>
       )}
       <TextInput
         autoCapitalize={autoCapitalize}
-        className={`border border-gray-300 rounded-md px-4 py-2 text-base text-gray-800 focus:border-blue-500 ${inputClassName}`}
+        className={`rounded-md border border-gray-300 px-4 py-2 text-base text-gray-800 focus:border-blue-500 ${inputClassName}`}
         keyboardType={keyboardType}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor='#9ca3af'
         secureTextEntry={secureTextEntry}
         value={value}
       />

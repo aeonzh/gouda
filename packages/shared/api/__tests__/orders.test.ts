@@ -1,20 +1,22 @@
-import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient } from '../../testing/supabase.mock';
 import { createClient } from '@supabase/supabase-js';
+
+import type { MockSupabaseClient } from '../../testing/supabase.mock';
+
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable<T>(result: { data: T; error: any }) {
   const qb: any = {
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
     delete: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue(result),
     then: (
       onFulfilled: (v: typeof result) => any,
       onRejected?: (e: any) => any,
     ) => Promise.resolve(result).then(onFulfilled, onRejected),
+    update: jest.fn().mockReturnThis(),
   };
   return qb;
 }
@@ -31,33 +33,33 @@ describe('orders API', () => {
     jest.isolateModules(() => {
       const raw = [
         {
-          id: 'ci1',
           cart_id: 'c1',
-          product_id: 'p1',
-          quantity: 1,
-          price_at_time_of_add: 5,
           created_at: '',
-          updated_at: '',
+          id: 'ci1',
+          price_at_time_of_add: 5,
           product: [
             {
+              business_id: 'b',
               id: 'p1',
               name: 'A',
               price: 5,
-              stock_quantity: 0,
-              business_id: 'b',
               status: 'published',
+              stock_quantity: 0,
             },
           ],
+          product_id: 'p1',
+          quantity: 1,
+          updated_at: '',
         },
         {
-          id: 'ci2',
           cart_id: 'c1',
+          created_at: '',
+          id: 'ci2',
+          price_at_time_of_add: 10,
+          product: null,
           product_id: 'p2',
           quantity: 2,
-          price_at_time_of_add: 10,
-          created_at: '',
           updated_at: '',
-          product: null,
         },
       ];
       (client.from as jest.Mock).mockImplementation((table: string) => {
@@ -79,14 +81,14 @@ describe('orders API', () => {
 
   it('createOrderFromCart uses price_at_time_of_order and clears cart', async () => {
     jest.isolateModules(() => {
-      const cart = { id: 'c1', user_id: 'u1', business_id: 'b1' } as any;
+      const cart = { business_id: 'b1', id: 'c1', user_id: 'u1' } as any;
       const cartItems = [
-        { product_id: 'p1', quantity: 2, price_at_time_of_add: 5, carts: cart },
+        { carts: cart, price_at_time_of_add: 5, product_id: 'p1', quantity: 2 },
         {
+          carts: cart,
+          price_at_time_of_add: 10,
           product_id: 'p2',
           quantity: 1,
-          price_at_time_of_add: 10,
-          carts: cart,
         },
       ] as any;
       const newOrder = { id: 'o1' } as any;
@@ -99,12 +101,12 @@ describe('orders API', () => {
               return createThenable({ data: null as any, error: null });
             }
             return createThenable({ data: cartItems as any, error: null });
-          case 'orders':
-            return createThenable({ data: newOrder as any, error: null });
-          case 'order_items':
-            return createThenable({ data: null as any, error: null });
           case 'carts':
             return createThenable({ data: cart as any, error: null });
+          case 'order_items':
+            return createThenable({ data: null as any, error: null });
+          case 'orders':
+            return createThenable({ data: newOrder as any, error: null });
           default:
             throw new Error('Unexpected table ' + table);
         }
@@ -134,8 +136,8 @@ describe('orders API', () => {
       const { createOrderFromCartAtomic } = require('../orders');
       return createOrderFromCartAtomic('u1', 'b1').then((result: any) => {
         expect(client.rpc).toHaveBeenCalledWith('create_order_from_cart', {
-          user_id: 'u1',
           business_id: 'b1',
+          user_id: 'u1',
         });
         expect(result).toEqual(newOrder);
       });

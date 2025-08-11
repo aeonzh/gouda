@@ -28,12 +28,14 @@ export default function InitialLayout() {
     });
 
     // Subscribe to authentication state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (!loading) {
-        SplashScreen.hideAsync();
-      }
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setSession(session);
+        if (!loading) {
+          SplashScreen.hideAsync();
+        }
+      },
+    );
 
     // Cleanup function to unsubscribe from the auth listener when the component unmounts
     return () => {

@@ -1,13 +1,15 @@
-import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient } from '../../testing/supabase.mock';
 import { createClient } from '@supabase/supabase-js';
+
+import type { MockSupabaseClient } from '../../testing/supabase.mock';
+
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable<T>(result: { data: T; error: any }) {
   const qb: any = {
-    select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
     in: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
     then: (onFulfilled: (v: typeof result) => any) =>
       Promise.resolve(result).then(onFulfilled),
   };

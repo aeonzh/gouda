@@ -195,22 +195,32 @@ export default function CreateOrderScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator color="#6366F1" size="large" />
-        <Text className="mt-4 text-gray-700">Loading data...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator
+          color='#6366F1'
+          size='large'
+        />
+        <Text className='mt-4 text-gray-700'>Loading data...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className='flex-1 bg-gray-50'>
       <Stack.Screen
         options={{
           headerBlurEffect: 'light',
           headerLargeTitle: true,
           headerLeft: () => (
-            <TouchableOpacity className="p-2" onPress={() => router.back()}>
-              <Feather color="#6366F1" name="arrow-left" size={24} />
+            <TouchableOpacity
+              className='p-2'
+              onPress={() => router.back()}
+            >
+              <Feather
+                color='#6366F1'
+                name='arrow-left'
+                size={24}
+              />
             </TouchableOpacity>
           ),
           headerShown: true,
@@ -218,21 +228,24 @@ export default function CreateOrderScreen() {
           title: 'Create Order',
         }}
       />
-      <ScrollView className="p-4">
+      <ScrollView className='p-4'>
         {/* Customer Selection */}
-        <View className="mb-4 bg-white p-4 rounded-lg shadow-md">
-          <Text className="text-base font-medium text-gray-700 mb-1">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-1 text-base font-medium text-gray-700'>
             Select Customer:
           </Text>
-          <View className="border border-gray-300 rounded-lg bg-white">
+          <View className='rounded-lg border border-gray-300 bg-white'>
             <Picker
-              className="w-full text-gray-800"
+              className='w-full text-gray-800'
               onValueChange={(itemValue: string | undefined) =>
                 setSelectedCustomerId(itemValue)
               }
               selectedValue={selectedCustomerId}
             >
-              <Picker.Item label="-- Select a Customer --" value={undefined} />
+              <Picker.Item
+                label='-- Select a Customer --'
+                value={undefined}
+              />
               {customers.map((customer) => (
                 <Picker.Item
                   key={customer.id}
@@ -245,41 +258,48 @@ export default function CreateOrderScreen() {
         </View>
 
         {/* Order Items */}
-        <View className="mb-4 bg-white p-4 rounded-lg shadow-md">
-          <Text className="text-base font-medium text-gray-700 mb-2">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-base font-medium text-gray-700'>
             Order Items:
           </Text>
           {orderItems.map((item, index) => (
             <View
-              className="mb-4 p-3 border border-gray-200 rounded-lg bg-gray-50"
+              className='mb-4 rounded-lg border border-gray-200 bg-gray-50 p-3'
               key={index}
             >
-              <View className="flex-row justify-between items-center mb-2">
-                <Text className="font-semibold text-gray-700">
+              <View className='mb-2 flex-row items-center justify-between'>
+                <Text className='font-semibold text-gray-700'>
                   Item {index + 1}
                 </Text>
                 {orderItems.length > 1 && (
                   <TouchableOpacity
-                    className="p-1 rounded-full bg-red-100"
+                    className='rounded-full bg-red-100 p-1'
                     onPress={() => handleRemoveItem(index)}
                   >
-                    <Feather color="#EF4444" name="x" size={18} />
+                    <Feather
+                      color='#EF4444'
+                      name='x'
+                      size={18}
+                    />
                   </TouchableOpacity>
                 )}
               </View>
-              <View className="mb-2">
-                <Text className="text-sm font-medium text-gray-600 mb-1">
+              <View className='mb-2'>
+                <Text className='mb-1 text-sm font-medium text-gray-600'>
                   Product:
                 </Text>
-                <View className="border border-gray-300 rounded-lg bg-white">
+                <View className='rounded-lg border border-gray-300 bg-white'>
                   <Picker
-                    className="w-full text-gray-800"
+                    className='w-full text-gray-800'
                     onValueChange={(itemValue: string) =>
                       handleOrderItemChange(index, 'productId', itemValue)
                     }
                     selectedValue={item.productId}
                   >
-                    <Picker.Item label="-- Select a Product --" value="" />
+                    <Picker.Item
+                      label='-- Select a Product --'
+                      value=''
+                    />
                     {products.map((product) => (
                       <Picker.Item
                         key={product.id}
@@ -290,32 +310,32 @@ export default function CreateOrderScreen() {
                   </Picker>
                 </View>
               </View>
-              <View className="flex-row justify-between mb-2">
-                <View className="flex-1 mr-2">
-                  <Text className="text-sm font-medium text-gray-600 mb-1">
+              <View className='mb-2 flex-row justify-between'>
+                <View className='mr-2 flex-1'>
+                  <Text className='mb-1 text-sm font-medium text-gray-600'>
                     Quantity:
                   </Text>
                   <TextInput
-                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800"
-                    keyboardType="numeric"
+                    className='w-full rounded-lg border border-gray-300 bg-white p-2 text-gray-800'
+                    keyboardType='numeric'
                     onChangeText={(text) =>
                       handleOrderItemChange(index, 'quantity', text)
                     }
-                    placeholder="Quantity"
+                    placeholder='Quantity'
                     value={item.quantity}
                   />
                 </View>
-                <View className="flex-1 ml-2">
-                  <Text className="text-sm font-medium text-gray-600 mb-1">
+                <View className='ml-2 flex-1'>
+                  <Text className='mb-1 text-sm font-medium text-gray-600'>
                     Price at Order:
                   </Text>
                   <TextInput
-                    className="w-full p-2 border border-gray-300 rounded-lg bg-white text-gray-800"
-                    keyboardType="numeric"
+                    className='w-full rounded-lg border border-gray-300 bg-white p-2 text-gray-800'
+                    keyboardType='numeric'
                     onChangeText={(text) =>
                       handleOrderItemChange(index, 'priceAtOrder', text)
                     }
-                    placeholder="Price"
+                    placeholder='Price'
                     value={item.priceAtOrder}
                   />
                 </View>
@@ -323,122 +343,126 @@ export default function CreateOrderScreen() {
             </View>
           ))}
           <TouchableOpacity
-            className="w-full p-3 rounded-lg bg-blue-500 flex-row justify-center items-center mt-2"
+            className='mt-2 w-full flex-row items-center justify-center rounded-lg bg-blue-500 p-3'
             onPress={handleAddItem}
           >
-            <Feather color="white" name="plus" size={20} />
-            <Text className="text-white text-base font-semibold ml-2">
+            <Feather
+              color='white'
+              name='plus'
+              size={20}
+            />
+            <Text className='ml-2 text-base font-semibold text-white'>
               Add Item
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Shipping Address */}
-        <View className="mb-4 bg-white p-4 rounded-lg shadow-md">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Shipping Address
           </Text>
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('shipping', 'street', text)
             }
-            placeholder="Street"
+            placeholder='Street'
             value={shippingAddress.street}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('shipping', 'city', text)
             }
-            placeholder="City"
+            placeholder='City'
             value={shippingAddress.city}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('shipping', 'state', text)
             }
-            placeholder="State"
+            placeholder='State'
             value={shippingAddress.state}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('shipping', 'zipCode', text)
             }
-            placeholder="Zip Code"
+            placeholder='Zip Code'
             value={shippingAddress.zipCode}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
+            className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('shipping', 'country', text)
             }
-            placeholder="Country"
+            placeholder='Country'
             value={shippingAddress.country}
           />
         </View>
 
         {/* Billing Address */}
-        <View className="mb-6 bg-white p-4 rounded-lg shadow-md">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='mb-6 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Billing Address
           </Text>
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('billing', 'street', text)
             }
-            placeholder="Street"
+            placeholder='Street'
             value={billingAddress.street}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('billing', 'city', text)
             }
-            placeholder="City"
+            placeholder='City'
             value={billingAddress.city}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('billing', 'state', text)
             }
-            placeholder="State"
+            placeholder='State'
             value={billingAddress.state}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800 mb-2"
+            className='mb-2 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('billing', 'zipCode', text)
             }
-            placeholder="Zip Code"
+            placeholder='Zip Code'
             value={billingAddress.zipCode}
           />
           <TextInput
-            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
+            className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
             onChangeText={(text) =>
               handleAddressChange('billing', 'country', text)
             }
-            placeholder="Country"
+            placeholder='Country'
             value={billingAddress.country}
           />
         </View>
 
         {/* Submit Button */}
         <TouchableOpacity
-          className={`w-full p-4 rounded-lg flex-row justify-center items-center ${
+          className={`w-full flex-row items-center justify-center rounded-lg p-4 ${
             submitting ? 'bg-indigo-300' : 'bg-indigo-600'
           }`}
           disabled={submitting}
           onPress={handleSubmit}
         >
           {submitting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color='#fff' />
           ) : (
-            <Text className="text-white text-lg font-semibold">
+            <Text className='text-lg font-semibold text-white'>
               Create Order
             </Text>
           )}

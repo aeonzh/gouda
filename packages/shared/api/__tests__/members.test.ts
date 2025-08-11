@@ -1,19 +1,21 @@
-import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient } from '../../testing/supabase.mock';
 import { createClient } from '@supabase/supabase-js';
+
+import type { MockSupabaseClient } from '../../testing/supabase.mock';
+
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 // thenable builder factory
 function createThenable(result: { data: any; error: any }) {
   const qb: any = {
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
     delete: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue(result),
     then: (onFulfilled: (v: any) => any, onRejected?: (e: any) => any) =>
       Promise.resolve(result).then(onFulfilled, onRejected),
+    update: jest.fn().mockReturnThis(),
   };
   return qb;
 }
@@ -27,7 +29,11 @@ describe('members API', () => {
   });
 
   it('addMember inserts and returns row', async () => {
-    const member = { profile_id: 'u1', business_id: 'b1', role_in_business: 'sales_agent' as const };
+    const member = {
+      business_id: 'b1',
+      profile_id: 'u1',
+      role_in_business: 'sales_agent' as const,
+    };
     const qb = createThenable({ data: member, error: null });
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('members');
@@ -46,7 +52,11 @@ describe('members API', () => {
   });
 
   it('updateMemberRole updates role and returns row', async () => {
-    const updated = { profile_id: 'u1', business_id: 'b1', role_in_business: 'owner' as const };
+    const updated = {
+      business_id: 'b1',
+      profile_id: 'u1',
+      role_in_business: 'owner' as const,
+    };
     const qb = createThenable({ data: updated, error: null });
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('members');
@@ -83,5 +93,3 @@ describe('members API', () => {
     expect(qb.eq).toHaveBeenCalledWith('business_id', 'b1');
   });
 });
-
-

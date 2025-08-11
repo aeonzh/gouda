@@ -35,24 +35,27 @@ export default function StorefrontPage() {
     router.push(`/products/${productId}`);
   };
 
-  const renderProductItem = useCallback(({ item }: { item: Product }) => (
-    <TouchableOpacity
-      className='flex-row items-center border-b border-gray-200 p-4'
-      onPress={() => handleProductPress(item.id)}
-    >
-      {item.image_url && (
-        <Image
-          className='mr-4 h-16 w-16 rounded'
-          source={{ uri: item.image_url }}
-        />
-      )}
-      <View className='flex-1'>
-        <Text className='text-lg font-bold'>{item.name}</Text>
-        <Text className='text-gray-600'>${item.price.toFixed(2)}</Text>
-        <Text className='text-gray-500'>{item.description}</Text>
-      </View>
-    </TouchableOpacity>
-  ), []);
+  const renderProductItem = useCallback(
+    ({ item }: { item: Product }) => (
+      <TouchableOpacity
+        className='flex-row items-center border-b border-gray-200 p-4'
+        onPress={() => handleProductPress(item.id)}
+      >
+        {item.image_url && (
+          <Image
+            className='mr-4 h-16 w-16 rounded'
+            source={{ uri: item.image_url }}
+          />
+        )}
+        <View className='flex-1'>
+          <Text className='text-lg font-bold'>{item.name}</Text>
+          <Text className='text-gray-600'>${item.price.toFixed(2)}</Text>
+          <Text className='text-gray-500'>{item.description}</Text>
+        </View>
+      </TouchableOpacity>
+    ),
+    [],
+  );
 
   if (loading) {
     return (
@@ -76,16 +79,18 @@ export default function StorefrontPage() {
   return (
     <View className='flex-1 p-4'>
       <Stack.Screen options={{ title: storeName }} />
-      <View className='flex-row items-center justify-between mb-4'>
+      <View className='mb-4 flex-row items-center justify-between'>
         <Input
-          className='flex-1 mr-2'
+          className='mr-2 flex-1'
           onChangeText={setSearchQuery}
           placeholder='Search products...'
           value={searchQuery}
         />
         <TouchableOpacity
-          className='bg-blue-500 rounded-md px-4 py-2'
-          onPress={() => router.push({ pathname: '/cart', params: { businessId: storeId } })}
+          className='rounded-md bg-blue-500 px-4 py-2'
+          onPress={() =>
+            router.push({ pathname: '/cart', params: { businessId: storeId } })
+          }
         >
           <Text className='text-white'>Cart</Text>
         </TouchableOpacity>

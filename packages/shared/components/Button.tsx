@@ -68,8 +68,8 @@ export const Button: React.FC<ButtonProps> = ({
     if (isLoading) {
       return (
         <ActivityIndicator
-          testID='activity-indicator'
           color={variant === 'primary' ? 'white' : 'gray'}
+          testID='activity-indicator'
         />
       );
     }

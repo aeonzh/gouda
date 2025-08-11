@@ -1,40 +1,9 @@
 import { getSupabase } from './supabase';
 
 export interface Member {
-  profile_id: string;
   business_id: string;
-  role_in_business: 'owner' | 'sales_agent' | 'customer';
-}
-
-export async function listMembers(
-  business_id: string,
-): Promise<Member[] | null> {
-  const { data, error } = await getSupabase()
-    .from('members')
-    .select('*')
-    .eq('business_id', business_id);
-  if (error) {
-    console.error('Error listing members:', error.message);
-    throw error;
-  }
-  return (data as Member[]) ?? [];
-}
-
-export async function getMember(
-  profile_id: string,
-  business_id: string,
-): Promise<Member | null> {
-  const { data, error } = await getSupabase()
-    .from('members')
-    .select('*')
-    .eq('profile_id', profile_id)
-    .eq('business_id', business_id)
-    .single();
-  if (error) {
-    console.error('Error fetching member:', error.message);
-    throw error;
-  }
-  return data as Member;
+  profile_id: string;
+  role_in_business: 'customer' | 'owner' | 'sales_agent';
 }
 
 export async function addMember(member: Member): Promise<Member | null> {
@@ -45,25 +14,6 @@ export async function addMember(member: Member): Promise<Member | null> {
     .single();
   if (error) {
     console.error('Error adding member:', error.message);
-    throw error;
-  }
-  return data as Member;
-}
-
-export async function updateMemberRole(
-  profile_id: string,
-  business_id: string,
-  role_in_business: Member['role_in_business'],
-): Promise<Member | null> {
-  const { data, error } = await getSupabase()
-    .from('members')
-    .update({ role_in_business })
-    .eq('profile_id', profile_id)
-    .eq('business_id', business_id)
-    .select()
-    .single();
-  if (error) {
-    console.error('Error updating member role:', error.message);
     throw error;
   }
   return data as Member;
@@ -84,4 +34,52 @@ export async function deleteMember(
   }
 }
 
+export async function getMember(
+  profile_id: string,
+  business_id: string,
+): Promise<Member | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .select('*')
+    .eq('profile_id', profile_id)
+    .eq('business_id', business_id)
+    .single();
+  if (error) {
+    console.error('Error fetching member:', error.message);
+    throw error;
+  }
+  return data as Member;
+}
 
+export async function listMembers(
+  business_id: string,
+): Promise<Member[] | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .select('*')
+    .eq('business_id', business_id);
+  if (error) {
+    console.error('Error listing members:', error.message);
+    throw error;
+  }
+  return (data as Member[]) ?? [];
+}
+
+export async function updateMemberRole(
+  profile_id: string,
+  business_id: string,
+  role_in_business: Member['role_in_business'],
+): Promise<Member | null> {
+  const { data, error } = await getSupabase()
+    .from('members')
+    .update({ role_in_business })
+    .eq('profile_id', profile_id)
+    .eq('business_id', business_id)
+    .select()
+    .single();
+  if (error) {
+    console.error('Error updating member role:', error.message);
+    throw error;
+  }
+  return data as Member;
+}

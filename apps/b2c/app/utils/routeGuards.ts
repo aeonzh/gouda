@@ -9,8 +9,22 @@ export function isAllowedAuthedRoute(segments: string[]): boolean {
 
   // Allowed top-level groups for authenticated users
   const allowedRoots = new Set<
-    '(tabs)' | 'storefront' | 'orders' | 'profile' | 'cart' | 'order-confirmation' | 'products'
-  >(['(tabs)', 'storefront', 'orders', 'profile', 'cart', 'order-confirmation', 'products']);
+    | '(tabs)'
+    | 'storefront'
+    | 'orders'
+    | 'profile'
+    | 'cart'
+    | 'order-confirmation'
+    | 'products'
+  >([
+    '(tabs)',
+    'storefront',
+    'orders',
+    'profile',
+    'cart',
+    'order-confirmation',
+    'products',
+  ]);
 
   if (!allowedRoots.has(root)) return false;
 
@@ -22,5 +36,3 @@ export function isAllowedAuthedRoute(segments: string[]): boolean {
   // Other allowed roots are fine regardless of deeper segments
   return true;
 }
-
-

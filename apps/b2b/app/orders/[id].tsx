@@ -63,30 +63,40 @@ export default function OrderDetailsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator color="#6366F1" size="large" />
-        <Text className="mt-4 text-gray-700">Loading order details...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator
+          color='#6366F1'
+          size='large'
+        />
+        <Text className='mt-4 text-gray-700'>Loading order details...</Text>
       </View>
     );
   }
 
   if (!order) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-lg text-gray-600">Order not found.</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <Text className='text-lg text-gray-600'>Order not found.</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className='flex-1 bg-gray-50'>
       <Stack.Screen
         options={{
           headerBlurEffect: 'light',
           headerLargeTitle: true,
           headerLeft: () => (
-            <TouchableOpacity className="p-2" onPress={() => router.back()}>
-              <Feather color="#6366F1" name="arrow-left" size={24} />
+            <TouchableOpacity
+              className='p-2'
+              onPress={() => router.back()}
+            >
+              <Feather
+                color='#6366F1'
+                name='arrow-left'
+                size={24}
+              />
             </TouchableOpacity>
           ),
           headerShown: true,
@@ -94,13 +104,13 @@ export default function OrderDetailsScreen() {
           title: `Order #${order.id.substring(0, 8)}`,
         }}
       />
-      <ScrollView className="p-4">
-        <View className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+      <ScrollView className='p-4'>
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Order Summary
           </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-semibold">Status:</Text>{' '}
+          <Text className='text-base text-gray-700'>
+            <Text className='font-semibold'>Status:</Text>{' '}
             <Text
               className={`font-bold ${
                 order.status === 'delivered'
@@ -113,85 +123,85 @@ export default function OrderDetailsScreen() {
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </Text>
           </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-semibold">Total Amount:</Text> $
+          <Text className='text-base text-gray-700'>
+            <Text className='font-semibold'>Total Amount:</Text> $
             {order.total_amount.toFixed(2)}
           </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-semibold">Order Date:</Text>{' '}
+          <Text className='text-base text-gray-700'>
+            <Text className='font-semibold'>Order Date:</Text>{' '}
             {new Date(order.order_date).toLocaleDateString()}
           </Text>
-          <Text className="text-base text-gray-700">
-            <Text className="font-semibold">Cuyer ID:</Text> {order.user_id}
+          <Text className='text-base text-gray-700'>
+            <Text className='font-semibold'>Cuyer ID:</Text> {order.user_id}
           </Text>
           {order.sales_agent_id && (
-            <Text className="text-base text-gray-700">
-              <Text className="font-semibold">Sales Agent ID:</Text>{' '}
+            <Text className='text-base text-gray-700'>
+              <Text className='font-semibold'>Sales Agent ID:</Text>{' '}
               {order.sales_agent_id}
             </Text>
           )}
         </View>
 
-        <View className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Shipping Address
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.shipping_address.street}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.shipping_address.city}, {order.shipping_address.state}{' '}
             {order.shipping_address.zip_code}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.shipping_address.country}
           </Text>
         </View>
 
-        <View className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Billing Address
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.billing_address.street}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.billing_address.city}, {order.billing_address.state}{' '}
             {order.billing_address.zip_code}
           </Text>
-          <Text className="text-base text-gray-700">
+          <Text className='text-base text-gray-700'>
             {order.billing_address.country}
           </Text>
         </View>
 
-        <View className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='mb-4 rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Order Items
           </Text>
           {order.order_items?.map((item) => (
             <View
-              className="flex-row justify-between py-2 border-b border-gray-100 last:border-b-0"
+              className='flex-row justify-between border-b border-gray-100 py-2 last:border-b-0'
               key={item.id}
             >
-              <Text className="text-base text-gray-700 flex-1">
+              <Text className='flex-1 text-base text-gray-700'>
                 {item.product?.name || 'Unknown Product'} (x{item.quantity})
               </Text>
-              <Text className="text-base text-gray-700">
+              <Text className='text-base text-gray-700'>
                 ${(item.quantity * item.price_at_order).toFixed(2)}
               </Text>
             </View>
           ))}
         </View>
 
-        <View className="bg-white rounded-lg shadow-md p-4">
-          <Text className="text-xl font-bold text-gray-800 mb-2">
+        <View className='rounded-lg bg-white p-4 shadow-md'>
+          <Text className='mb-2 text-xl font-bold text-gray-800'>
             Update Status
           </Text>
-          <View className="flex-row flex-wrap justify-between">
+          <View className='flex-row flex-wrap justify-between'>
             {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(
               (status) => (
                 <TouchableOpacity
-                  className={`w-[48%] p-3 rounded-lg mb-2 flex-row justify-center items-center ${
+                  className={`mb-2 w-[48%] flex-row items-center justify-center rounded-lg p-3 ${
                     order.status === status
                       ? 'bg-gray-400'
                       : submitting
@@ -203,9 +213,9 @@ export default function OrderDetailsScreen() {
                   onPress={() => handleUpdateStatus(status as Order['status'])}
                 >
                   {submitting && order.status !== status ? (
-                    <ActivityIndicator color="#fff" />
+                    <ActivityIndicator color='#fff' />
                   ) : (
-                    <Text className="text-white text-base font-semibold">
+                    <Text className='text-base font-semibold text-white'>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </Text>
                   )}

@@ -24,11 +24,15 @@ module.exports = {
   },
   moduleNameMapper: {
     '^shared/components$': '<rootDir>/testing/mocks/shared-components.js',
-    '^packages/shared/components$': '<rootDir>/testing/mocks/shared-components.js',
-    '^packages/shared/components/AuthProvider$': '<rootDir>/testing/mocks/shared-components.js',
-    '^shared/components/AuthProvider$': '<rootDir>/testing/mocks/shared-components.js',
+    '^packages/shared/components$':
+      '<rootDir>/testing/mocks/shared-components.js',
+    '^packages/shared/components/AuthProvider$':
+      '<rootDir>/testing/mocks/shared-components.js',
+    '^shared/components/AuthProvider$':
+      '<rootDir>/testing/mocks/shared-components.js',
     '^shared/(.*)$': '<rootDir>/../../packages/shared/$1',
-    '^react-native-css-interop$': '<rootDir>/testing/mocks/react-native-css-interop.js',
+    '^react-native-css-interop$':
+      '<rootDir>/testing/mocks/react-native-css-interop.js',
     '^@expo/vector-icons$': '<rootDir>/testing/mocks/vector-icons.js',
     '^@react-native/js-polyfills/error-guard$':
       '<rootDir>/../../__mocks__/@react-native/js-polyfills/error-guard.js',

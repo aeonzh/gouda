@@ -83,87 +83,100 @@ export default function InventoryScreen() {
   };
 
   const renderInventoryItem = ({ item }: { item: InventoryProduct }) => (
-    <View className="flex-row items-center justify-between p-4 border-b border-gray-200 bg-white">
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-        <Text className="text-sm text-gray-600">
+    <View className='flex-row items-center justify-between border-b border-gray-200 bg-white p-4'>
+      <View className='flex-1'>
+        <Text className='text-lg font-semibold text-gray-800'>{item.name}</Text>
+        <Text className='text-sm text-gray-600'>
           Current Stock: {item.stock_quantity}
         </Text>
       </View>
       <TouchableOpacity
-        className="p-2 rounded-full bg-blue-100"
+        className='rounded-full bg-blue-100 p-2'
         onPress={() => handleAdjustInventoryPress(item)}
       >
-        <Feather color="#3B82F6" name="edit" size={20} />
+        <Feather
+          color='#3B82F6'
+          name='edit'
+          size={20}
+        />
       </TouchableOpacity>
     </View>
   );
 
   if (loading && !refreshing) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator color="#6366F1" size="large" />
-        <Text className="mt-4 text-gray-700">Loading inventory...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator
+          color='#6366F1'
+          size='large'
+        />
+        <Text className='mt-4 text-gray-700'>Loading inventory...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      
+    <SafeAreaView className='flex-1 bg-gray-50'>
       {inventory.length === 0 && !loading ? (
-        <View className="flex-1 justify-center items-center p-4">
-          <Feather color="#9CA3AF" name="box" size={60} />
-          <Text className="text-xl text-gray-600 mt-4 font-semibold">
+        <View className='flex-1 items-center justify-center p-4'>
+          <Feather
+            color='#9CA3AF'
+            name='box'
+            size={60}
+          />
+          <Text className='mt-4 text-xl font-semibold text-gray-600'>
             No Inventory Items Found
           </Text>
-          <Text className="text-gray-500 text-center mt-2">
+          <Text className='mt-2 text-center text-gray-500'>
             It looks like there are no products with inventory to manage.
           </Text>
         </View>
       ) : (
         <FlatList
-          className="flex-1"
+          className='flex-1'
           contentContainerStyle={{ paddingBottom: 20 }}
           data={inventory}
           keyExtractor={(item) => item.id}
           refreshControl={
-            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            <RefreshControl
+              onRefresh={onRefresh}
+              refreshing={refreshing}
+            />
           }
           renderItem={renderInventoryItem}
         />
       )}
 
       <Modal
-        animationType="slide"
+        animationType='slide'
         onRequestClose={() => setModalVisible(!modalVisible)}
         transparent={true}
         visible={modalVisible}
       >
-        <View className="flex-1 justify-center items-center bg-black/50">
-          <View className="bg-white p-6 rounded-lg shadow-xl w-11/12 max-w-md">
-            <Text className="text-xl font-bold mb-4 text-gray-800">
+        <View className='flex-1 items-center justify-center bg-black/50'>
+          <View className='w-11/12 max-w-md rounded-lg bg-white p-6 shadow-xl'>
+            <Text className='mb-4 text-xl font-bold text-gray-800'>
               Adjust Stock for {selectedProduct?.name}
             </Text>
             <TextInput
-              className="border border-gray-300 p-3 rounded-md text-lg mb-4"
-              keyboardType="numeric"
+              className='mb-4 rounded-md border border-gray-300 p-3 text-lg'
+              keyboardType='numeric'
               onChangeText={setNewQuantity}
-              placeholder="Enter new quantity"
+              placeholder='Enter new quantity'
               value={newQuantity}
             />
-            <View className="flex-row justify-end space-x-3">
+            <View className='flex-row justify-end space-x-3'>
               <TouchableOpacity
-                className="px-5 py-3 rounded-md bg-gray-200"
+                className='rounded-md bg-gray-200 px-5 py-3'
                 onPress={() => setModalVisible(false)}
               >
-                <Text className="text-gray-700 font-semibold">Cancel</Text>
+                <Text className='font-semibold text-gray-700'>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="px-5 py-3 rounded-md bg-indigo-600"
+                className='rounded-md bg-indigo-600 px-5 py-3'
                 onPress={handleSaveQuantity}
               >
-                <Text className="text-white font-semibold">Save</Text>
+                <Text className='font-semibold text-white'>Save</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -14,16 +14,26 @@ describe('Storefront visibility', () => {
         res(
           ctx.status(200),
           ctx.json([
-            { id: 'p1', name: 'Published', status: 'published', price: 1, stock_quantity: 0 },
-            { id: 'p2', name: 'Draft', status: 'draft', price: 1, stock_quantity: 0 },
-          ])
-        )
-      )
+            {
+              id: 'p1',
+              name: 'Published',
+              status: 'published',
+              price: 1,
+              stock_quantity: 0,
+            },
+            {
+              id: 'p2',
+              name: 'Draft',
+              status: 'draft',
+              price: 1,
+              stock_quantity: 0,
+            },
+          ]),
+        ),
+      ),
     );
 
     renderWithProviders(<StorefrontPage />);
     await screen.findByText('Published');
   });
 });
-
-

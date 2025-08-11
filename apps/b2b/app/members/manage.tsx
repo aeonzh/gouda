@@ -12,13 +12,18 @@ const ROLES = ['owner', 'sales_agent', 'customer'] as const;
 
 export default function ManageMemberScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ profile_id?: string; business_id?: string }>();
+  const params = useLocalSearchParams<{
+    profile_id?: string;
+    business_id?: string;
+  }>();
   const isEditing = !!(params.profile_id && params.business_id);
   const { session } = useAuth();
 
-  const [businessId, setBusinessId] = useState<string | null>(params.business_id ?? null);
+  const [businessId, setBusinessId] = useState<string | null>(
+    params.business_id ?? null,
+  );
   const [profileId, setProfileId] = useState<string>(params.profile_id ?? '');
-  const [role, setRole] = useState<typeof ROLES[number]>('customer');
+  const [role, setRole] = useState<(typeof ROLES)[number]>('customer');
   const [loading, setLoading] = useState<boolean>(isEditing);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
@@ -29,11 +34,18 @@ export default function ManageMemberScreen() {
           const bId = await getBusinessIdForUser(session.user.id);
           setBusinessId(bId);
         }
-        if (isEditing && params.profile_id && (businessId || params.business_id)) {
+        if (
+          isEditing &&
+          params.profile_id &&
+          (businessId || params.business_id)
+        ) {
           setLoading(true);
-          const data = await getMember(params.profile_id, (businessId || params.business_id)!);
+          const data = await getMember(
+            params.profile_id,
+            (businessId || params.business_id)!,
+          );
           if (data) {
-            setRole(data.role_in_business as typeof ROLES[number]);
+            setRole(data.role_in_business as (typeof ROLES)[number]);
           }
         }
       } catch (e: any) {
@@ -55,7 +67,10 @@ export default function ManageMemberScreen() {
       }
       if (!isEditing) {
         if (!profileId || !/^\b[0-9a-fA-F-]{36}\b$/.test(profileId)) {
-          Alert.alert('Validation Error', 'Provide a valid UUID for profile_id');
+          Alert.alert(
+            'Validation Error',
+            'Provide a valid UUID for profile_id',
+          );
           return;
         }
       }
@@ -64,7 +79,11 @@ export default function ManageMemberScreen() {
         await updateMemberRole(params.profile_id!, businessId, role);
         Alert.alert('Success', 'Member updated');
       } else {
-        await addMember({ profile_id: profileId, business_id: businessId, role_in_business: role });
+        await addMember({
+          profile_id: profileId,
+          business_id: businessId,
+          role_in_business: role,
+        });
         Alert.alert('Success', 'Member added');
       }
       router.back();
@@ -77,39 +96,53 @@ export default function ManageMemberScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className='flex-1 items-center justify-center'>
         <Text>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white p-4">
-      <Stack.Screen options={{ title: isEditing ? 'Edit Member' : 'Add Member' }} />
+    <View className='flex-1 bg-white p-4'>
+      <Stack.Screen
+        options={{ title: isEditing ? 'Edit Member' : 'Add Member' }}
+      />
       <ScrollView>
         {!isEditing && (
-          <View className="mb-4">
-            <Text className="text-base font-medium mb-1">Profile ID (UUID)</Text>
+          <View className='mb-4'>
+            <Text className='mb-1 text-base font-medium'>
+              Profile ID (UUID)
+            </Text>
             <Input
-              autoCapitalize="none"
+              autoCapitalize='none'
               onChangeText={setProfileId}
-              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
               value={profileId}
             />
           </View>
         )}
 
-        <View className="mb-4">
-          <Text className="text-base font-medium mb-1">Role</Text>
-          <Picker selectedValue={role} onValueChange={(v) => setRole(v)}>
+        <View className='mb-4'>
+          <Text className='mb-1 text-base font-medium'>Role</Text>
+          <Picker
+            selectedValue={role}
+            onValueChange={(v) => setRole(v)}
+          >
             {ROLES.map((r) => (
-              <Picker.Item key={r} label={r} value={r} />
+              <Picker.Item
+                key={r}
+                label={r}
+                value={r}
+              />
             ))}
           </Picker>
         </View>
 
-        <Button isLoading={submitting} onPress={handleSubmit}>
-          <Text className="text-white text-lg font-semibold">
+        <Button
+          isLoading={submitting}
+          onPress={handleSubmit}
+        >
+          <Text className='text-lg font-semibold text-white'>
             {isEditing ? 'Save Changes' : 'Add Member'}
           </Text>
         </Button>
@@ -117,5 +150,3 @@ export default function ManageMemberScreen() {
     </View>
   );
 }
-
-

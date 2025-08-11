@@ -1,16 +1,18 @@
-import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient } from '../../testing/supabase.mock';
 import { createClient } from '@supabase/supabase-js';
+
+import type { MockSupabaseClient } from '../../testing/supabase.mock';
+
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 // Helper to create a thenable query builder that works with `await query`
 function createThenableQuery<T>(result: { data: T; error: any }) {
   const qb: any = {
-    select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
     or: jest.fn().mockReturnThis(),
-    range: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
+    range: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue(result),
     then: (onFulfilled: (v: typeof result) => any) =>
       Promise.resolve(result).then(onFulfilled),
@@ -36,7 +38,16 @@ describe('products API', () => {
     });
 
     it('filters by status when provided and queries products table', async () => {
-      const data = [{ id: 'p1', business_id: 'b1', name: 'X', price: 1, stock_quantity: 0, status: 'published' as const }];
+      const data = [
+        {
+          business_id: 'b1',
+          id: 'p1',
+          name: 'X',
+          price: 1,
+          status: 'published' as const,
+          stock_quantity: 0,
+        },
+      ];
       const qb = createThenableQuery({ data, error: null });
       (client.from as jest.Mock).mockImplementation((table: string) => {
         expect(table).toBe('products');
@@ -48,7 +59,12 @@ describe('products API', () => {
         jest.doMock('../supabase', () => ({ getSupabase: () => client }));
         ({ getProducts } = require('../products'));
       });
-      const result = await getProducts({ business_id: 'b1', status: 'published', page: 1, limit: 10 });
+      const result = await getProducts({
+        business_id: 'b1',
+        limit: 10,
+        page: 1,
+        status: 'published',
+      });
 
       // business_id filter applied
       expect(qb.eq).toHaveBeenCalledWith('business_id', 'b1');
@@ -62,7 +78,14 @@ describe('products API', () => {
 
   describe('getProductById', () => {
     it('returns the product on success', async () => {
-      const product = { id: 'p2', business_id: 'b1', name: 'P2', price: 2, stock_quantity: 5, status: 'published' as const };
+      const product = {
+        business_id: 'b1',
+        id: 'p2',
+        name: 'P2',
+        price: 2,
+        status: 'published' as const,
+        stock_quantity: 5,
+      };
       const qb = createThenableQuery({ data: product, error: null });
       (client.from as jest.Mock).mockReset();
       (client.from as jest.Mock).mockImplementation((table: string) => {
@@ -99,5 +122,3 @@ describe('products API', () => {
     });
   });
 });
-
-

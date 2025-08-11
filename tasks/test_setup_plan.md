@@ -1,11 +1,13 @@
 ## Test Setup Plan
 
 ### Overview
+
 - **Unit tests**: Logic in `packages/shared` (API adapters, helpers) with mocked Supabase/network.
 - **Integration tests**: End-to-end-in-app flows using MSW; optional separate job against local Supabase for smoke.
 - **Screen tests**: `@testing-library/react-native` for B2C screens (and later B2B) with `renderWithProviders` (AuthProvider, SafeArea, router mocks).
 
 ### Tooling
+
 - **Runner**: Jest + ts-jest/babel-jest (already in repo)
 - **UI**: `@testing-library/react-native`, `@testing-library/jest-native`
 - **Network**: MSW (mock PostgREST and RPC); or jest mocks for `@supabase/supabase-js`
@@ -13,6 +15,7 @@
 - **Optional live**: Supabase CLI for local backend smoke tests
 
 ### Structure
+
 - Test file locations
   - `packages/shared/**/__tests__/*.test.ts`
   - `apps/b2c/**/__tests__/*.test.tsx`
@@ -23,6 +26,7 @@
   - `apps/b2c/testing/supabase.mock.ts`
 
 ### Scripts
+
 - Root
   - `pnpm -w test` – run all tests
   - `pnpm -w test:coverage` – run with coverage
@@ -30,6 +34,7 @@
   - `pnpm -w test:shared` – filter shared
 
 ### Utilities
+
 ```tsx
 // apps/b2c/testing/renderWithProviders.tsx
 import React from 'react';
@@ -42,7 +47,7 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     <SafeAreaProvider>
       <AuthProvider>{ui}</AuthProvider>
     </SafeAreaProvider>,
-    options
+    options,
   );
 }
 ```
@@ -141,10 +146,9 @@ export function renderWithProviders(ui: React.ReactElement, options?: any) {
     - Why: Accelerates adoption and standardizes style.
 
 ### Notes
+
 - Command targets:
   - Root: `pnpm -w test`, `pnpm -w test:coverage`
   - B2C: `pnpm --filter @gouda/b2c test`
   - Shared: `pnpm --filter @gouda/shared test`
 - Open scope question: Start screen tests with B2C only and add B2B later, or include B2B now?
-
-

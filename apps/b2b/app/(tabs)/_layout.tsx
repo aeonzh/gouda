@@ -5,31 +5,49 @@ export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name='index'
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="home" />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              color={color}
+              name='home'
+            />
+          ),
           title: 'Dashboard',
         }}
       />
       <Tabs.Screen
-        name="products"
+        name='products'
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="list" />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              color={color}
+              name='list'
+            />
+          ),
           title: 'Products',
         }}
       />
       <Tabs.Screen
-        name="orders"
+        name='orders'
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon color={color} name="book" />,
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon
+              color={color}
+              name='book'
+            />
+          ),
           title: 'Orders',
         }}
       />
       <Tabs.Screen
-        name="inventory"
+        name='inventory'
         options={{
           tabBarIcon: ({ color }) => (
-            <TabBarIcon color={color} name="archive" />
+            <TabBarIcon
+              color={color}
+              name='archive'
+            />
           ),
           title: 'Inventory',
         }}

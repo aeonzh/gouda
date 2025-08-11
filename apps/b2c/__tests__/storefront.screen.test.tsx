@@ -11,19 +11,25 @@ describe('Storefront screen', () => {
   test('lists categories and published products for store', async () => {
     server.use(
       rest.get(`${API}/rest/v1/organisations`, (_req, res, ctx) =>
-        res(ctx.status(200), ctx.json([{ id: 'b1', name: 'Store' }]))
+        res(ctx.status(200), ctx.json([{ id: 'b1', name: 'Store' }])),
       ),
       rest.get(`${API}/rest/v1/categories`, (_req, res, ctx) =>
-        res(ctx.status(200), ctx.json([{ id: 'c1', name: 'Cat' }]))
+        res(ctx.status(200), ctx.json([{ id: 'c1', name: 'Cat' }])),
       ),
       rest.get(`${API}/rest/v1/products`, (_req, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json([
-            { id: 'p1', name: 'Published', status: 'published', price: 1, stock_quantity: 0 },
-          ])
-        )
-      )
+            {
+              id: 'p1',
+              name: 'Published',
+              status: 'published',
+              price: 1,
+              stock_quantity: 0,
+            },
+          ]),
+        ),
+      ),
     );
 
     renderWithProviders(<StorefrontPage />);
@@ -31,5 +37,3 @@ describe('Storefront screen', () => {
     await screen.findByText('Cat');
   });
 });
-
-

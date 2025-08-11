@@ -90,28 +90,39 @@ export default function ProductsScreen() {
   };
 
   const renderProductItem = ({ item }: { item: Product }) => (
-    <View className="flex-row items-center justify-between p-4 border-b border-gray-200 bg-white">
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-        <Text className="text-sm text-gray-600">
+    <View className='flex-row items-center justify-between border-b border-gray-200 bg-white p-4'>
+      <View className='flex-1'>
+        <Text className='text-lg font-semibold text-gray-800'>{item.name}</Text>
+        <Text className='text-sm text-gray-600'>
           ${item.price.toFixed(2)} | {getCategoryName(item.category_id)}
         </Text>
-        <Text className="text-xs text-gray-500 mt-1" numberOfLines={1}>
+        <Text
+          className='mt-1 text-xs text-gray-500'
+          numberOfLines={1}
+        >
           {item.description}
         </Text>
       </View>
-      <View className="flex-row space-x-3">
+      <View className='flex-row space-x-3'>
         <TouchableOpacity
-          className="p-2 rounded-full bg-blue-100"
+          className='rounded-full bg-blue-100 p-2'
           onPress={() => router.push(`/products/manage?id=${item.id}`)}
         >
-          <Feather color="#3B82F6" name="edit" size={20} />
+          <Feather
+            color='#3B82F6'
+            name='edit'
+            size={20}
+          />
         </TouchableOpacity>
         <TouchableOpacity
-          className="p-2 rounded-full bg-red-100"
+          className='rounded-full bg-red-100 p-2'
           onPress={() => handleDeleteProduct(item.id)}
         >
-          <Feather color="#EF4444" name="trash-2" size={20} />
+          <Feather
+            color='#EF4444'
+            name='trash-2'
+            size={20}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -119,35 +130,44 @@ export default function ProductsScreen() {
 
   if (loading && !refreshing) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator color="#6366F1" size="large" />
-        <Text className="mt-4 text-gray-700">Loading products...</Text>
+      <View className='flex-1 items-center justify-center bg-gray-50'>
+        <ActivityIndicator
+          color='#6366F1'
+          size='large'
+        />
+        <Text className='mt-4 text-gray-700'>Loading products...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      
+    <SafeAreaView className='flex-1 bg-gray-50'>
       {products.length === 0 && !loading ? (
-        <View className="flex-1 justify-center items-center p-4">
-          <Feather color="#9CA3AF" name="box" size={60} />
-          <Text className="text-xl text-gray-600 mt-4 font-semibold">
+        <View className='flex-1 items-center justify-center p-4'>
+          <Feather
+            color='#9CA3AF'
+            name='box'
+            size={60}
+          />
+          <Text className='mt-4 text-xl font-semibold text-gray-600'>
             No Products Found
           </Text>
-          <Text className="text-gray-500 text-center mt-2">
+          <Text className='mt-2 text-center text-gray-500'>
             It looks like there are no products yet. Tap the '+' button to add
             one!
           </Text>
         </View>
       ) : (
         <FlatList
-          className="flex-1"
+          className='flex-1'
           contentContainerStyle={{ paddingBottom: 20 }}
           data={products}
           keyExtractor={(item) => item.id}
           refreshControl={
-            <RefreshControl onRefresh={onRefresh} refreshing={refreshing} />
+            <RefreshControl
+              onRefresh={onRefresh}
+              refreshing={refreshing}
+            />
           }
           renderItem={renderProductItem}
         />

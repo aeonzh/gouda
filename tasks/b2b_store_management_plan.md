@@ -45,6 +45,6 @@ Checklist of features for the B2B app. Each item includes implementation and tes
   - Deps: 4
 
 Notes:
+
 - Follow lazy `getSupabase()` pattern.
 - Tests should mock `getSupabase()` with chainable/awaitable query builders.
-

@@ -14,11 +14,29 @@ describe('Home screen', () => {
         res(
           ctx.status(200),
           ctx.json([
-            { id: 'b1', name: 'Alpha', status: 'approved', address_line1: 'a', city: 'x', postal_code: '1', country: 'c', state: 's' },
-            { id: 'b2', name: 'Beta', status: 'approved', address_line1: 'b', city: 'y', postal_code: '2', country: 'c', state: 's' },
-          ])
-        )
-      )
+            {
+              id: 'b1',
+              name: 'Alpha',
+              status: 'approved',
+              address_line1: 'a',
+              city: 'x',
+              postal_code: '1',
+              country: 'c',
+              state: 's',
+            },
+            {
+              id: 'b2',
+              name: 'Beta',
+              status: 'approved',
+              address_line1: 'b',
+              city: 'y',
+              postal_code: '2',
+              country: 'c',
+              state: 's',
+            },
+          ]),
+        ),
+      ),
     );
 
     renderWithProviders(<HomeScreen />);
@@ -31,5 +49,3 @@ describe('Home screen', () => {
     await screen.findByText('Alpha');
   });
 });
-
-

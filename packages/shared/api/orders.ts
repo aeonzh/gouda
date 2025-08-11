@@ -243,7 +243,7 @@ export async function createOrderFromCart(
   console.log('=== DEBUG: Found cart items ===', cartItems);
 
   // Determine cart id (from join) for clearing later; fallback to separate fetch
-  let cartId: string | null = null;
+  let cartId: null | string = null;
   const first = cartItems[0] as any;
   if (first && first.carts && first.carts.id) {
     cartId = first.carts.id as string;
@@ -337,19 +337,18 @@ export async function createOrderFromCartAtomic(
   userId: string,
   businessId: string,
   idempotencyKey?: string,
-): Promise<Order | null> {
+): Promise<null | Order> {
   const { data, error } = await supabase.rpc('create_order_from_cart', {
-    user_id: userId,
     business_id: businessId,
     idempotency_key: idempotencyKey ?? null,
+    user_id: userId,
   });
 
   if (error) {
-    // eslint-disable-next-line no-console
     console.error('RPC create_order_from_cart failed:', error.message);
     throw error;
   }
-  return data as unknown as Order | null;
+  return data as unknown as null | Order;
 }
 
 /**

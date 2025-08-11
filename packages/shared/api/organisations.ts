@@ -65,15 +65,14 @@ export async function getAuthorizedBusinesses(
  */
 export async function resolveBusinessIdForUser(
   userId: string,
-  preferredBusinessId?: string | null,
-): Promise<string | null> {
+  preferredBusinessId?: null | string,
+): Promise<null | string> {
   const { data: memberships, error } = await supabase
     .from('members')
     .select('business_id')
     .eq('profile_id', userId);
 
   if (error) {
-    // eslint-disable-next-line no-console
     console.error('Error resolving business id for user:', error.message);
     throw error;
   }

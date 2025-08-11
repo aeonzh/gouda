@@ -31,10 +31,10 @@ export interface UseStorefrontArgs {
  * Encapsulates storefront data fetching, authorization checks, debounced search,
  * and category filtering.
  */
-export function useStorefront({ rawStoreId, userId }: UseStorefrontArgs): [
-  UseStorefrontState,
-  UseStorefrontActions,
-] {
+export function useStorefront({
+  rawStoreId,
+  userId,
+}: UseStorefrontArgs): [UseStorefrontState, UseStorefrontActions] {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
@@ -133,5 +133,3 @@ export function useStorefront({ rawStoreId, userId }: UseStorefrontArgs): [
     },
   ];
 }
-
-

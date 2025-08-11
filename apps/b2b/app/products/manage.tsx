@@ -3,7 +3,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Alert, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getBusinessIdForUser } from 'shared/api/profiles';
-import { createProduct, getCategories, getProductById, updateProduct, type Category, type Product } from 'shared/api/products';
+import {
+  createProduct,
+  getCategories,
+  getProductById,
+  updateProduct,
+  type Category,
+  type Product,
+} from 'shared/api/products';
 import { useAuth } from 'shared/components/AuthProvider';
 import { ProductForm } from './components/ProductForm';
 import { useProductForm, type ProductFormState } from './hooks/useProductForm';
@@ -18,7 +25,9 @@ export default function ManageProductScreen() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [initialProduct, setInitialProduct] = useState<Partial<Product> | null>(null);
+  const [initialProduct, setInitialProduct] = useState<Partial<Product> | null>(
+    null,
+  );
 
   useEffect(() => {
     const init = async () => {
@@ -39,7 +48,9 @@ export default function ManageProductScreen() {
 
         const [cats, product] = await Promise.all([
           getCategories({ business_id: bId }),
-          isEditing && typeof id === 'string' ? getProductById(id) : Promise.resolve(null),
+          isEditing && typeof id === 'string'
+            ? getProductById(id)
+            : Promise.resolve(null),
         ]);
         setCategories(cats || []);
         if (isEditing) {
@@ -50,7 +61,13 @@ export default function ManageProductScreen() {
           }
           setInitialProduct(product);
         } else {
-          setInitialProduct({ name: '', description: '', image_url: '', category_id: undefined, price: 0 });
+          setInitialProduct({
+            name: '',
+            description: '',
+            image_url: '',
+            category_id: undefined,
+            price: 0,
+          });
         }
       } catch (error: any) {
         Alert.alert('Error', error?.message || 'Failed to load data');
@@ -109,11 +126,11 @@ export default function ManageProductScreen() {
   });
 
   if (loading || !initialProduct) {
-    return <View className="flex-1 bg-gray-50" />;
+    return <View className='flex-1 bg-gray-50' />;
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className='flex-1 bg-gray-50'>
       <Stack.Screen
         options={{
           headerShown: true,

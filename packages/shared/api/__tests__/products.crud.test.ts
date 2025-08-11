@@ -1,18 +1,20 @@
-import type { MockSupabaseClient } from '../../testing/supabase.mock';
-import { createMockSupabaseClient } from '../../testing/supabase.mock';
 import { createClient } from '@supabase/supabase-js';
+
+import type { MockSupabaseClient } from '../../testing/supabase.mock';
+
+import { createMockSupabaseClient } from '../../testing/supabase.mock';
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }));
 
 function createThenable(result: { data: any; error: any }) {
   const qb: any = {
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
     delete: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue(result),
     then: (onFulfilled: (v: any) => any, onRejected?: (e: any) => any) =>
       Promise.resolve(result).then(onFulfilled, onRejected),
+    update: jest.fn().mockReturnThis(),
   };
   return qb;
 }
@@ -26,7 +28,14 @@ describe('products CRUD API', () => {
   });
 
   it('createProduct inserts and returns product', async () => {
-    const product = { id: 'p1', business_id: 'b1', name: 'X', price: 1, stock_quantity: 0, status: 'published' as const };
+    const product = {
+      business_id: 'b1',
+      id: 'p1',
+      name: 'X',
+      price: 1,
+      status: 'published' as const,
+      stock_quantity: 0,
+    };
     const qb = createThenable({ data: product, error: null });
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('products');
@@ -80,5 +89,3 @@ describe('products CRUD API', () => {
     expect(qb.eq).toHaveBeenCalledWith('id', 'p1');
   });
 });
-
-

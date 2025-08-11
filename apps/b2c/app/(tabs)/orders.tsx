@@ -40,18 +40,23 @@ export default function OrdersScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator color="#0000ff" size="large" />
-        <Text className="mt-2 text-gray-600">Loading orders...</Text>
+      <View className='flex-1 items-center justify-center bg-white'>
+        <ActivityIndicator
+          color='#0000ff'
+          size='large'
+        />
+        <Text className='mt-2 text-gray-600'>Loading orders...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center bg-white p-4">
-        <Text className="text-red-500 text-lg font-bold">Error loading orders:</Text>
-        <Text className="text-gray-700 text-center mt-2">
+      <View className='flex-1 items-center justify-center bg-white p-4'>
+        <Text className='text-lg font-bold text-red-500'>
+          Error loading orders:
+        </Text>
+        <Text className='mt-2 text-center text-gray-700'>
           {error.message || 'An unknown error occurred.'}
         </Text>
       </View>
@@ -60,9 +65,11 @@ export default function OrdersScreen() {
 
   if (!orders || orders.length === 0) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <Text className="text-xl font-bold text-gray-800">No orders found.</Text>
-        <Text className="text-gray-600 mt-2">
+      <View className='flex-1 items-center justify-center bg-white'>
+        <Text className='text-xl font-bold text-gray-800'>
+          No orders found.
+        </Text>
+        <Text className='mt-2 text-gray-600'>
           Start shopping to see your order history here!
         </Text>
       </View>
@@ -70,30 +77,41 @@ export default function OrdersScreen() {
   }
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className='flex-1 bg-gray-100'>
       <Stack.Screen options={{ title: 'Order History' }} />
       <FlatList
-        contentContainerClassName="p-4"
+        contentContainerClassName='p-4'
         data={orders}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => {
           const displayDate = item.order_date || item.created_at;
           return (
-            <Link asChild href={`/orders/${item.id}`}>
-              <TouchableOpacity className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200 active:bg-gray-50">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-lg font-bold text-gray-900">
+            <Link
+              asChild
+              href={`/orders/${item.id}`}
+            >
+              <TouchableOpacity className='mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-md active:bg-gray-50'>
+                <View className='mb-2 flex-row items-center justify-between'>
+                  <Text className='text-lg font-bold text-gray-900'>
                     Order #{item.id}
                   </Text>
-                  <Text className="text-sm text-gray-600">
-                    {displayDate ? new Date(displayDate).toLocaleDateString() : '—'}
+                  <Text className='text-sm text-gray-600'>
+                    {displayDate
+                      ? new Date(displayDate).toLocaleDateString()
+                      : '—'}
                   </Text>
                 </View>
-                <Text className="text-base text-gray-700 mb-1">
-                  Status: <Text className="font-semibold text-blue-600">{item.status}</Text>
+                <Text className='mb-1 text-base text-gray-700'>
+                  Status:{' '}
+                  <Text className='font-semibold text-blue-600'>
+                    {item.status}
+                  </Text>
                 </Text>
-                <Text className="text-base text-gray-700">
-                  Total: <Text className="font-bold text-green-700">${item.total_amount?.toFixed(2) || 'N/A'}</Text>
+                <Text className='text-base text-gray-700'>
+                  Total:{' '}
+                  <Text className='font-bold text-green-700'>
+                    ${item.total_amount?.toFixed(2) || 'N/A'}
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </Link>

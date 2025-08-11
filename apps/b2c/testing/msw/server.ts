@@ -17,5 +17,3 @@ try {
 }
 
 export { server };
-
-

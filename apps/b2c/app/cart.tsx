@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   createOrderFromCart,
+  createOrderFromCartAtomic,
   getCartItems,
   getOrCreateCart,
   removeCartItem as removeCartItemApi,
@@ -289,8 +290,12 @@ export default function CartScreen() {
     setPlacingOrder(true);
     try {
       if (__DEV__) console.log('=== DEBUG: Creating order from cart ===');
-      // Use the shared API to create order from cart
-      const order = await createOrderFromCart(user.id, businessId);
+      // Feature flag to use RPC-based atomic order creation
+      const useRpc = true;
+      const idempotencyKey = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      const order = useRpc
+        ? await createOrderFromCartAtomic(user.id, businessId, idempotencyKey)
+        : await createOrderFromCart(user.id, businessId);
       if (!order) {
         if (__DEV__)
           console.log('=== DEBUG: Failed to create order - order is null ===');

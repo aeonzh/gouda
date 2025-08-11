@@ -183,7 +183,7 @@ Status:
 
 ---
 
-### 5. Order creation and history
+### 5. Order creation and history (Completed)
 
 Objective:
 
@@ -218,6 +218,13 @@ Acceptance criteria:
 Deliverables:
 
 - RPC SQL/function, API updates, tests.
+
+Status:
+
+- Shared API includes `createOrderFromCartAtomic(userId, businessId, idempotencyKey?)` calling `rpc('create_order_from_cart', ...)`.
+- B2C `cart.tsx` uses RPC behind a feature flag with an idempotency key.
+- Test infra mocks `supabase.rpc` and MSW adds handler for `/rest/v1/rpc/create_order_from_cart`.
+- Integration test updated to assert RPC usage; suites pass locally.
 
 ---
 

@@ -224,13 +224,10 @@ export async function createOrderFromCart(
 
   // Intentionally query cart_items first (with a join) so that the first table
   // accessed is `cart_items` to align with test expectations.
-  const {
-    data: cartItems,
-    error: cartItemsError,
-  } = await supabase
+  const { data: cartItems, error: cartItemsError } = await supabase
     .from('cart_items')
     .select(
-      'product_id, quantity, price_at_time_of_add, carts!inner(id,user_id,business_id)'
+      'product_id, quantity, price_at_time_of_add, carts!inner(id,user_id,business_id)',
     )
     // Filter via joined carts by user and business
     .eq('carts.user_id', userId)
@@ -332,6 +329,30 @@ export async function createOrderFromCart(
 }
 
 /**
+ * Atomic order creation via database RPC. Expects the DB function to perform
+ * all operations (insert order and items, clear cart) within a transaction.
+ * Throws on any error; does not perform any client-side fallbacks.
+ */
+export async function createOrderFromCartAtomic(
+  userId: string,
+  businessId: string,
+  idempotencyKey?: string,
+): Promise<Order | null> {
+  const { data, error } = await supabase.rpc('create_order_from_cart', {
+    user_id: userId,
+    business_id: businessId,
+    idempotency_key: idempotencyKey ?? null,
+  });
+
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('RPC create_order_from_cart failed:', error.message);
+    throw error;
+  }
+  return data as unknown as Order | null;
+}
+
+/**
  * Fetches all items in a specific cart, optionally with product details.
  * @param {string} cartId - The ID of the cart.
  * @returns {Promise<CartItem[] | null>} A promise that resolves to an array of cart items or null on error.
@@ -356,8 +377,12 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
   return data.map((item: RawCartItemFromSupabase) => ({
     ...item,
     product: Array.isArray(item.product)
-      ? (item.product.length > 0 ? (item.product[0] as Product) : undefined)
-      : (item.product === null ? undefined : (item.product as Product | undefined)),
+      ? item.product.length > 0
+        ? (item.product[0] as Product)
+        : undefined
+      : item.product === null
+        ? undefined
+        : (item.product as Product | undefined),
   })) as CartItem[];
 }
 

@@ -57,26 +57,16 @@ describe('Order creation flow', () => {
       rest.get(`${API}/rest/v1/cart_items`, (_req, res, ctx) =>
         res(ctx.status(200), ctx.json(cartItems)),
       ),
-      // orders insert
-      rest.post(`${API}/rest/v1/orders`, async (req, res, ctx) => {
+      // RPC path (atomic)
+      rest.post(`${API}/rest/v1/rpc/create_order_from_cart`, async (req, res, ctx) => {
         const body: any = await req.json();
-        // total = 2*5 = 10
-        expect(body[0].total_amount).toBe(10);
+        expect(body.user_id).toBe(userId);
+        expect(body.business_id).toBe(businessId);
         return res(
-          ctx.status(201),
-          ctx.json([{ id: 'o1', user_id: userId, business_id: businessId }]),
+          ctx.status(200),
+          ctx.json({ id: 'o1', user_id: userId, business_id: businessId, total_amount: 10 }),
         );
       }),
-      // order_items insert
-      rest.post(`${API}/rest/v1/order_items`, async (req, res, ctx) => {
-        const body: any = await req.json();
-        expect(body[0].price_at_time_of_order).toBe(5);
-        return res(ctx.status(201), ctx.json([]));
-      }),
-      // cart_items clear
-      rest.delete(`${API}/rest/v1/cart_items`, (_req, res, ctx) =>
-        res(ctx.status(204)),
-      ),
     );
 
     renderWithProviders(<CartScreen />);

@@ -50,21 +50,27 @@ export const handlers = [
   // update quantity
   http.patch(`${API}/rest/v1/cart_items`, () => HttpResponse.json([])),
   // remove item
-  http.delete(`${API}/rest/v1/cart_items`, () => new HttpResponse(null, { status: 204 })),
+  http.delete(
+    `${API}/rest/v1/cart_items`,
+    () => new HttpResponse(null, { status: 204 }),
+  ),
   // orders default
   http.get(`${API}/rest/v1/orders`, () => HttpResponse.json([])),
   // RPC: create_order_from_cart
-  http.post(`${API}/rest/v1/rpc/create_order_from_cart`, async ({ request }) => {
-    const body: any = await request.json();
-    return HttpResponse.json({
-      id: 'o_rpc',
-      user_id: body.user_id,
-      business_id: body.business_id,
-      total_amount: 0,
-      status: 'pending',
-      created_at: new Date().toISOString(),
-    });
-  }),
+  http.post(
+    `${API}/rest/v1/rpc/create_order_from_cart`,
+    async ({ request }) => {
+      const body: any = await request.json();
+      return HttpResponse.json({
+        id: 'o_rpc',
+        user_id: body.user_id,
+        business_id: body.business_id,
+        total_amount: 0,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      });
+    },
+  ),
   // health
   http.get(`${API}/health`, () => HttpResponse.json({ ok: true })),
 ];

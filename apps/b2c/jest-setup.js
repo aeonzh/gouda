@@ -149,6 +149,21 @@ jest.mock('packages/shared/api/supabase', () => {
   const supabase = {
     auth: mockAuth,
     from: (table) => makeBuilder(table),
+    rpc: (fn, params) => {
+      if (fn === 'create_order_from_cart') {
+        const order = {
+          id: 'o_rpc_1',
+          user_id: params.user_id,
+          business_id: params.business_id,
+          total_amount: 10,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        return Promise.resolve({ data: order, error: null });
+      }
+      return Promise.resolve({ data: null, error: null });
+    },
   };
 
   return {

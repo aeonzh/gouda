@@ -292,7 +292,9 @@ export default function CartScreen() {
       if (__DEV__) console.log('=== DEBUG: Creating order from cart ===');
       // Feature flag to use RPC-based atomic order creation
       const useRpc = true;
-      const idempotencyKey = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      const idempotencyKey = crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`;
       const order = useRpc
         ? await createOrderFromCartAtomic(user.id, businessId, idempotencyKey)
         : await createOrderFromCart(user.id, businessId);

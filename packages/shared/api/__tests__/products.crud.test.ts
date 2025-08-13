@@ -28,15 +28,22 @@ describe('products CRUD API', () => {
   });
 
   it('createProduct inserts and returns product', async () => {
-    const product = {
-      business_id: 'b1',
-      id: 'p1',
+    const productInsert = {
+      business_id: '123e4567-e89b-12d3-a456-426614174000',
       name: 'X',
       price: 1,
       status: 'published' as const,
       stock_quantity: 0,
     };
-    const qb = createThenable({ data: product, error: null });
+    const productResult = {
+      ...productInsert,
+      category_id: '123e4567-e89b-12d3-a456-426614174001',
+      created_at: '2023-01-01T00:00:00Z',
+      deleted_at: null,
+      id: '123e4567-e89b-12d3-a456-426614174002',
+      updated_at: '2023-01-01T00:00:00Z',
+    };
+    const qb = createThenable({ data: productResult, error: null });
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('products');
       return qb;
@@ -46,15 +53,27 @@ describe('products CRUD API', () => {
       jest.doMock('../supabase', () => ({ getSupabase: () => client }));
       ({ createProduct } = require('../products'));
     });
-    const res = await createProduct(product);
-    expect(qb.insert).toHaveBeenCalledWith([product]);
+    const res = await createProduct(productInsert);
+    expect(qb.insert).toHaveBeenCalledWith([productInsert]);
     expect(qb.select).toHaveBeenCalled();
     expect(qb.single).toHaveBeenCalled();
-    expect(res).toEqual(product);
+    expect(res).toEqual(productResult);
   });
 
   it('updateProduct updates and returns product', async () => {
-    const updated = { id: 'p1', name: 'Y' };
+    const productUpdate = { name: 'Y' };
+    const updated = {
+      business_id: '123e4567-e89b-12d3-a456-426614174000',
+      category_id: '123e4567-e89b-12d3-a456-426614174001',
+      created_at: '2023-01-01T00:00:00Z',
+      deleted_at: null,
+      id: '123e4567-e89b-12d3-a456-426614174002',
+      name: 'Y',
+      price: 10,
+      status: 'published' as const,
+      stock_quantity: 5,
+      updated_at: '2023-01-02T00:00:00Z',
+    };
     const qb = createThenable({ data: updated, error: null });
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('products');
@@ -65,8 +84,8 @@ describe('products CRUD API', () => {
       jest.doMock('../supabase', () => ({ getSupabase: () => client }));
       ({ updateProduct } = require('../products'));
     });
-    const res = await updateProduct('p1', { name: 'Y' });
-    expect(qb.update).toHaveBeenCalledWith({ name: 'Y' });
+    const res = await updateProduct('123e4567-e89b-12d3-a456-426614174002', productUpdate);
+    expect(qb.update).toHaveBeenCalledWith(productUpdate);
     expect(qb.eq).toHaveBeenCalledWith('id', 'p1');
     expect(qb.select).toHaveBeenCalled();
     expect(qb.single).toHaveBeenCalled();
@@ -84,8 +103,8 @@ describe('products CRUD API', () => {
       jest.doMock('../supabase', () => ({ getSupabase: () => client }));
       ({ deleteProduct } = require('../products'));
     });
-    await deleteProduct('p1');
+    await deleteProduct('123e4567-e89b-12d3-a456-426614174002');
     expect(qb.delete).toHaveBeenCalled();
-    expect(qb.eq).toHaveBeenCalledWith('id', 'p1');
+    expect(qb.eq).toHaveBeenCalledWith('id', '123e4567-e89b-12d3-a456-426614174002');
   });
 });

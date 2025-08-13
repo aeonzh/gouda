@@ -33,31 +33,31 @@ describe('orders API', () => {
     jest.isolateModules(() => {
       const raw = [
         {
-          cart_id: 'c1',
+          cart_id: '123e4567-e89b-12d3-a456-426614174000',
           created_at: '',
-          id: 'ci1',
+          id: '123e4567-e89b-12d3-a456-426614174001',
           price_at_time_of_add: 5,
           product: [
             {
-              business_id: 'b',
-              id: 'p1',
+              business_id: '123e4567-e89b-12d3-a456-426614174005',
+              id: '123e4567-e89b-12d3-a456-426614174003',
               name: 'A',
               price: 5,
               status: 'published',
               stock_quantity: 0,
             },
           ],
-          product_id: 'p1',
+          product_id: '123e4567-e89b-12d3-a456-426614174003',
           quantity: 1,
           updated_at: '',
         },
         {
-          cart_id: 'c1',
+          cart_id: '123e4567-e89b-12d3-a456-426614174000',
           created_at: '',
-          id: 'ci2',
+          id: '123e4567-e89b-12d3-a456-426614174002',
           price_at_time_of_add: 10,
           product: null,
-          product_id: 'p2',
+          product_id: '123e4567-e89b-12d3-a456-426614174004',
           quantity: 2,
           updated_at: '',
         },
@@ -72,8 +72,8 @@ describe('orders API', () => {
         supabase: client,
       }));
       const { getCartItems } = require('../orders');
-      return getCartItems('c1').then((items: any[]) => {
-        expect(items?.[0].product?.id).toBe('p1');
+      return getCartItems('123e4567-e89b-12d3-a456-426614174000').then((items: any[]) => {
+        expect(items?.[0].product?.id).toBe('123e4567-e89b-12d3-a456-426614174003');
         expect(items?.[1].product).toBeUndefined();
       });
     });
@@ -81,17 +81,17 @@ describe('orders API', () => {
 
   it('createOrderFromCart uses price_at_time_of_order and clears cart', async () => {
     jest.isolateModules(() => {
-      const cart = { business_id: 'b1', id: 'c1', user_id: 'u1' } as any;
+      const cart = { business_id: '123e4567-e89b-12d3-a456-426614174006', id: '123e4567-e89b-12d3-a456-426614174000', user_id: '123e4567-e89b-12d3-a456-426614174007' } as any;
       const cartItems = [
-        { carts: cart, price_at_time_of_add: 5, product_id: 'p1', quantity: 2 },
+        { carts: cart, price_at_time_of_add: 5, product_id: '123e4567-e89b-12d3-a456-426614174003', quantity: 2 },
         {
           carts: cart,
           price_at_time_of_add: 10,
-          product_id: 'p2',
+          product_id: '123e4567-e89b-12d3-a456-426614174004',
           quantity: 1,
         },
       ] as any;
-      const newOrder = { id: 'o1' } as any;
+      const newOrder = { id: '123e4567-e89b-12d3-a456-426614174008' } as any;
 
       (client.from as jest.Mock).mockImplementation((table: string) => {
         switch (table) {
@@ -116,7 +116,7 @@ describe('orders API', () => {
         supabase: client,
       }));
       const { createOrderFromCart } = require('../orders');
-      return createOrderFromCart('u1', 'b1').then((result: any) => {
+      return createOrderFromCart('123e4567-e89b-12d3-a456-426614174007', '123e4567-e89b-12d3-a456-426614174006').then((result: any) => {
         expect(result).toEqual(newOrder);
       });
     });
@@ -124,7 +124,7 @@ describe('orders API', () => {
 
   it('createOrderFromCartAtomic calls RPC and returns order', async () => {
     jest.isolateModules(() => {
-      const newOrder = { id: 'o2' } as any;
+      const newOrder = { id: '123e4567-e89b-12d3-a456-426614174009' } as any;
       (client.rpc as jest.Mock).mockResolvedValue({
         data: newOrder,
         error: null,
@@ -134,10 +134,10 @@ describe('orders API', () => {
         supabase: client,
       }));
       const { createOrderFromCartAtomic } = require('../orders');
-      return createOrderFromCartAtomic('u1', 'b1').then((result: any) => {
+      return createOrderFromCartAtomic('123e4567-e89b-12d3-a456-426614174007', '123e4567-e89b-12d3-a456-426614174006').then((result: any) => {
         expect(client.rpc).toHaveBeenCalledWith('create_order_from_cart', {
-          business_id: 'b1',
-          user_id: 'u1',
+          business_id: '123e4567-e89b-12d3-a456-426614174006',
+          user_id: '123e4567-e89b-12d3-a456-426614174007',
         });
         expect(result).toEqual(newOrder);
       });
@@ -155,7 +155,7 @@ describe('orders API', () => {
         supabase: client,
       }));
       const { createOrderFromCartAtomic } = require('../orders');
-      await expect(createOrderFromCartAtomic('u1', 'b1')).rejects.toBeTruthy();
+      await expect(createOrderFromCartAtomic('123e4567-e89b-12d3-a456-426614174007', '123e4567-e89b-12d3-a456-426614174006')).rejects.toBeTruthy();
     });
   });
 });

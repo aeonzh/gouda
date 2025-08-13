@@ -24,10 +24,10 @@ describe('organisations API', () => {
   });
 
   it('getAuthorizedBusinesses filters by user membership and approved status', async () => {
-    const memberRows = [{ business_id: 'b1' }, { business_id: 'b2' }];
+    const memberRows = [{ business_id: '123e4567-e89b-12d3-a456-426614174000' }, { business_id: '123e4567-e89b-12d3-a456-426614174001' }];
     const orgRows = [
-      { id: 'b1', name: 'A', status: 'approved' },
-      { id: 'b2', name: 'B', status: 'approved' },
+      { id: '123e4567-e89b-12d3-a456-426614174000', name: 'A', status: 'approved' },
+      { id: '123e4567-e89b-12d3-a456-426614174001', name: 'B', status: 'approved' },
     ];
 
     (client.from as jest.Mock).mockImplementation((table: string) => {
@@ -41,7 +41,7 @@ describe('organisations API', () => {
     });
 
     const { getAuthorizedBusinesses } = require('../organisations');
-    const result = await getAuthorizedBusinesses('u1');
+    const result = await getAuthorizedBusinesses('123e4567-e89b-12d3-a456-426614174002');
     expect(result).toHaveLength(2);
   });
 
@@ -49,7 +49,7 @@ describe('organisations API', () => {
     (client.from as jest.Mock).mockImplementation((table: string) => {
       if (table === 'members') {
         return createThenable({
-          data: [{ business_id: 'b1' }, { business_id: 'b2' }] as any,
+          data: [{ business_id: '123e4567-e89b-12d3-a456-426614174000' }, { business_id: '123e4567-e89b-12d3-a456-426614174001' }] as any,
           error: null,
         });
       }
@@ -62,7 +62,7 @@ describe('organisations API', () => {
         supabase: client,
       }));
       const { resolveBusinessIdForUser } = require('../organisations');
-      const result = await resolveBusinessIdForUser('u1', 'b2');
+      const result = await resolveBusinessIdForUser('123e4567-e89b-12d3-a456-426614174002', 'b2');
       expect(result).toBe('b2');
     });
   });
@@ -71,7 +71,7 @@ describe('organisations API', () => {
     (client.from as jest.Mock).mockImplementation((table: string) => {
       if (table === 'members') {
         return createThenable({
-          data: [{ business_id: 'b1' }, { business_id: 'b2' }] as any,
+          data: [{ business_id: '123e4567-e89b-12d3-a456-426614174000' }, { business_id: '123e4567-e89b-12d3-a456-426614174001' }] as any,
           error: null,
         });
       }
@@ -84,7 +84,7 @@ describe('organisations API', () => {
         supabase: client,
       }));
       const { resolveBusinessIdForUser } = require('../organisations');
-      const result = await resolveBusinessIdForUser('u1', 'bX');
+      const result = await resolveBusinessIdForUser('123e4567-e89b-12d3-a456-426614174002', 'bX');
       expect(result).toBe('b1');
     });
   });
@@ -103,7 +103,7 @@ describe('organisations API', () => {
         supabase: client,
       }));
       const { resolveBusinessIdForUser } = require('../organisations');
-      const result = await resolveBusinessIdForUser('u1', 'b2');
+      const result = await resolveBusinessIdForUser('123e4567-e89b-12d3-a456-426614174002', 'b2');
       expect(result).toBeNull();
     });
   });

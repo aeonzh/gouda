@@ -40,8 +40,8 @@ describe('products API', () => {
     it('filters by status when provided and queries products table', async () => {
       const data = [
         {
-          business_id: 'b1',
-          id: 'p1',
+          business_id: '123e4567-e89b-12d3-a456-426614174000',
+          id: '123e4567-e89b-12d3-a456-426614174001',
           name: 'X',
           price: 1,
           status: 'published' as const,
@@ -60,14 +60,14 @@ describe('products API', () => {
         ({ getProducts } = require('../products'));
       });
       const result = await getProducts({
-        business_id: 'b1',
+        business_id: '123e4567-e89b-12d3-a456-426614174000',
         limit: 10,
         page: 1,
         status: 'published',
       });
 
       // business_id filter applied
-      expect(qb.eq).toHaveBeenCalledWith('business_id', 'b1');
+      expect(qb.eq).toHaveBeenCalledWith('business_id', '123e4567-e89b-12d3-a456-426614174000');
       // status filter applied
       expect(qb.eq).toHaveBeenCalledWith('status', 'published');
       // pagination applied
@@ -79,8 +79,8 @@ describe('products API', () => {
   describe('getProductById', () => {
     it('returns the product on success', async () => {
       const product = {
-        business_id: 'b1',
-        id: 'p2',
+        business_id: '123e4567-e89b-12d3-a456-426614174000',
+        id: '123e4567-e89b-12d3-a456-426614174002',
         name: 'P2',
         price: 2,
         status: 'published' as const,
@@ -98,8 +98,8 @@ describe('products API', () => {
         jest.doMock('../supabase', () => ({ getSupabase: () => client }));
         ({ getProductById } = require('../products'));
       });
-      const result = await getProductById('p2');
-      expect(qb.eq).toHaveBeenCalledWith('id', 'p2');
+      const result = await getProductById('123e4567-e89b-12d3-a456-426614174002');
+      expect(qb.eq).toHaveBeenCalledWith('id', '123e4567-e89b-12d3-a456-426614174002');
       expect(qb.single).toHaveBeenCalled();
       expect(result).toEqual(product);
     });

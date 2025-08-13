@@ -1,5 +1,5 @@
 import { Profile } from './profiles';
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
 /**
  * Adds a new customer account. (Admin only)
@@ -9,7 +9,7 @@ import { supabase } from './supabase';
 export async function createCustomer(
   customerData: Omit<Profile, 'created_at' | 'id' | 'updated_at'>,
 ): Promise<null | Profile> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('profiles')
     .insert([{ ...customerData, role: 'customer' }]) // Ensure role is 'customer'
     .select()
@@ -27,7 +27,7 @@ export async function createCustomer(
  * @returns {Promise<Profile[] | null>} A promise that resolves to an array of customer profiles or null on error.
  */
 export async function getAllCustomers(): Promise<null | Profile[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('profiles')
     .select('*')
     .eq('role', 'customer');
@@ -47,7 +47,7 @@ export async function getAllCustomers(): Promise<null | Profile[]> {
 export async function getcustomerById(
   customerId: string,
 ): Promise<null | Profile> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('profiles')
     .select('*')
     .eq('id', customerId)
@@ -70,7 +70,7 @@ export async function updateCustomer(
   customerId: string,
   customerData: Partial<Omit<Profile, 'created_at' | 'id' | 'updated_at'>>,
 ): Promise<null | Profile> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('profiles')
     .update(customerData)
     .eq('id', customerId)

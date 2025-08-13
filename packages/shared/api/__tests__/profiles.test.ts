@@ -25,7 +25,7 @@ describe('profiles API', () => {
   });
 
   it('getBusinessIdForUser returns first membership when multiple exist', async () => {
-    const memberships = [{ business_id: 'b1' }, { business_id: 'b2' }];
+    const memberships = [{ business_id: '123e4567-e89b-12d3-a456-426614174000' }, { business_id: '123e4567-e89b-12d3-a456-426614174001' }];
     (client.from as jest.Mock).mockImplementation((table: string) => {
       expect(table).toBe('members');
       const qb = createThenable({ data: memberships as any, error: null });
@@ -35,7 +35,7 @@ describe('profiles API', () => {
     });
 
     const { getBusinessIdForUser } = require('../profiles');
-    const result = await getBusinessIdForUser('u1');
-    expect(result).toBe('b1');
+    const result = await getBusinessIdForUser('123e4567-e89b-12d3-a456-426614174002');
+    expect(result).toBe('123e4567-e89b-12d3-a456-426614174000');
   });
 });

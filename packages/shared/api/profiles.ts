@@ -1,14 +1,34 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}
+
+// DB entity types (as stored in database)
 export interface Profile {
   id: string;
   full_name?: string;
   username: string;
   avatar_url?: string;
   role: 'admin' | 'customer' | 'sales_agent';
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
+
+// Insert types (for creating new records)
+export type ProfileInsert = Omit<
+  Profile,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+
+// Update types (for updating existing records)
+export type ProfileUpdate = Partial<
+  Omit<Profile, 'created_at' | 'deleted_at' | 'id' | 'updated_at'>
+>;
 
 /**
  * Fetches a user's profile by their ID.
@@ -16,7 +36,12 @@ export interface Profile {
  * @returns {Promise<Profile | null>} A promise that resolves to the profile object or null if not found/error.
  */
 export async function getProfile(userId: string): Promise<null | Profile> {
-  const { data, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  const { data, error } = await getSupabase()
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -32,14 +57,19 @@ export async function getProfile(userId: string): Promise<null | Profile> {
 /**
  * Updates a user's profile.
  * @param {string} userId - The ID of the user.
- * @param {Partial<Profile>} profileData - The partial profile data to update.
+ * @param {ProfileUpdate} profileData - The profile data to update.
  * @returns {Promise<Profile | null>} A promise that resolves to the updated profile or null on error.
  */
 export async function updateProfile(
   userId: string,
-  profileData: Partial<Profile>,
+  profileData: ProfileUpdate,
 ): Promise<null | Profile> {
-  const { data, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  const { data, error } = await getSupabase()
     .from('profiles')
     .update(profileData)
     .eq('id', userId)
@@ -61,7 +91,12 @@ export async function updateProfile(
 export async function getBusinessIdForUser(
   userId: string,
 ): Promise<null | string> {
-  const { data, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  const { data, error } = await getSupabase()
     .from('members')
     .select('business_id')
     .eq('profile_id', userId)

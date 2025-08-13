@@ -1,12 +1,21 @@
 import { Product } from './products';
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}
+
+// DB entity types (as stored in database)
 export interface Cart {
   business_id: string;
   id: string;
   user_id: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
 export interface CartItem {
@@ -16,34 +25,89 @@ export interface CartItem {
   price_at_time_of_add: number;
   product?: Product; // Optional: to include product details when fetching cart
   quantity: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
-// Intermediate interface to match the structure returned by Supabase query
 export interface Order {
+  business_id?: string;
   id: string;
   user_id: string;
-  order_date: string;
+  order_date?: string;
   order_items?: OrderItem[]; // Optional: to include order item details when fetching order
   sales_agent_id?: string;
   status: 'cancelled' | 'pending' | 'processing';
   total_amount: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
 export interface OrderItem {
   id: string;
   order_id: string;
   product_id: string;
-  price_at_order: number;
+  price_at_order?: number; // UI field for compatibility
+  price_at_time_of_order: number;
   product?: Product; // Optional: to include product details when fetching order
   quantity: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
+// Insert types (for creating new records)
+export type CartInsert = Omit<
+  Cart,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+export type CartItemInsert = Omit<
+  CartItem,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+export type OrderInsert = Omit<
+  Order,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+export type OrderItemInsert = Omit<
+  OrderItem,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+
+// Update types (for updating existing records)
+export type CartItemUpdate = Partial<
+  Omit<
+    CartItem,
+    | 'cart_id'
+    | 'created_at'
+    | 'deleted_at'
+    | 'id'
+    | 'price_at_time_of_add'
+    | 'product_id'
+    | 'updated_at'
+  >
+>;
+export type CartUpdate = Partial<
+  Omit<Cart, 'created_at' | 'deleted_at' | 'id' | 'updated_at'>
+>;
+export type OrderItemUpdate = Partial<
+  Omit<
+    OrderItem,
+    | 'created_at'
+    | 'deleted_at'
+    | 'id'
+    | 'order_id'
+    | 'price_at_time_of_order'
+    | 'product_id'
+    | 'updated_at'
+  >
+>;
+export type OrderUpdate = Partial<
+  Omit<Order, 'created_at' | 'deleted_at' | 'id' | 'updated_at' | 'user_id'>
+>;
+
+// Intermediate interface to match the structure returned by Supabase query
 interface RawCartItemFromSupabase {
   cart_id: string;
   id: string;
@@ -69,6 +133,14 @@ export async function addOrUpdateCartItem(
   quantity: number,
   priceAtAddition: number,
 ): Promise<CartItem | null> {
+  // Validate UUIDs
+  if (!isValidUUID(cartId)) {
+    throw new Error('Invalid cart ID format');
+  }
+  if (!isValidUUID(productId)) {
+    throw new Error('Invalid product ID format');
+  }
+
   console.log('=== DEBUG: addOrUpdateCartItem called ===', {
     cartId,
     priceAtAddition,
@@ -76,7 +148,7 @@ export async function addOrUpdateCartItem(
     quantity,
   });
 
-  const { data: existingItem, error: fetchError } = await supabase
+  const { data: existingItem, error: fetchError } = await getSupabase()
     .from('cart_items')
     .select('*')
     .eq('cart_id', cartId)
@@ -103,7 +175,7 @@ export async function addOrUpdateCartItem(
     });
     // Update quantity if item exists
     const newQuantity = existingItem.quantity + quantity;
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('cart_items')
       .update({ quantity: newQuantity, updated_at: new Date().toISOString() })
       .eq('id', existingItem.id)
@@ -124,7 +196,7 @@ export async function addOrUpdateCartItem(
       quantity,
     });
     // Add new item if it doesn't exist
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from('cart_items')
       .insert([
         {
@@ -158,8 +230,23 @@ export async function createOrderForCustomer(
   salesAgentId: string,
   items: { priceAtOrder: number; productId: string; quantity: number }[],
 ): Promise<null | Order> {
+  // Validate UUIDs
+  if (!isValidUUID(customerId)) {
+    throw new Error('Invalid customer ID format');
+  }
+  if (!isValidUUID(salesAgentId)) {
+    throw new Error('Invalid sales agent ID format');
+  }
+
   if (!items || items.length === 0) {
     throw new Error('Order must contain at least one item.');
+  }
+
+  // Validate product IDs in items
+  for (const item of items) {
+    if (!isValidUUID(item.productId)) {
+      throw new Error(`Invalid product ID format: ${item.productId}`);
+    }
   }
 
   const totalAmount = items.reduce(
@@ -167,7 +254,7 @@ export async function createOrderForCustomer(
     0,
   );
 
-  const { data: newOrder, error: orderError } = await supabase
+  const { data: newOrder, error: orderError } = await getSupabase()
     .from('orders')
     .insert([
       {
@@ -192,7 +279,7 @@ export async function createOrderForCustomer(
     quantity: item.quantity,
   }));
 
-  const { error: orderItemsError } = await supabase
+  const { error: orderItemsError } = await getSupabase()
     .from('order_items')
     .insert(orderItemsToInsert);
 
@@ -217,6 +304,14 @@ export async function createOrderFromCart(
   userId: string,
   businessId: string,
 ): Promise<null | Order> {
+  // Validate UUIDs
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+  if (!isValidUUID(businessId)) {
+    throw new Error('Invalid business ID format');
+  }
+
   console.log('=== DEBUG: createOrderFromCart called ===', {
     businessId,
     userId,
@@ -224,7 +319,7 @@ export async function createOrderFromCart(
 
   // Intentionally query cart_items first (with a join) so that the first table
   // accessed is `cart_items` to align with test expectations.
-  const { data: cartItems, error: cartItemsError } = await supabase
+  const { data: cartItems, error: cartItemsError } = await getSupabase()
     .from('cart_items')
     .select(
       'product_id, quantity, price_at_time_of_add, carts!inner(id,user_id,business_id)',
@@ -249,7 +344,7 @@ export async function createOrderFromCart(
     cartId = first.carts.id as string;
   }
   if (!cartId) {
-    const { data: cart, error: cartError } = await supabase
+    const { data: cart, error: cartError } = await getSupabase()
       .from('carts')
       .select('id')
       .eq('user_id', userId)
@@ -272,7 +367,7 @@ export async function createOrderFromCart(
   );
   console.log('=== DEBUG: Calculated total amount ===', totalAmount);
 
-  const { data: newOrder, error: orderError } = await supabase
+  const { data: newOrder, error: orderError } = await getSupabase()
     .from('orders')
     .insert([
       {
@@ -298,7 +393,7 @@ export async function createOrderFromCart(
     quantity: item.quantity,
   }));
 
-  const { error: orderItemsError } = await supabase
+  const { error: orderItemsError } = await getSupabase()
     .from('order_items')
     .insert(orderItemsToInsert);
 
@@ -310,7 +405,7 @@ export async function createOrderFromCart(
   console.log('=== DEBUG: Successfully created order items ===');
 
   // Clear the cart after order creation
-  const { error: clearCartError } = await supabase
+  const { error: clearCartError } = await getSupabase()
     .from('cart_items')
     .delete()
     .eq('cart_id', cartId);
@@ -338,7 +433,15 @@ export async function createOrderFromCartAtomic(
   businessId: string,
   idempotencyKey?: string,
 ): Promise<null | Order> {
-  const { data, error } = await supabase.rpc('create_order_from_cart', {
+  // Validate UUIDs
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+  if (!isValidUUID(businessId)) {
+    throw new Error('Invalid business ID format');
+  }
+
+  const { data, error } = await getSupabase().rpc('create_order_from_cart', {
     business_id: businessId,
     idempotency_key: idempotencyKey ?? null,
     user_id: userId,
@@ -357,9 +460,14 @@ export async function createOrderFromCartAtomic(
  * @returns {Promise<CartItem[] | null>} A promise that resolves to an array of cart items or null on error.
  */
 export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
+  // Validate UUID
+  if (!isValidUUID(cartId)) {
+    throw new Error('Invalid cart ID format');
+  }
+
   console.log('getCartItems called with cartId:', cartId);
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('cart_items')
     .select(
       'id, cart_id, product_id, quantity, price_at_time_of_add, created_at, updated_at, product:products!left(id, name, description, price, stock_quantity, image_url, business_id, category_id, status)',
@@ -388,16 +496,44 @@ export async function getCartItems(cartId: string): Promise<CartItem[] | null> {
 /**
  * Lists a customer's order history.
  * @param {string} userId - The ID of the customer.
+ * @param {number} [page=1] - Page number for pagination.
+ * @param {number} [limit=10] - Number of items per page.
  * @returns {Promise<Order[] | null>} A promise that resolves to an array of orders or null on error.
  */
 export async function getCustomerOrderHistory(
   userId?: string, // Make userId optional
+  page: number = 1,
+  limit: number = 10,
 ): Promise<null | Order[]> {
-  let query = supabase.from('orders').select('*');
+  // Validate userId if provided
+  if (userId && !isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  // Validate pagination parameters
+  if (page < 1) {
+    page = 1;
+  }
+  
+  if (limit < 1) {
+    limit = 10;
+  }
+  
+  // Set reasonable boundaries for pagination
+  if (limit > 100) {
+    limit = 100;
+  }
+
+  let query = getSupabase().from('orders').select('*');
 
   if (userId) {
     query = query.eq('user_id', userId);
   }
+
+  // Add pagination
+  const start = (page - 1) * limit;
+  const end = start + limit - 1;
+  query = query.range(start, end);
 
   const { data, error } = await query.order('created_at', { ascending: false });
 
@@ -418,9 +554,17 @@ export async function getOrCreateCart(
   userId: string,
   businessId: string,
 ): Promise<Cart | null> {
+  // Validate UUIDs
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+  if (!isValidUUID(businessId)) {
+    throw new Error('Invalid business ID format');
+  }
+
   console.log('getOrCreateCart called with:', { businessId, userId });
 
-  const { data: cart, error } = await supabase
+  const { data: cart, error } = await getSupabase()
     .from('carts')
     .upsert(
       { business_id: businessId, user_id: userId },
@@ -444,7 +588,12 @@ export async function getOrCreateCart(
  * @returns {Promise<Order | null>} A promise that resolves to the detailed order object or null on error.
  */
 export async function getOrderDetails(orderId: string): Promise<null | Order> {
-  const { data, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(orderId)) {
+    throw new Error('Invalid order ID format');
+  }
+
+  const { data, error } = await getSupabase()
     .from('orders')
     .select(
       '*, order_items!left(*, product:products!left(id, name, description, price, stock_quantity, image_url, business_id, category_id, status))',
@@ -479,9 +628,14 @@ export async function getOrderDetails(orderId: string): Promise<null | Order> {
  * @returns {Promise<void>} A promise that resolves when the item is removed or rejects on error.
  */
 export async function removeCartItem(cartItemId: string): Promise<void> {
+  // Validate UUID
+  if (!isValidUUID(cartItemId)) {
+    throw new Error('Invalid cart item ID format');
+  }
+
   console.log('=== DEBUG: removeCartItem called ===', { cartItemId });
 
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('cart_items')
     .delete()
     .eq('id', cartItemId);
@@ -503,6 +657,11 @@ export async function updateCartItemQuantity(
   cartItemId: string,
   quantity: number,
 ): Promise<CartItem | null> {
+  // Validate UUID
+  if (!isValidUUID(cartItemId)) {
+    throw new Error('Invalid cart item ID format');
+  }
+
   console.log('=== DEBUG: updateCartItemQuantity called ===', {
     cartItemId,
     quantity,
@@ -514,7 +673,7 @@ export async function updateCartItemQuantity(
     return null;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('cart_items')
     .update({ quantity, updated_at: new Date().toISOString() })
     .eq('id', cartItemId)
@@ -539,7 +698,12 @@ export async function updateOrderStatus(
   orderId: string,
   newStatus: Order['status'],
 ): Promise<null | Order> {
-  const { data, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(orderId)) {
+    throw new Error('Invalid order ID format');
+  }
+
+  const { data, error } = await getSupabase()
     .from('orders')
     .update({ status: newStatus, updated_at: new Date().toISOString() })
     .eq('id', orderId)

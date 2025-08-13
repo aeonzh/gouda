@@ -1,8 +1,20 @@
 import { getSupabase } from './supabase';
 
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}
+
+// DB entity types (as stored in database)
 export interface Category {
-  id: null | string; // Explicitly allow null for 'All' category
+  business_id: string;
+  id: string;
   name: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
 export interface InventoryProduct {
@@ -21,6 +33,38 @@ export interface Product {
   price: number;
   status: 'draft' | 'published' | 'rejected';
   stock_quantity: number;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
+}
+
+// Insert types (for creating new records)
+export type CategoryInsert = Omit<
+  Category,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+export type ProductInsert = Omit<
+  Product,
+  'created_at' | 'deleted_at' | 'id' | 'updated_at'
+>;
+
+// Update types (for updating existing records)
+export type CategoryUpdate = Partial<
+  Omit<
+    Category,
+    'business_id' | 'created_at' | 'deleted_at' | 'id' | 'updated_at'
+  >
+>;
+export type ProductUpdate = Partial<
+  Omit<
+    Product,
+    'business_id' | 'created_at' | 'deleted_at' | 'id' | 'updated_at'
+  >
+>;
+
+// UI sentinel types (for frontend display)
+export interface CategoryWithSentinel extends Category {
+  id: null | string; // Explicitly allow null for 'All' category
 }
 
 /**
@@ -33,6 +77,11 @@ export async function adjustInventoryLevel(
   productId: string,
   newQuantity: number,
 ): Promise<null | Product> {
+  // Validate UUID
+  if (!isValidUUID(productId)) {
+    throw new Error('Invalid product ID format');
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
@@ -50,11 +99,11 @@ export async function adjustInventoryLevel(
 
 /**
  * Creates a new category. (Admin only)
- * @param {Category} categoryData - The category data to insert.
+ * @param {CategoryInsert} categoryData - The category data to insert.
  * @returns {Promise<Category | null>} A promise that resolves to the created category or null on error.
  */
 export async function createCategory(
-  categoryData: Category,
+  categoryData: CategoryInsert,
 ): Promise<Category | null> {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -72,11 +121,11 @@ export async function createCategory(
 
 /**
  * Creates a new product. (Admin only)
- * @param {Product} productData - The product data to insert.
+ * @param {ProductInsert} productData - The product data to insert.
  * @returns {Promise<Product | null>} A promise that resolves to the created product or null on error.
  */
 export async function createProduct(
-  productData: Product,
+  productData: ProductInsert,
 ): Promise<null | Product> {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -98,6 +147,11 @@ export async function createProduct(
  * @returns {Promise<void>} A promise that resolves when the category is deleted or rejects on error.
  */
 export async function deleteCategory(id: string): Promise<void> {
+  // Validate UUID
+  if (!isValidUUID(id)) {
+    throw new Error('Invalid category ID format');
+  }
+
   const supabase = getSupabase();
   const { error } = await supabase.from('categories').delete().eq('id', id);
 
@@ -113,6 +167,11 @@ export async function deleteCategory(id: string): Promise<void> {
  * @returns {Promise<void>} A promise that resolves when the product is deleted or rejects on error.
  */
 export async function deleteProduct(id: string): Promise<void> {
+  // Validate UUID
+  if (!isValidUUID(id)) {
+    throw new Error('Invalid product ID format');
+  }
+
   const supabase = getSupabase();
   const { error } = await supabase.from('products').delete().eq('id', id);
 
@@ -130,13 +189,18 @@ export async function getCategories({
   business_id,
 }: {
   business_id?: string;
-}): Promise<Category[] | null> {
-  const supabase = getSupabase();
-  let query = supabase.from('categories').select('*');
-
+}): Promise<CategoryWithSentinel[] | null> {
+  // Validate business_id
   if (!business_id) {
     return [];
   }
+
+  if (!isValidUUID(business_id)) {
+    throw new Error('Invalid business ID format');
+  }
+
+  const supabase = getSupabase();
+  let query = supabase.from('categories').select('*');
   query = query.eq('business_id', business_id);
 
   const { data, error } = await query;
@@ -145,7 +209,12 @@ export async function getCategories({
     console.error('Error fetching categories:', error.message);
     throw error;
   }
-  return data;
+
+  // Add the UI sentinel "All" category at the beginning
+  return [
+    { business_id, id: null, name: 'All' } as CategoryWithSentinel,
+    ...data,
+  ] as CategoryWithSentinel[];
 }
 
 /**
@@ -171,6 +240,11 @@ export async function getInventoryLevels(): Promise<InventoryProduct[] | null> {
  * @returns {Promise<Product | null>} A promise that resolves to the product object or null if not found/error.
  */
 export async function getProductById(id: string): Promise<null | Product> {
+  // Validate UUID
+  if (!isValidUUID(id)) {
+    throw new Error('Invalid product ID format');
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
@@ -209,8 +283,27 @@ export async function getProducts({
   search_query?: string;
   status?: string;
 }): Promise<null | Product[]> {
+  // Validate business_id
   if (!business_id) {
     return [];
+  }
+
+  if (!isValidUUID(business_id)) {
+    throw new Error('Invalid business ID format');
+  }
+
+  // Validate pagination parameters
+  if (page < 1) {
+    page = 1;
+  }
+  
+  if (limit < 1) {
+    limit = 10;
+  }
+  
+  // Set reasonable boundaries for pagination
+  if (limit > 100) {
+    limit = 100;
   }
 
   const supabase = getSupabase();
@@ -249,13 +342,18 @@ export async function getProducts({
 /**
  * Updates an existing category. (Admin only)
  * @param {string} id - The ID of the category to update.
- * @param {Partial<Category>} categoryData - The partial category data to update.
+ * @param {CategoryUpdate} categoryData - The category data to update.
  * @returns {Promise<Category | null>} A promise that resolves to the updated category or null on error.
  */
 export async function updateCategory(
   id: string,
-  categoryData: Partial<Category>,
+  categoryData: CategoryUpdate,
 ): Promise<Category | null> {
+  // Validate UUID
+  if (!isValidUUID(id)) {
+    throw new Error('Invalid category ID format');
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('categories')
@@ -274,13 +372,18 @@ export async function updateCategory(
 /**
  * Updates an existing product. (Admin only)
  * @param {string} id - The ID of the product to update.
- * @param {Partial<Product>} productData - The partial product data to update.
+ * @param {ProductUpdate} productData - The product data to update.
  * @returns {Promise<Product | null>} A promise that resolves to the updated product or null on error.
  */
 export async function updateProduct(
   id: string,
-  productData: Partial<Product>,
+  productData: ProductUpdate,
 ): Promise<null | Product> {
+  // Validate UUID
+  if (!isValidUUID(id)) {
+    throw new Error('Invalid product ID format');
+  }
+
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')

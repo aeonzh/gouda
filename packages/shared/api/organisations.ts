@@ -1,5 +1,13 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}
+
+// DB entity types (as stored in database)
 export interface Organisation {
   id: string;
   name: string;
@@ -12,7 +20,21 @@ export interface Organisation {
   description?: string;
   image_url?: string;
   status: 'approved' | 'pending' | 'rejected' | 'suspended';
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
+
+// Insert types (for creating new records)
+export type OrganisationInsert = Omit<
+  Organisation,
+  'created_at' | 'deleted_at' | 'id' | 'status' | 'updated_at'
+> & { status?: Organisation['status'] };
+
+// Update types (for updating existing records)
+export type OrganisationUpdate = Partial<
+  Omit<Organisation, 'created_at' | 'deleted_at' | 'id' | 'updated_at'>
+>;
 
 /**
  * Fetches all organisations a user is a member of with a 'customer' role.
@@ -22,7 +44,12 @@ export interface Organisation {
 export async function getAuthorizedBusinesses(
   userId: string,
 ): Promise<null | Organisation[]> {
-  const { data: memberData, error: memberError } = await supabase
+  // Validate UUID
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  const { data: memberData, error: memberError } = await getSupabase()
     .from('members')
     .select('business_id')
     .eq('profile_id', userId)
@@ -39,13 +66,14 @@ export async function getAuthorizedBusinesses(
 
   const businessIds = memberData.map((member) => member.business_id);
 
-  const { data: organisationData, error: organisationError } = await supabase
-    .from('organisations')
-    .select(
-      'id, name, address_line1, address_line2, city, state, postal_code, country, status, image_url, description',
-    ) // Added description
-    .in('id', businessIds)
-    .eq('status', 'approved'); // Only show approved organisations
+  const { data: organisationData, error: organisationError } =
+    await getSupabase()
+      .from('organisations')
+      .select(
+        'id, name, address_line1, address_line2, city, state, postal_code, country, status, image_url, description',
+      ) // Added description
+      .in('id', businessIds)
+      .eq('status', 'approved'); // Only show approved organisations
 
   if (organisationError) {
     console.error(
@@ -67,7 +95,17 @@ export async function resolveBusinessIdForUser(
   userId: string,
   preferredBusinessId?: null | string,
 ): Promise<null | string> {
-  const { data: memberships, error } = await supabase
+  // Validate UUID
+  if (!isValidUUID(userId)) {
+    throw new Error('Invalid user ID format');
+  }
+
+  // Validate preferredBusinessId if provided
+  if (preferredBusinessId && !isValidUUID(preferredBusinessId)) {
+    throw new Error('Invalid preferred business ID format');
+  }
+
+  const { data: memberships, error } = await getSupabase()
     .from('members')
     .select('business_id')
     .eq('profile_id', userId);
@@ -94,10 +132,15 @@ export async function resolveBusinessIdForUser(
 export async function getCustomerBusinessId(
   profileId: string,
 ): Promise<null | string> {
+  // Validate UUID
+  if (!isValidUUID(profileId)) {
+    throw new Error('Invalid profile ID format');
+  }
+
   console.log('getCustomerBusinessId called with profileId:', profileId);
 
   // First, let's check if the user has any role in any business
-  const { data: allMemberships, error: allError } = await supabase
+  const { data: allMemberships, error: allError } = await getSupabase()
     .from('members')
     .select('*')
     .eq('profile_id', profileId);
@@ -105,7 +148,7 @@ export async function getCustomerBusinessId(
   console.log('All memberships for profile:', allMemberships);
 
   // Now check specifically for customer/sales_agent roles
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from('members')
     .select('business_id')
     .eq('profile_id', profileId)

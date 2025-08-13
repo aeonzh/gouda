@@ -30,8 +30,8 @@ describe('members API', () => {
 
   it('addMember inserts and returns row', async () => {
     const member = {
-      business_id: 'b1',
-      profile_id: 'u1',
+      business_id: '123e4567-e89b-12d3-a456-426614174000',
+      profile_id: '123e4567-e89b-12d3-a456-426614174001',
       role_in_business: 'sales_agent' as const,
     };
     const qb = createThenable({ data: member, error: null });
@@ -53,8 +53,8 @@ describe('members API', () => {
 
   it('updateMemberRole updates role and returns row', async () => {
     const updated = {
-      business_id: 'b1',
-      profile_id: 'u1',
+      business_id: '123e4567-e89b-12d3-a456-426614174000',
+      profile_id: '123e4567-e89b-12d3-a456-426614174001',
       role_in_business: 'owner' as const,
     };
     const qb = createThenable({ data: updated, error: null });
@@ -67,7 +67,7 @@ describe('members API', () => {
       jest.doMock('../supabase', () => ({ getSupabase: () => client }));
       ({ updateMemberRole } = require('../members'));
     });
-    const res = await updateMemberRole('u1', 'b1', 'owner');
+    const res = await updateMemberRole('123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174000', 'owner');
     expect(qb.update).toHaveBeenCalledWith({ role_in_business: 'owner' });
     expect(qb.eq).toHaveBeenCalledWith('profile_id', 'u1');
     expect(qb.eq).toHaveBeenCalledWith('business_id', 'b1');

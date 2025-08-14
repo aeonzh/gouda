@@ -73,7 +73,7 @@ export function createMockSupabaseClient(
       signOut: jest.fn().mockResolvedValue({ error: null }),
       signUp: jest.fn().mockResolvedValue({ data: {}, error: null }),
     },
-    from: jest.fn(() => qb),
+    from: jest.fn((table: string) => qb),
     rpc: jest.fn().mockResolvedValue(defaultResolved),
   };
   return { ...client, ...overrides } as MockSupabaseClient;

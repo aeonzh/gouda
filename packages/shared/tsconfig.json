@@ -24,7 +24,9 @@
     "api/**/*.ts",
     "components/**/*.tsx",
     "components/**/*.ts",
-    "nativewind-env.d.ts"
+    "nativewind-env.d.ts",
+    "testing/**/*.ts",
+    "types/**/*.ts"
   ],
   "exclude": ["node_modules", "dist"]
 }

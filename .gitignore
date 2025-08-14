@@ -45,3 +45,9 @@ tmp/
 
 # coverage
 coverage/
+
+# Serena
+.serena/cache
+
+# Claude
+.claude/settings.local.json

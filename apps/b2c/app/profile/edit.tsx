@@ -15,6 +15,8 @@ import {
   View,
 } from 'react-native';
 
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+
 export default function EditProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<null | Profile>(null);
@@ -84,42 +86,44 @@ export default function EditProfileScreen() {
   }
 
   return (
-    <View className='flex-1 bg-white p-4'>
-      <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
-        Edit Profile
-      </Text>
-
-      <View className='mb-4'>
-        <Text className='mb-2 text-lg font-semibold text-gray-700'>
-          Username
+    <ErrorBoundary>
+      <View className='flex-1 bg-white p-4'>
+        <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
+          Edit Profile
         </Text>
-        <TextInput
-          className='rounded-lg border border-gray-300 p-3 text-lg'
-          onChangeText={setUsername}
-          placeholder='Enter username'
-          value={username}
-        />
-      </View>
 
-      <View className='mb-6'>
-        <Text className='mb-2 text-lg font-semibold text-gray-700'>
-          Full Name
-        </Text>
-        <TextInput
-          className='rounded-lg border border-gray-300 p-3 text-lg'
-          onChangeText={setFullName}
-          placeholder='Enter full name'
-          value={fullName}
-        />
-      </View>
+        <View className='mb-4'>
+          <Text className='mb-2 text-lg font-semibold text-gray-700'>
+            Username
+          </Text>
+          <TextInput
+            className='rounded-lg border border-gray-300 p-3 text-lg'
+            onChangeText={setUsername}
+            placeholder='Enter username'
+            value={username}
+          />
+        </View>
 
-      <TouchableOpacity
-        className='self-center rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
-        disabled={loading}
-        onPress={handleUpdateProfile}
-      >
-        <Text className='text-base font-semibold text-white'>Save Changes</Text>
-      </TouchableOpacity>
-    </View>
+        <View className='mb-6'>
+          <Text className='mb-2 text-lg font-semibold text-gray-700'>
+            Full Name
+          </Text>
+          <TextInput
+            className='rounded-lg border border-gray-300 p-3 text-lg'
+            onChangeText={setFullName}
+            placeholder='Enter full name'
+            value={fullName}
+          />
+        </View>
+
+        <TouchableOpacity
+          className='self-center rounded-lg bg-blue-600 px-5 py-3 shadow-sm'
+          disabled={loading}
+          onPress={handleUpdateProfile}
+        >
+          <Text className='text-base font-semibold text-white'>Save Changes</Text>
+        </TouchableOpacity>
+      </View>
+    </ErrorBoundary>
   );
 }

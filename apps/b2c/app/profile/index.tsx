@@ -3,6 +3,8 @@ import { useAuth } from 'packages/shared/components/AuthProvider';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+
 export default function ProfileIndexScreen() {
   const { session } = useAuth();
   const [profile, setProfile] = useState<null | Profile>(null);
@@ -40,28 +42,30 @@ export default function ProfileIndexScreen() {
   }
 
   return (
-    <View className='flex-1 bg-white p-4'>
-      <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
-        My Profile
-      </Text>
+    <ErrorBoundary>
+      <View className='flex-1 bg-white p-4'>
+        <Text className='mb-6 text-center text-3xl font-extrabold text-gray-800'>
+          My Profile
+        </Text>
 
-      <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
-        <Text className='mb-4 text-xl font-semibold text-gray-700'>
-          Profile Information
-        </Text>
-        <Text className='mb-2 text-lg text-gray-600'>
-          <Text className='font-medium'>Email:</Text>{' '}
-          {session?.user?.email || 'N/A'}
-        </Text>
-        <Text className='mb-2 text-lg text-gray-600'>
-          <Text className='font-medium'>Username:</Text>{' '}
-          {profile?.username || 'N/A'}
-        </Text>
-        <Text className='mb-4 text-lg text-gray-600'>
-          <Text className='font-medium'>Full Name:</Text>{' '}
-          {profile?.full_name || 'N/A'}
-        </Text>
+        <View className='mb-6 rounded-xl bg-gray-50 p-6 shadow-md'>
+          <Text className='mb-4 text-xl font-semibold text-gray-700'>
+            Profile Information
+          </Text>
+          <Text className='mb-2 text-lg text-gray-600'>
+            <Text className='font-medium'>Email:</Text>{' '}
+            {session?.user?.email || 'N/A'}
+          </Text>
+          <Text className='mb-2 text-lg text-gray-600'>
+            <Text className='font-medium'>Username:</Text>{' '}
+            {profile?.username || 'N/A'}
+          </Text>
+          <Text className='mb-4 text-lg text-gray-600'>
+            <Text className='font-medium'>Full Name:</Text>{' '}
+            {profile?.full_name || 'N/A'}
+          </Text>
+        </View>
       </View>
-    </View>
+    </ErrorBoundary>
   );
 }

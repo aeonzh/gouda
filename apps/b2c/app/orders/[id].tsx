@@ -3,6 +3,8 @@ import { getOrderDetails, Order, OrderItem } from 'packages/shared/api/orders';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const orderId = typeof id === 'string' ? id : undefined;
@@ -72,101 +74,104 @@ export default function OrderDetailsScreen() {
   const orderDate = order.order_date || order.created_at;
 
   return (
-    <View className='flex-1 bg-gray-100'>
-      <Stack.Screen options={{ title: `Order #${order.id}` }} />
-      <FlatList
-        contentContainerClassName='px-4 pb-4'
-        data={order.order_items}
-        keyExtractor={(item) => item.id.toString()}
-        ListEmptyComponent={() => (
-          <View className='mx-4 rounded-lg bg-white p-4 shadow-md'>
-            <Text className='text-center text-gray-600'>
-              No items in this order.
-            </Text>
-          </View>
-        )}
-        ListHeaderComponent={() => (
-          <View className='mx-4 mb-4 mt-4 rounded-lg bg-white p-4 shadow-md'>
-            <Text className='mb-2 text-2xl font-bold text-gray-900'>
-              Order Details
-            </Text>
-            <Text className='mb-1 text-base text-gray-700'>
-              Order ID: <Text className='font-semibold'>{order.id}</Text>
-            </Text>
-            <Text className='mb-1 text-base text-gray-700'>
-              Date:{' '}
-              <Text className='font-semibold'>
-                {orderDate ? new Date(orderDate).toLocaleDateString() : '—'}
+    <ErrorBoundary>
+      <View className='flex-1 bg-gray-100'>
+        <Stack.Screen options={{ title: `Order #${order.id}` }} />
+        <FlatList
+          contentContainerClassName='px-4 pb-4'
+          data={order.order_items}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            <View className='mx-4 rounded-lg bg-white p-4 shadow-md'>
+              <Text className='text-center text-gray-600'>
+                No items in this order.
               </Text>
-            </Text>
-            <Text className='mb-1 text-base text-gray-700'>
-              Status:{' '}
-              <Text className='font-semibold text-blue-600'>
-                {order.status}
+            </View>
+          )}
+          ListHeaderComponent={() => (
+            <View className='mx-4 mb-4 mt-4 rounded-lg bg-white p-4 shadow-md'>
+              <Text className='mb-2 text-2xl font-bold text-gray-900'>
+                Order Details
               </Text>
-            </Text>
-            <Text className='mb-1 text-base text-gray-700'>
-              Total Amount:{' '}
-              <Text className='font-bold text-green-700'>
-                ${order.total_amount?.toFixed(2)}
+              <Text className='mb-1 text-base text-gray-700'>
+                Order ID: <Text className='font-semibold'>{order.id}</Text>
               </Text>
-            </Text>
-            {order.shipping_address && (
-              <>
-                <Text className='mt-2 text-base font-bold text-gray-700'>
-                  Shipping Address:
+              <Text className='mb-1 text-base text-gray-700'>
+                Date:{' '}
+                <Text className='font-semibold'>
+                  {orderDate ? new Date(orderDate).toLocaleDateString() : '—'}
                 </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.shipping_address.street}
+              </Text>
+              <Text className='mb-1 text-base text-gray-700'>
+                Status:{' '}
+                <Text className='font-semibold text-blue-600'>
+                  {order.status}
                 </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.shipping_address.city}, {order.shipping_address.state}{' '}
-                  {order.shipping_address.zip_code}
+              </Text>
+              <Text className='mb-1 text-base text-gray-700'>
+                Total Amount:{' '}
+                <Text className='font-bold text-green-700'>
+                  ${order.total_amount?.toFixed(2)}
                 </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.shipping_address.country}
-                </Text>
-              </>
-            )}
-            {order.billing_address && (
-              <>
-                <Text className='mt-2 text-base font-bold text-gray-700'>
-                  Billing Address:
-                </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.billing_address.street}
-                </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.billing_address.city}, {order.billing_address.state}{' '}
-                  {order.billing_address.zip_code}
-                </Text>
-                <Text className='text-sm text-gray-600'>
-                  {order.billing_address.country}
-                </Text>
-              </>
-            )}
-            <Text className='mb-2 mt-4 text-xl font-bold text-gray-900'>
-              Items
-            </Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <View className='mb-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm'>
-            <Text className='text-base font-semibold text-gray-800'>
-              {item.product?.name || 'Unknown Product'}
-            </Text>
-            <Text className='text-sm text-gray-600'>
-              Quantity: {item.quantity}
-            </Text>
-            <Text className='text-sm text-gray-600'>
-              Price: ${item.price_at_order?.toFixed(2)}
-            </Text>
-            <Text className='text-sm text-gray-600'>
-              Subtotal: ${(item.quantity * item.price_at_order)?.toFixed(2)}
-            </Text>
-          </View>
-        )}
-      />
-    </View>
+              </Text>
+              {order.shipping_address && (
+                <>
+                  <Text className='mt-2 text-base font-bold text-gray-700'>
+                    Shipping Address:
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.shipping_address.street}
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.shipping_address.city},{' '}
+                    {order.shipping_address.state}{' '}
+                    {order.shipping_address.zip_code}
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.shipping_address.country}
+                  </Text>
+                </>
+              )}
+              {order.billing_address && (
+                <>
+                  <Text className='mt-2 text-base font-bold text-gray-700'>
+                    Billing Address:
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.billing_address.street}
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.billing_address.city}, {order.billing_address.state}{' '}
+                    {order.billing_address.zip_code}
+                  </Text>
+                  <Text className='text-sm text-gray-600'>
+                    {order.billing_address.country}
+                  </Text>
+                </>
+              )}
+              <Text className='mb-2 mt-4 text-xl font-bold text-gray-900'>
+                Items
+              </Text>
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <View className='mb-3 rounded-lg border border-gray-200 bg-white p-3 shadow-sm'>
+              <Text className='text-base font-semibold text-gray-800'>
+                {item.product?.name || 'Unknown Product'}
+              </Text>
+              <Text className='text-sm text-gray-600'>
+                Quantity: {item.quantity}
+              </Text>
+              <Text className='text-sm text-gray-600'>
+                Price: ${item.price_at_order?.toFixed(2)}
+              </Text>
+              <Text className='text-sm text-gray-600'>
+                Subtotal: ${(item.quantity * item.price_at_order)?.toFixed(2)}
+              </Text>
+            </View>
+          )}
+        />
+      </View>
+    </ErrorBoundary>
   );
 }

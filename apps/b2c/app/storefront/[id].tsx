@@ -1,4 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Product } from 'packages/shared/api/products';
 import { Input } from 'packages/shared/components';
 import { useAuth } from 'packages/shared/components/AuthProvider';
 import { useCallback } from 'react';
@@ -10,6 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+import { ErrorComponent } from '../../components/ErrorComponent';
 import { useStorefront } from './useStorefront';
 
 export default function StorefrontPage() {
@@ -21,15 +25,19 @@ export default function StorefrontPage() {
     userId: session?.user?.id ?? null,
   });
   const {
-    loading,
-    error,
-    products,
     categories,
+    error,
+    loading,
+    products,
+    searchQuery,
     selectedCategoryId,
     storeName,
-    searchQuery,
   } = state;
   const { setSearchQuery, setSelectedCategoryId } = actions;
+
+  // Extract storeId from the hook's internal state
+  const storeId =
+    state.products.length > 0 ? state.products[0]?.business_id : null;
 
   const handleProductPress = (productId: string) => {
     router.push(`/products/${productId}`);
@@ -59,73 +67,98 @@ export default function StorefrontPage() {
 
   if (loading) {
     return (
-      <View className='flex-1 items-center justify-center'>
-        <ActivityIndicator
-          color='#0000ff'
-          size='large'
-        />
-      </View>
+      <ErrorBoundary>
+        <View className='flex-1 items-center justify-center'>
+          <ActivityIndicator
+            color='#0000ff'
+            size='large'
+          />
+        </View>
+      </ErrorBoundary>
     );
   }
 
   if (error) {
     return (
-      <View className='flex-1 items-center justify-center'>
-        <Text className='text-red-500'>{error}</Text>
-      </View>
+      <ErrorBoundary>
+        <ErrorComponent
+          error={error}
+          onRetry={() => {
+            // Navigate back to the same page to trigger a reload
+            router.replace({
+              params: { id: rawStoreId as string },
+              pathname: '/storefront/[id]',
+            });
+          }}
+          title='Failed to load store'
+        />
+      </ErrorBoundary>
     );
   }
 
   return (
-    <View className='flex-1 p-4'>
-      <Stack.Screen options={{ title: storeName }} />
-      <View className='mb-4 flex-row items-center justify-between'>
-        <Input
-          className='mr-2 flex-1'
-          onChangeText={setSearchQuery}
-          placeholder='Search products...'
-          value={searchQuery}
-        />
-        <TouchableOpacity
-          className='rounded-md bg-blue-500 px-4 py-2'
-          onPress={() =>
-            router.push({ pathname: '/cart', params: { businessId: storeId } })
-          }
-        >
-          <Text className='text-white'>Cart</Text>
-        </TouchableOpacity>
-      </View>
-      <View className='mb-4 flex-row'>
-        <FlatList
-          data={categories}
-          horizontal
-          keyExtractor={(item) => item.id || 'all'}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className={`mr-2 rounded-full px-3 py-1 ${selectedCategoryId === item.id ? 'bg-blue-500' : 'bg-gray-200'}`}
-              onPress={() => setSelectedCategoryId(item.id)}
-            >
-              <Text
-                className={`${selectedCategoryId === item.id ? 'text-white' : 'text-gray-800'}`}
+    <ErrorBoundary>
+      <View className='flex-1 p-4'>
+        <Stack.Screen options={{ title: storeName }} />
+        <View className='mb-4 flex-row items-center justify-between'>
+          <Input
+            className='mr-2 flex-1'
+            onChangeText={setSearchQuery}
+            placeholder='Search products...'
+            value={searchQuery}
+          />
+          <TouchableOpacity
+            className='rounded-md bg-blue-500 px-4 py-2'
+            onPress={() => {
+              if (storeId) {
+                router.push({
+                  params: { businessId: storeId },
+                  pathname: '/cart',
+                });
+              } else {
+                // Fallback to rawStoreId if storeId is not available
+                router.push({
+                  params: { businessId: rawStoreId },
+                  pathname: '/cart',
+                });
+              }
+            }}
+          >
+            <Text className='text-white'>Cart</Text>
+          </TouchableOpacity>
+        </View>
+        <View className='mb-4 flex-row'>
+          <FlatList
+            data={categories}
+            horizontal
+            keyExtractor={(item) => item.id || 'all'}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                className={`mr-2 rounded-full px-3 py-1 ${selectedCategoryId === item.id ? 'bg-blue-500' : 'bg-gray-200'}`}
+                onPress={() => setSelectedCategoryId(item.id)}
               >
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
+                <Text
+                  className={`${selectedCategoryId === item.id ? 'text-white' : 'text-gray-800'}`}
+                >
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+        {products.length === 0 ? (
+          <Text className='text-center text-gray-500'>
+            No products found for this store.
+          </Text>
+        ) : (
+          <FlatList
+            data={products}
+            keyExtractor={(item) => item.id}
+            renderItem={renderProductItem}
+          />
+        )}
       </View>
-      {products.length === 0 ? (
-        <Text className='text-center text-gray-500'>
-          No products found for this store.
-        </Text>
-      ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id}
-          renderItem={renderProductItem}
-        />
-      )}
-    </View>
+    </ErrorBoundary>
   );
 }

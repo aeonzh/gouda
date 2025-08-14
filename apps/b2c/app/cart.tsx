@@ -7,6 +7,7 @@ import {
   removeCartItem as removeCartItemApi,
   updateCartItemQuantity as updateCartItemQuantityApi,
 } from 'packages/shared/api/orders';
+import { resolveBusinessIdForUser } from 'packages/shared/api/organisations';
 import { Product } from 'packages/shared/api/products';
 import { supabase } from 'packages/shared/api/supabase';
 import { Button } from 'packages/shared/components';
@@ -14,7 +15,8 @@ import { QuantitySelector } from 'packages/shared/components/QuantitySelector';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { resolveBusinessIdForUser } from 'packages/shared/api/organisations';
+
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 interface CartItem {
   cart_id: string;
@@ -23,8 +25,9 @@ interface CartItem {
   price_at_time_of_add: number;
   product?: Product; // Optional: to include product details when fetching cart
   quantity: number;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  deleted_at?: null | string;
+  updated_at?: string;
 }
 
 export default function CartScreen() {
@@ -337,8 +340,9 @@ export default function CartScreen() {
               'newQuantity:',
               newQuantity,
             );
-            item.product?.id &&
+            if (item.product?.id) {
               updateCartItemQuantity(item.product.id, newQuantity);
+            }
           }}
           quantity={item.quantity}
         />
@@ -349,7 +353,9 @@ export default function CartScreen() {
               'DEBUG: Remove button - item.product.id:',
               item.product?.id,
             );
-            item.product?.id && removeCartItem(item.product.id);
+            if (item.product?.id) {
+              removeCartItem(item.product.id);
+            }
           }}
         >
           <Text className='text-gray-800'>Remove</Text>
@@ -359,37 +365,39 @@ export default function CartScreen() {
   );
 
   return (
-    <SafeAreaView className='flex-1 bg-white'>
-      <Stack.Screen options={{ headerShown: true, title: 'Your Cart' }} />
-      <View className='flex-1 p-4'>
-        {loading ? (
-          <Text className='text-center text-lg'>Loading cart...</Text>
-        ) : cartItems.length === 0 ? (
-          <Text className='text-center text-lg'>Your cart is empty.</Text>
-        ) : (
-          <FlatList
-            contentContainerClassName='pb-4'
-            data={cartItems}
-            keyExtractor={(item) => item.id}
-            renderItem={renderCartItem}
-          />
-        )}
-
-        {!loading && cartItems.length > 0 && (
-          <View className='mt-4 border-t border-gray-200 p-4'>
-            <Text className='text-right text-xl font-bold'>
-              Total: ${totalPrice.toFixed(2)}
-            </Text>
-            <Button
-              className='mt-4 rounded-lg bg-blue-600 py-3'
-              onPress={createOrder}
-              title='Create Order'
-              isLoading={placingOrder}
-              disabled={placingOrder}
+    <ErrorBoundary>
+      <SafeAreaView className='flex-1 bg-white'>
+        <Stack.Screen options={{ headerShown: true, title: 'Your Cart' }} />
+        <View className='flex-1 p-4'>
+          {loading ? (
+            <Text className='text-center text-lg'>Loading cart...</Text>
+          ) : cartItems.length === 0 ? (
+            <Text className='text-center text-lg'>Your cart is empty.</Text>
+          ) : (
+            <FlatList
+              contentContainerClassName='pb-4'
+              data={cartItems}
+              keyExtractor={(item) => item.id}
+              renderItem={renderCartItem}
             />
-          </View>
-        )}
-      </View>
-    </SafeAreaView>
+          )}
+
+          {!loading && cartItems.length > 0 && (
+            <View className='mt-4 border-t border-gray-200 p-4'>
+              <Text className='text-right text-xl font-bold'>
+                Total: ${totalPrice.toFixed(2)}
+              </Text>
+              <Button
+                className='mt-4 rounded-lg bg-blue-600 py-3'
+                disabled={placingOrder}
+                isLoading={placingOrder}
+                onPress={createOrder}
+                title='Create Order'
+              />
+            </View>
+          )}
+        </View>
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }

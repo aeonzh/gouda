@@ -7,6 +7,8 @@ import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorComponent } from '@/components/ErrorComponent';
 import '@/global.css';
 
 interface VendorCardProps {
@@ -49,13 +51,14 @@ export default function HomeScreen() {
   const [vendors, setVendors] = useState<Organisation[]>([]);
   const [filteredVendors, setFilteredVendors] = useState<Organisation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchVendors = async () => {
       if (session?.user?.id) {
         try {
           setLoading(true);
+          setError(null);
           const authorizedVendors = await getAuthorizedBusinesses(
             session.user.id,
           );
@@ -65,7 +68,11 @@ export default function HomeScreen() {
           }
         } catch (err) {
           console.error('Failed to fetch authorized vendors:', err);
-          setError('Failed to load vendors. Please try again.');
+          setError(
+            err instanceof Error
+              ? err
+              : new Error('Failed to load vendors. Please try again.'),
+          );
         } finally {
           setLoading(false);
         }
@@ -100,49 +107,66 @@ export default function HomeScreen() {
   };
 
   return (
-    <View className='flex-1 bg-white'>
-      {/* Header */}
-      <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
-        <View className='mr-4 flex-1'>
-          <Input
-            onChangeText={setSearchQuery}
-            placeholder='Search vendors...'
-            value={searchQuery}
-          />
+    <ErrorBoundary>
+      <View className='flex-1 bg-white'>
+        {/* Header */}
+        <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
+          <View className='mr-4 flex-1'>
+            <Input
+              onChangeText={setSearchQuery}
+              placeholder='Search vendors...'
+              value={searchQuery}
+            />
+          </View>
+          <TouchableOpacity
+            className='rounded-md bg-blue-500 px-4 py-2'
+            onPress={() => {
+              /* No action for now */
+            }}
+          >
+            <Text className='text-white'>Add New Vendors</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          className='rounded-md bg-blue-500 px-4 py-2'
-          onPress={() => {
-            /* No action for now */
-          }}
-        >
-          <Text className='text-white'>Add New Vendors</Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Main Content Area - Authorized Vendor List */}
-      <View className='flex-1 p-4'>
-        {loading && (
-          <Text className='text-center text-gray-500'>Loading vendors...</Text>
-        )}
-        {error && <Text className='text-center text-red-500'>{error}</Text>}
-        {!loading && !error && filteredVendors.length === 0 && (
-          <Text className='text-center text-lg font-bold text-gray-600'>
-            No authorized vendors found.
-          </Text>
-        )}
-        <FlatList
-          contentContainerStyle={{ paddingBottom: 16 }}
-          data={filteredVendors}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <StorefrontCard
-              onPress={handleVendorPress}
-              vendor={item}
+        {/* Main Content Area - Authorized Vendor List */}
+        <View className='flex-1 p-4'>
+          {error && (
+            <ErrorComponent
+              error={error.message || 'An unknown error occurred'}
+              onRetry={() => {
+                setError(null);
+                if (session?.user?.id) {
+                  // This will trigger the useEffect to refetch
+                }
+              }}
+              title='Failed to load vendors'
             />
           )}
-        />
+          {loading && !error && (
+            <Text className='text-center text-gray-500'>
+              Loading vendors...
+            </Text>
+          )}
+          {!loading && !error && filteredVendors.length === 0 && (
+            <Text className='text-center text-lg font-bold text-gray-600'>
+              No authorized vendors found.
+            </Text>
+          )}
+          {!error && (
+            <FlatList
+              contentContainerStyle={{ paddingBottom: 16 }}
+              data={filteredVendors}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <StorefrontCard
+                  onPress={handleVendorPress}
+                  vendor={item}
+                />
+              )}
+            />
+          )}
+        </View>
       </View>
-    </View>
+    </ErrorBoundary>
   );
 }

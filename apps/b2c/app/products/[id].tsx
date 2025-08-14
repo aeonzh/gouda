@@ -17,7 +17,17 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+
 export default function ProductDetailsScreen() {
+  return (
+    <ErrorBoundary>
+      <ProductDetailsContent />
+    </ErrorBoundary>
+  );
+}
+
+function ProductDetailsContent() {
   const { id } = useLocalSearchParams();
   const [product, setProduct] = useState<null | Product>(null);
   const [loading, setLoading] = useState(true);

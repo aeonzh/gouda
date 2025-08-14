@@ -1,30 +1,30 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getAuthorizedBusinesses } from 'packages/shared/api/organisations';
 import {
   Category,
-  Product,
   getCategories,
   getProducts,
+  Product,
 } from 'packages/shared/api/products';
-
-export interface UseStorefrontState {
-  loading: boolean;
-  error: string | null;
-  products: Product[];
-  categories: Category[];
-  selectedCategoryId: string | null;
-  storeName: string;
-  searchQuery: string;
-}
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UseStorefrontActions {
   setSearchQuery: (value: string) => void;
-  setSelectedCategoryId: (value: string | null) => void;
+  setSelectedCategoryId: (value: null | string) => void;
 }
 
 export interface UseStorefrontArgs {
   rawStoreId: unknown;
-  userId: string | null;
+  userId: null | string;
+}
+
+export interface UseStorefrontState {
+  categories: Category[];
+  error: null | string;
+  loading: boolean;
+  products: Product[];
+  searchQuery: string;
+  selectedCategoryId: null | string;
+  storeName: string;
 }
 
 /**
@@ -37,17 +37,17 @@ export function useStorefront({
 }: UseStorefrontArgs): [UseStorefrontState, UseStorefrontActions] {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+  const [selectedCategoryId, setSelectedCategoryId] = useState<null | string>(
     null,
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<null | string>(null);
   const [storeName, setStoreName] = useState<string>('Store');
 
   // Normalize storeId: must be a non-empty string
-  const storeId: string | null = useMemo(() => {
+  const storeId: null | string = useMemo(() => {
     if (typeof rawStoreId !== 'string' || rawStoreId.trim().length === 0) {
       return null;
     }
@@ -96,7 +96,7 @@ export function useStorefront({
       const fetchedCategories = await getCategories({ business_id: storeId });
       setCategories([{ id: null, name: 'All' }, ...(fetchedCategories || [])]);
     } catch (err) {
-      // eslint-disable-next-line no-console
+       
       console.error('Failed to fetch storefront data:', err);
       setError('Failed to load products or categories.');
     } finally {
@@ -119,13 +119,13 @@ export function useStorefront({
 
   return [
     {
-      loading,
-      error,
-      products,
       categories,
+      error,
+      loading,
+      products,
+      searchQuery,
       selectedCategoryId,
       storeName,
-      searchQuery,
     },
     {
       setSearchQuery,

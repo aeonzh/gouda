@@ -6,7 +6,6 @@
       "packages/shared/*": ["../../packages/shared/*"],
       "@/*": ["./*"]
     },
-    "types": ["nativewind/types", "expo-router"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "baseUrl": "."
@@ -16,8 +15,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "nativewind-env.d.ts",
-    "../../packages/shared/types"
+    "nativewind-env.d.ts"
   ],
   "references": [
     {

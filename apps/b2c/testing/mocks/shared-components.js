@@ -1,50 +1,50 @@
 const React = require('react');
-const { Text, TextInput, View, TouchableOpacity } = require('react-native');
+const { Text, TextInput, TouchableOpacity, View } = require('react-native');
 
 module.exports = {
   __esModule: true,
   AuthProvider: ({ children }) => children,
-  useAuth: () => ({
-    session: { user: { id: 'test-user' } },
-    supabase: { auth: {} },
-  }),
   Button: function Button({
-    onPress,
-    children,
-    title,
     accessibilityLabel,
+    children,
+    onPress,
+    title,
     ...rest
   }) {
     return React.createElement(
       TouchableOpacity,
-      { onPress, accessibilityRole: 'button', accessibilityLabel, ...rest },
+      { accessibilityLabel, accessibilityRole: 'button', onPress, ...rest },
       children || React.createElement(Text, null, title || 'Button'),
     );
   },
   Input: function Input(props) {
     const {
-      value = '',
-      onChangeText = () => {},
-      placeholder = '',
-      label,
       className = '',
       inputClassName = '',
+      label,
+      onChangeText = () => {},
+      placeholder = '',
+      value = '',
     } = props || {};
     const children = [];
     if (label) {
       children.push(
-        React.createElement(Text, { key: 'label', className: 'mb-1' }, label),
+        React.createElement(Text, { className: 'mb-1', key: 'label' }, label),
       );
     }
     children.push(
       React.createElement(TextInput, {
+        className: inputClassName,
         key: 'input',
-        value,
         onChangeText,
         placeholder,
-        className: inputClassName,
+        value,
       }),
     );
     return React.createElement(View, { className }, children);
   },
+  useAuth: () => ({
+    session: { user: { id: 'test-user' } },
+    supabase: { auth: {} },
+  }),
 };

@@ -28,6 +28,7 @@ export default tseslint.config([
     ignores: [
       '**/.expo/**',
       '**/node_modules/**',
+      '**/dist/**', // Added to ignore dist files
       '**/*.generated.js',
       '**/*.generated.ts',
       '**/app.config.ts',
@@ -103,6 +104,27 @@ export default tseslint.config([
       react: {
         version: 'detect',
       },
+    },
+  },
+  {
+    files: [
+      '**/*.test.{js,ts,tsx}',
+      '**/jest-setup.js',
+      '**/__mocks__/**/*.js',
+      '**/__tests__/**/*.js',
+    ],
+    languageOptions: {
+      globals: {
+        globalThis: true,
+        jest: true,
+        module: true,
+        // Add other Node.js globals if necessary, e.g., process, console, require
+        // For now, 'module' and 'globalThis' should cover the previous 'node: true'
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-undef': 'off',
     },
   },
 ]);

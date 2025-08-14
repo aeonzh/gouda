@@ -1,14 +1,8 @@
+import { fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
-import { rest } from 'msw';
-import { server } from '../testing/msw/server';
-import { renderWithProviders } from '../testing/renderWithProviders';
+
 import CartScreen from '../app/cart';
-import {
-  fireEvent,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react-native';
+import { renderWithProviders } from '../testing/renderWithProviders';
 
 const API = 'https://msw.test';
 

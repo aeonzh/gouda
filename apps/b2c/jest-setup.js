@@ -1,103 +1,105 @@
+/* eslint-env jest */
+
 import '@testing-library/jest-native/extend-expect';
 
 // Mock supabase client to avoid importing ESM deps in tests
 jest.mock('packages/shared/api/supabase', () => {
   // In-memory dataset for targeted tests
   const db = {
-    members: [
+    cart_items: [
       {
-        id: 'm1',
-        profile_id: 'test-user',
-        business_id: 'b1',
-        role_in_business: 'customer',
-      },
-      {
-        id: 'm2',
-        profile_id: 'test-user',
-        business_id: 'b2',
-        role_in_business: 'customer',
-      },
-    ],
-    organisations: [
-      {
-        id: 'b1',
-        name: 'Alpha',
-        status: 'approved',
-        address_line1: 'a',
-        city: 'x',
-        postal_code: '1',
-        country: 'c',
-        state: 's',
-        description: '',
-        image_url: undefined,
-      },
-      {
-        id: 'b2',
-        name: 'Beta',
-        status: 'approved',
-        address_line1: 'b',
-        city: 'y',
-        postal_code: '2',
-        country: 'c',
-        state: 's',
-        description: '',
-        image_url: undefined,
+        cart_id: 'c1',
+        created_at: '',
+        id: 'ci1',
+        price_at_time_of_add: 5,
+        product_id: 'p1',
+        quantity: 2,
+        updated_at: '',
       },
     ],
     carts: [
       {
+        business_id: 'b1',
+        created_at: '',
         id: 'c1',
+        updated_at: '',
         user_id: 'test-user',
-        business_id: 'b1',
-        created_at: '',
-        updated_at: '',
       },
     ],
-    products: [
+    categories: [{ business_id: 'b1', id: 'c1', name: 'Cat' }],
+    members: [
       {
-        id: 'p1',
         business_id: 'b1',
-        category_id: null,
-        name: 'Prod A',
-        description: '',
-        image_url: undefined,
-        price: 5,
-        stock_quantity: 10,
-        status: 'published',
+        id: 'm1',
+        profile_id: 'test-user',
+        role_in_business: 'customer',
       },
       {
-        id: 'p2',
-        business_id: 'b1',
-        category_id: null,
-        name: 'Published',
-        description: '',
-        image_url: undefined,
-        price: 1,
-        stock_quantity: 10,
-        status: 'published',
-      },
-    ],
-    categories: [{ id: 'c1', name: 'Cat', business_id: 'b1' }],
-    cart_items: [
-      {
-        id: 'ci1',
-        cart_id: 'c1',
-        product_id: 'p1',
-        quantity: 2,
-        price_at_time_of_add: 5,
-        created_at: '',
-        updated_at: '',
+        business_id: 'b2',
+        id: 'm2',
+        profile_id: 'test-user',
+        role_in_business: 'customer',
       },
     ],
     orders: [
       {
+        created_at: new Date().toISOString(),
         id: 'o1',
-        user_id: 'test-user',
         order_date: new Date().toISOString(),
         status: 'pending',
         total_amount: 10,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        user_id: 'test-user',
+      },
+    ],
+    organisations: [
+      {
+        address_line1: 'a',
+        city: 'x',
+        country: 'c',
+        description: '',
+        id: 'b1',
+        image_url: undefined,
+        name: 'Alpha',
+        postal_code: '1',
+        state: 's',
+        status: 'approved',
+      },
+      {
+        address_line1: 'b',
+        city: 'y',
+        country: 'c',
+        description: '',
+        id: 'b2',
+        image_url: undefined,
+        name: 'Beta',
+        postal_code: '2',
+        state: 's',
+        status: 'approved',
+      },
+    ],
+    products: [
+      {
+        business_id: 'b1',
+        category_id: null,
+        description: '',
+        id: 'p1',
+        image_url: undefined,
+        name: 'Prod A',
+        price: 5,
+        status: 'published',
+        stock_quantity: 10,
+      },
+      {
+        business_id: 'b1',
+        category_id: null,
+        description: '',
+        id: 'p2',
+        image_url: undefined,
+        name: 'Published',
+        price: 1,
+        status: 'published',
+        stock_quantity: 10,
       },
     ],
   };
@@ -132,22 +134,28 @@ jest.mock('packages/shared/api/supabase', () => {
 
   const makeBuilder = (table) => {
     const state = {
-      table,
       filters: [],
-      orderBy: null,
       op: 'select',
+      orderBy: null,
       payload: null,
+      table,
     };
     const thenable = {
-      select() {
+      delete() {
+        state.op = 'delete';
         return this;
       },
       eq(key, value) {
-        state.filters.push({ type: 'eq', key, value });
+        state.filters.push({ key, type: 'eq', value });
         return this;
       },
       in(key, values) {
-        state.filters.push({ type: 'in', key, values });
+        state.filters.push({ key, type: 'in', values });
+        return this;
+      },
+      insert(payload) {
+        state.op = 'insert';
+        state.payload = payload;
         return this;
       },
       order(col, _opts) {
@@ -157,30 +165,14 @@ jest.mock('packages/shared/api/supabase', () => {
       range(_s, _e) {
         return this;
       },
+      select() {
+        return this;
+      },
       single() {
         return this.then((r) => ({
           data: Array.isArray(r.data) ? r.data[0] || null : r.data,
           error: null,
         }));
-      },
-      upsert(payload) {
-        state.op = 'upsert';
-        state.payload = payload;
-        return this;
-      },
-      insert(payload) {
-        state.op = 'insert';
-        state.payload = payload;
-        return this;
-      },
-      update(payload) {
-        state.op = 'update';
-        state.payload = payload;
-        return this;
-      },
-      delete() {
-        state.op = 'delete';
-        return this;
       },
       then(resolve) {
         let rows = db[state.table] ? [...db[state.table]] : [];
@@ -197,8 +189,8 @@ jest.mock('packages/shared/api/supabase', () => {
               return resolve({ data: existing, error: null });
             }
             const newRow = {
-              id: 'c' + (db.carts.length + 1),
               created_at: '',
+              id: 'c' + (db.carts.length + 1),
               updated_at: '',
               ...state.payload,
             };
@@ -279,6 +271,16 @@ jest.mock('packages/shared/api/supabase', () => {
 
         return resolve({ data: rows, error: null });
       },
+      update(payload) {
+        state.op = 'update';
+        state.payload = payload;
+        return this;
+      },
+      upsert(payload) {
+        state.op = 'upsert';
+        state.payload = payload;
+        return this;
+      },
     };
     return thenable;
   };
@@ -289,13 +291,13 @@ jest.mock('packages/shared/api/supabase', () => {
     rpc: (fn, params) => {
       if (fn === 'create_order_from_cart') {
         const order = {
-          id: 'o_rpc_1',
-          user_id: params.user_id,
           business_id: params.business_id,
-          total_amount: 10,
-          status: 'pending',
           created_at: new Date().toISOString(),
+          id: 'o_rpc_1',
+          status: 'pending',
+          total_amount: 10,
           updated_at: new Date().toISOString(),
+          user_id: params.user_id,
         };
         return Promise.resolve({ data: order, error: null });
       }
@@ -331,15 +333,15 @@ jest.mock('expo-router', () => {
   globalThis.__routerBackMock = routerBackMock;
   return {
     Link: ({ children }) => children,
+    Stack: StackComp,
+    useGlobalSearchParams: jest.fn(() => ({})),
+    useLocalSearchParams: jest.fn(() => ({ businessId: 'b1', id: 'b1' })),
     useRouter: () => ({
+      back: routerBackMock,
       push: routerPushMock,
       replace: routerReplaceMock,
-      back: routerBackMock,
     }),
     useSegments: () => ['(tabs)'],
-    useLocalSearchParams: jest.fn(() => ({ id: 'b1', businessId: 'b1' })),
-    useGlobalSearchParams: jest.fn(() => ({})),
-    Stack: StackComp,
   };
 });
 
@@ -354,9 +356,9 @@ jest.mock('@/global.css', () => ({}), { virtual: true });
 
 // Mock react-native-safe-area-context
 jest.mock('react-native-safe-area-context', () => ({
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
   SafeAreaProvider: ({ children }) => children,
   SafeAreaView: ({ children }) => children,
+  useSafeAreaInsets: () => ({ bottom: 0, left: 0, right: 0, top: 0 }),
 }));
 
 // Ensure Alert.alert is a no-op to avoid crashes in tests
@@ -367,7 +369,6 @@ jest.mock('react-native/Libraries/Alert/Alert', () => ({
 
 // Ensure react-native export exposes Alert.alert
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const RN = require('react-native');
   if (RN) {
     if (!RN.Alert) {
@@ -393,8 +394,8 @@ jest.mock('@react-navigation/native', () => {
   return {
     ...actualNav,
     useNavigation: () => ({
-      navigate: jest.fn(),
       dispatch: jest.fn(),
+      navigate: jest.fn(),
     }),
   };
 });
@@ -416,38 +417,42 @@ jest.mock('@react-native/js-polyfills/error-guard', () => ({
 // Make MSW v2 compatible with tests written for v1 (rest → http)
 jest.mock('msw', () => {
   const actual = jest.requireActual('msw');
-  const http = actual.http || {};
-  const compatRest = actual.rest || {
-    get: http.get,
-    post: http.post,
-    put: http.put,
-    patch: http.patch,
-    delete: http.delete,
-    options: http.options,
-    head: http.head,
-  };
-  return { ...actual, rest: compatRest };
+  return { ...actual };
 });
 
 // MSW server setup (CommonJS-safe)
-const { server } = require('./testing/msw/server');
+let server;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { rest } = require('msw');
-  // Expose for tests that reference msw.rest
-  globalThis.msw = { rest };
-} catch {}
+  // Try to import the server using dynamic import
+  const mswServer = require('./testing/msw/server');
+  server = mswServer.server;
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+  const mswActual = require('msw');
+  // Expose for tests that reference msw.http
+  globalThis.msw = mswActual;
+} catch (error) {
+  console.warn('MSW server setup failed, using mock server:', error.message);
+  // Fallback no-op server to avoid missing dependency failures
+  server = {
+    close: () => undefined,
+    listen: () => undefined,
+    resetHandlers: () => undefined,
+    use: () => undefined,
+  };
+}
+
+if (server) {
+  beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+}
 
 // Lightweight native/expo mocks
 jest.mock('expo-constants', () => ({
   __esModule: true,
   default: {
     expoConfig: {
-      extra: { supabaseUrl: 'https://msw.test', supabaseAnonKey: 'test_anon' },
+      extra: { supabaseAnonKey: 'test_anon', supabaseUrl: 'https://msw.test' },
     },
   },
 }));

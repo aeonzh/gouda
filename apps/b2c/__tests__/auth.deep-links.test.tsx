@@ -1,7 +1,8 @@
-import React from 'react';
-import { renderWithProviders } from '../testing/renderWithProviders';
-import InitialLayout from '../app/_layout';
 import { waitFor } from '@testing-library/react-native';
+import React from 'react';
+
+import InitialLayout from '../app/_layout';
+import { renderWithProviders } from '../testing/renderWithProviders';
 
 // Utility to set segments and reset router mocks
 function setSegments(segments: string[]) {
@@ -20,7 +21,7 @@ describe('auth routing deep-link matrix', () => {
         Promise.resolve({ data: { session: null } }),
       );
 
-    const protectedRoots: Array<string[] | [string, string]> = [
+    const protectedRoots: ([string, string] | string[])[] = [
       ['(tabs)'],
       ['storefront'],
       ['orders'],
@@ -65,7 +66,7 @@ describe('auth routing deep-link matrix', () => {
     ).toBe(true);
 
     // allowed routes → no redirect
-    const allowed: Array<string[] | [string, string]> = [
+    const allowed: ([string, string] | string[])[] = [
       ['(tabs)'],
       ['storefront'],
       ['orders'],

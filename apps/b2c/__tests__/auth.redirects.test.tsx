@@ -1,7 +1,8 @@
+import { waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { renderWithProviders } from '../testing/renderWithProviders';
+
 import InitialLayout from '../app/_layout';
-import { act, waitFor } from '@testing-library/react-native';
+import { renderWithProviders } from '../testing/renderWithProviders';
 
 describe('auth redirects', () => {
   test('unauthenticated user redirected to (auth)/login', async () => {
@@ -17,7 +18,7 @@ describe('auth redirects', () => {
     );
     await waitFor(() =>
       expect(
-        (globalThis.__routerReplaceMock as jest.Mock).mock.calls.some(
+        globalThis.__routerReplaceMock.mock.calls.some(
           (c) => c[0] === '/(auth)/login',
         ),
       ).toBe(true),
@@ -33,7 +34,7 @@ describe('auth redirects', () => {
     );
     await waitFor(() =>
       expect(
-        (globalThis.__routerReplaceMock as jest.Mock).mock.calls.some(
+        globalThis.__routerReplaceMock.mock.calls.some(
           (c) => c[0] === '/(tabs)',
         ),
       ).toBe(true),

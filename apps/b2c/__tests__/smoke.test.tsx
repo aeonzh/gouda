@@ -1,7 +1,8 @@
 import React from 'react';
-import { renderWithProviders } from '../testing/renderWithProviders';
+
 import Home from '../app/(tabs)/index';
 import InitialLayout from '../app/_layout';
+import { renderWithProviders } from '../testing/renderWithProviders';
 
 describe('B2C smoke', () => {
   it('renders Home screen without crashing', () => {

@@ -1,0 +1,1 @@
+To lint all files, use `pnpm lint`. To lint a single file, use `pnpm eslint <file-path>`.

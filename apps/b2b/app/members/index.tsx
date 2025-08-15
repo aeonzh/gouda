@@ -1,3 +1,4 @@
+import { useAuth } from '@components/AuthProvider';
 import { Link, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -10,7 +11,6 @@ import {
 } from 'react-native';
 import { deleteMember, listMembers, Member } from 'shared/api/members';
 import { getBusinessIdForUser } from 'shared/api/profiles';
-import { useAuth } from 'shared/components/AuthProvider';
 
 export default function MembersListScreen() {
   const { session } = useAuth();
@@ -51,7 +51,6 @@ export default function MembersListScreen() {
     <View className='flex-1 bg-white'>
       <Stack.Screen
         options={{
-          title: 'Members',
           headerRight: () => (
             <Link
               asChild
@@ -62,6 +61,7 @@ export default function MembersListScreen() {
               </TouchableOpacity>
             </Link>
           ),
+          title: 'Members',
         }}
       />
       {!businessId || members.length === 0 ? (
@@ -85,11 +85,11 @@ export default function MembersListScreen() {
               <Link
                 asChild
                 href={{
-                  pathname: '/members/manage' as any,
                   params: {
-                    profile_id: item.profile_id,
                     business_id: item.business_id,
+                    profile_id: item.profile_id,
                   },
+                  pathname: '/members/manage' as any,
                 }}
               >
                 <TouchableOpacity className='mr-4 flex-1'>
@@ -113,10 +113,8 @@ export default function MembersListScreen() {
                     'Remove member',
                     'Are you sure you want to remove this member? This action cannot be undone.',
                     [
-                      { text: 'Cancel', style: 'cancel' },
+                      { style: 'cancel', text: 'Cancel' },
                       {
-                        text: 'Remove',
-                        style: 'destructive',
                         onPress: async () => {
                           try {
                             await deleteMember(item.profile_id, businessId);
@@ -129,6 +127,8 @@ export default function MembersListScreen() {
                             );
                           }
                         },
+                        style: 'destructive',
+                        text: 'Remove',
                       },
                     ],
                   );

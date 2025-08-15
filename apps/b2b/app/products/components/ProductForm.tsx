@@ -1,39 +1,40 @@
+import type { Category } from '@api/products';
+
 import { Picker } from '@react-native-picker/picker';
 import {
+  ActivityIndicator,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
 } from 'react-native';
-import type { Category, Product } from 'shared/api/products';
 
 export interface ProductFormValues {
+  category_id?: string;
   name: string;
   description?: string;
   image_url?: string;
   price: number;
-  category_id?: string;
 }
 
 export function ProductForm({
   categories,
-  values,
-  validationErrors,
   isSubmitting,
   onChange,
   onSubmit,
+  validationErrors,
+  values,
 }: {
   categories: Category[];
-  values: Partial<ProductFormValues>;
-  validationErrors: Partial<Record<keyof ProductFormValues, string>>;
   isSubmitting: boolean;
   onChange: <K extends keyof ProductFormValues>(
     key: K,
     value: ProductFormValues[K],
   ) => void;
   onSubmit: () => void;
+  validationErrors: Partial<Record<keyof ProductFormValues, string>>;
+  values: Partial<ProductFormValues>;
 }) {
   return (
     <ScrollView className='p-4'>
@@ -42,12 +43,12 @@ export function ProductForm({
           Product Name
         </Text>
         <TextInput
-          placeholder='Enter product name'
-          className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
-          value={values.name || ''}
-          onChangeText={(t) => onChange('name', t.trimStart())}
           accessibilityLabel='Product name'
+          className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
+          onChangeText={(t) => onChange('name', t.trimStart())}
+          placeholder='Enter product name'
           testID='product-name-input'
+          value={values.name || ''}
         />
         {!!validationErrors.name && (
           <Text className='mt-1 text-red-600'>{validationErrors.name}</Text>
@@ -59,24 +60,23 @@ export function ProductForm({
           Description
         </Text>
         <TextInput
-          placeholder='Enter product description'
-          className='h-24 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
-          value={values.description || ''}
-          onChangeText={(t) => onChange('description', t)}
-          multiline
-          textAlignVertical='top'
           accessibilityLabel='Product description'
+          className='h-24 w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
+          multiline
+          onChangeText={(t) => onChange('description', t)}
+          placeholder='Enter product description'
           testID='product-description-input'
+          textAlignVertical='top'
+          value={values.description || ''}
         />
       </View>
 
       <View className='mb-4'>
         <Text className='mb-1 text-base font-medium text-gray-700'>Price</Text>
         <TextInput
-          placeholder='Enter price'
+          accessibilityLabel='Product price'
           className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
           keyboardType='numeric'
-          value={values.price != null ? String(values.price) : ''}
           onChangeText={(t) =>
             onChange(
               'price',
@@ -85,8 +85,9 @@ export function ProductForm({
                 : parseFloat(Number(parseFloat(t).toFixed(2)).toString()),
             )
           }
-          accessibilityLabel='Product price'
+          placeholder='Enter price'
           testID='product-price-input'
+          value={values.price != null ? String(values.price) : ''}
         />
         {!!validationErrors.price && (
           <Text className='mt-1 text-red-600'>{validationErrors.price}</Text>
@@ -99,10 +100,10 @@ export function ProductForm({
         </Text>
         <View className='rounded-lg border border-gray-300 bg-white'>
           <Picker
-            selectedValue={values.category_id || ''}
             onValueChange={(val: string) =>
               onChange('category_id', val || undefined)
             }
+            selectedValue={values.category_id || ''}
             testID='product-category-picker'
           >
             <Picker.Item
@@ -125,12 +126,12 @@ export function ProductForm({
           Image URL
         </Text>
         <TextInput
-          placeholder='https://...'
-          className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
-          value={values.image_url || ''}
-          onChangeText={(t) => onChange('image_url', t.trim())}
           accessibilityLabel='Product image URL'
+          className='w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-800'
+          onChangeText={(t) => onChange('image_url', t.trim())}
+          placeholder='https://...'
           testID='product-image-url-input'
+          value={values.image_url || ''}
         />
       </View>
 

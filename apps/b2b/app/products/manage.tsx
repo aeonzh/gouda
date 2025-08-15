@@ -2,18 +2,19 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBusinessIdForUser } from 'shared/api/profiles';
 import {
+  type Category,
   createProduct,
   getCategories,
   getProductById,
-  updateProduct,
-  type Category,
   type Product,
+  updateProduct,
 } from 'shared/api/products';
+import { getBusinessIdForUser } from 'shared/api/profiles';
 import { useAuth } from 'shared/components/AuthProvider';
+
 import { ProductForm } from './components/ProductForm';
-import { useProductForm, type ProductFormState } from './hooks/useProductForm';
+import { type ProductFormState, useProductForm } from './hooks/useProductForm';
 
 export default function ManageProductScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -62,10 +63,10 @@ export default function ManageProductScreen() {
           setInitialProduct(product);
         } else {
           setInitialProduct({
-            name: '',
+            category_id: undefined,
             description: '',
             image_url: '',
-            category_id: undefined,
+            name: '',
             price: 0,
           });
         }
@@ -85,24 +86,24 @@ export default function ManageProductScreen() {
     }
     if (isEditing && typeof id === 'string') {
       await updateProduct(id, {
-        name: values.name,
+        category_id: values.category_id,
         description: values.description,
         image_url: values.image_url,
+        name: values.name,
         price: values.price,
-        category_id: values.category_id,
       });
       Alert.alert('Success', 'Product updated successfully');
     } else {
       await createProduct({
         business_id: businessId,
-        name: values.name,
-        description: values.description,
-        image_url: values.image_url,
-        price: values.price,
         category_id: values.category_id,
+        description: values.description,
         id: '', // DB default
-        stock_quantity: 0, // DB default or policy
+        image_url: values.image_url,
+        name: values.name,
+        price: values.price,
         status: 'draft',
+        stock_quantity: 0, // DB default or policy
       } as Product);
       Alert.alert('Success', 'Product created successfully');
     }
@@ -113,10 +114,10 @@ export default function ManageProductScreen() {
     initialValues: useMemo(
       () =>
         (initialProduct ?? {
-          name: '',
+          category_id: undefined,
           description: '',
           image_url: '',
-          category_id: undefined,
+          name: '',
           price: 0,
         }) as Partial<Product>,
       [initialProduct],
@@ -142,8 +143,8 @@ export default function ManageProductScreen() {
         isSubmitting={form.isSubmitting}
         onChange={form.onChange}
         onSubmit={form.onSubmit}
-        values={form.values}
         validationErrors={form.validationErrors}
+        values={form.values}
       />
     </SafeAreaView>
   );

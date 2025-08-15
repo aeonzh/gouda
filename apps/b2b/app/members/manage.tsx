@@ -1,11 +1,11 @@
+import { Button } from '@components/Button';
+import { Input } from '@components/Input';
+import { Picker } from '@react-native-picker/picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { addMember, getMember, updateMemberRole } from 'shared/api/members';
 import { getBusinessIdForUser } from 'shared/api/profiles';
-import { Input } from 'shared/components/Input';
-import { Button } from 'shared/components/Button';
 import { useAuth } from 'shared/components/AuthProvider';
 
 const ROLES = ['owner', 'sales_agent', 'customer'] as const;
@@ -13,8 +13,8 @@ const ROLES = ['owner', 'sales_agent', 'customer'] as const;
 export default function ManageMemberScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
-    profile_id?: string;
     business_id?: string;
+    profile_id?: string;
   }>();
   const isEditing = !!(params.profile_id && params.business_id);
   const { session } = useAuth();
@@ -80,8 +80,8 @@ export default function ManageMemberScreen() {
         Alert.alert('Success', 'Member updated');
       } else {
         await addMember({
-          profile_id: profileId,
           business_id: businessId,
+          profile_id: profileId,
           role_in_business: role,
         });
         Alert.alert('Success', 'Member added');
@@ -125,8 +125,8 @@ export default function ManageMemberScreen() {
         <View className='mb-4'>
           <Text className='mb-1 text-base font-medium'>Role</Text>
           <Picker
-            selectedValue={role}
             onValueChange={(v) => setRole(v)}
+            selectedValue={role}
           >
             {ROLES.map((r) => (
               <Picker.Item

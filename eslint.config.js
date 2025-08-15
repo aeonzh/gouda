@@ -83,6 +83,25 @@ export default tseslint.config([
           groups: ['top', 'name-group', 'address-group', 'unknown', 'bottom'],
         },
       ],
+      'perfectionist/sort-union-types': [
+        'error',
+        {
+          groups: [
+            'conditional',
+            'function',
+            'import',
+            'intersection',
+            'keyword',
+            'literal',
+            'named',
+            'object',
+            'operator',
+            'tuple',
+            'union',
+            'nullish',
+          ],
+        },
+      ],
     },
     settings: {
       'import/resolver': {
@@ -106,25 +125,25 @@ export default tseslint.config([
       },
     },
   },
-  {
-    files: [
-      '**/*.test.{js,ts,tsx}',
-      '**/jest-setup.js',
-      '**/__mocks__/**/*.js',
-      '**/__tests__/**/*.js',
-    ],
-    languageOptions: {
-      globals: {
-        globalThis: true,
-        jest: true,
-        module: true,
-        // Add other Node.js globals if necessary, e.g., process, console, require
-        // For now, 'module' and 'globalThis' should cover the previous 'node: true'
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-require-imports': 'off',
-      'no-undef': 'off',
-    },
-  },
+  // {
+  //   files: [
+  //     '**/*.test.{js,ts,tsx}',
+  //     '**/jest-setup.js',
+  //     '**/__mocks__/**/*.js',
+  //     '**/__tests__/**/*.js',
+  //   ],
+  //   languageOptions: {
+  //     globals: {
+  //       globalThis: true,
+  //       jest: true,
+  //       module: true,
+  //       // Add other Node.js globals if necessary, e.g., process, console, require
+  //       // For now, 'module' and 'globalThis' should cover the previous 'node: true'
+  //     },
+  //   },
+  //   rules: {
+  //     '@typescript-eslint/no-require-imports': 'off',
+  //     'no-undef': 'off',
+  //   },
+  // },
 ]);

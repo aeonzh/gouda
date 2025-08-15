@@ -1,4 +1,4 @@
-import { getSupabase } from './supabase';
+import { supabase } from './supabase';
 
 export interface Member {
   business_id: string;
@@ -7,7 +7,7 @@ export interface Member {
 }
 
 export async function addMember(member: Member): Promise<Member | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .insert([member])
     .select()
@@ -23,7 +23,7 @@ export async function deleteMember(
   profile_id: string,
   business_id: string,
 ): Promise<void> {
-  const { error } = await getSupabase()
+  const { error } = await supabase
     .from('members')
     .delete()
     .eq('profile_id', profile_id)
@@ -38,7 +38,7 @@ export async function getMember(
   profile_id: string,
   business_id: string,
 ): Promise<Member | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .select('*')
     .eq('profile_id', profile_id)
@@ -54,7 +54,7 @@ export async function getMember(
 export async function listMembers(
   business_id: string,
 ): Promise<Member[] | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .select('*')
     .eq('business_id', business_id);
@@ -70,7 +70,7 @@ export async function updateMemberRole(
   business_id: string,
   role_in_business: Member['role_in_business'],
 ): Promise<Member | null> {
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .update({ role_in_business })
     .eq('profile_id', profile_id)

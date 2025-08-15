@@ -1,4 +1,4 @@
-import { getSupabase } from './supabase';
+import { supabase } from './supabase';
 
 // Helper function to validate UUID format
 function isValidUUID(uuid: string): boolean {
@@ -15,7 +15,7 @@ export interface Profile {
   avatar_url?: string;
   role: 'admin' | 'customer' | 'sales_agent';
   created_at?: string;
-  deleted_at?: null | string;
+  deleted_at?: string | null;
   updated_at?: string;
 }
 
@@ -35,13 +35,13 @@ export type ProfileUpdate = Partial<
  * @param {string} userId - The ID of the user.
  * @returns {Promise<Profile | null>} A promise that resolves to the profile object or null if not found/error.
  */
-export async function getProfile(userId: string): Promise<null | Profile> {
+export async function getProfile(userId: string): Promise<Profile | null> {
   // Validate UUID
   if (!isValidUUID(userId)) {
     throw new Error('Invalid user ID format');
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -63,13 +63,13 @@ export async function getProfile(userId: string): Promise<null | Profile> {
 export async function updateProfile(
   userId: string,
   profileData: ProfileUpdate,
-): Promise<null | Profile> {
+): Promise<Profile | null> {
   // Validate UUID
   if (!isValidUUID(userId)) {
     throw new Error('Invalid user ID format');
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('profiles')
     .update(profileData)
     .eq('id', userId)
@@ -90,13 +90,13 @@ export async function updateProfile(
  */
 export async function getBusinessIdForUser(
   userId: string,
-): Promise<null | string> {
+): Promise<string | null> {
   // Validate UUID
   if (!isValidUUID(userId)) {
     throw new Error('Invalid user ID format');
   }
 
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .select('business_id')
     .eq('profile_id', userId)

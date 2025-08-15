@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../api/supabase';
 
 interface AuthContextType {
-  session: null | Session;
+  session: Session | null;
   supabase: SupabaseClient;
 }
 
@@ -12,17 +12,35 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
+}: {
+  children: React.ReactNode;
 }) => {
-  const [session, setSession] = useState<null | Session>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    supabase.auth
+      .getSession()
+      .then(
+        ({
+          data: { session: sessionData },
+        }: {
+          data: { session: Session | null };
+        }) => {
+          setSession(sessionData);
+        },
+      );
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (_event: string, session: Session | null) => {
+        setSession(session);
+      },
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (

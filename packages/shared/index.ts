@@ -1,2 +1,2 @@
-export * from './api/supabase';
+export * from './api';
 export * from './components';

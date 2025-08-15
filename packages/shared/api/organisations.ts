@@ -1,4 +1,4 @@
-import { getSupabase } from './supabase';
+import { supabase } from './supabase';
 
 // Helper function to validate UUID format
 function isValidUUID(uuid: string): boolean {
@@ -49,7 +49,7 @@ export async function getAuthorizedBusinesses(
     throw new Error('Invalid user ID format');
   }
 
-  const { data: memberData, error: memberError } = await getSupabase()
+  const { data: memberData, error: memberError } = await supabase
     .from('members')
     .select('business_id')
     .eq('profile_id', userId)
@@ -66,14 +66,13 @@ export async function getAuthorizedBusinesses(
 
   const businessIds = memberData.map((member) => member.business_id);
 
-  const { data: organisationData, error: organisationError } =
-    await getSupabase()
-      .from('organisations')
-      .select(
-        'id, name, address_line1, address_line2, city, state, postal_code, country, status, image_url, description',
-      ) // Added description
-      .in('id', businessIds)
-      .eq('status', 'approved'); // Only show approved organisations
+  const { data: organisationData, error: organisationError } = await supabase
+    .from('organisations')
+    .select(
+      'id, name, address_line1, address_line2, city, state, postal_code, country, status, image_url, description',
+    ) // Added description
+    .in('id', businessIds)
+    .eq('status', 'approved'); // Only show approved organisations
 
   if (organisationError) {
     console.error(
@@ -105,7 +104,7 @@ export async function resolveBusinessIdForUser(
     throw new Error('Invalid preferred business ID format');
   }
 
-  const { data: memberships, error } = await getSupabase()
+  const { data: memberships, error } = await supabase
     .from('members')
     .select('business_id')
     .eq('profile_id', userId);
@@ -140,7 +139,7 @@ export async function getCustomerBusinessId(
   console.log('getCustomerBusinessId called with profileId:', profileId);
 
   // First, let's check if the user has any role in any business
-  const { data: allMemberships, error: allError } = await getSupabase()
+  const { data: allMemberships, error: allError } = await supabase
     .from('members')
     .select('*')
     .eq('profile_id', profileId);
@@ -148,7 +147,7 @@ export async function getCustomerBusinessId(
   console.log('All memberships for profile:', allMemberships);
 
   // Now check specifically for customer/sales_agent roles
-  const { data, error } = await getSupabase()
+  const { data, error } = await supabase
     .from('members')
     .select('business_id')
     .eq('profile_id', profileId)

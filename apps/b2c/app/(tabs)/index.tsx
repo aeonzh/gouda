@@ -1,15 +1,13 @@
+import { getAuthorizedBusinesses, Organisation } from '@api/organisations';
+import { useAuth } from '@components/AuthProvider';
+import { Input } from '@components/Input';
 import { useRouter } from 'expo-router';
-import {
-  getAuthorizedBusinesses,
-  Organisation,
-} from 'packages/shared/api/organisations';
-import { Input, useAuth } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ErrorComponent } from '@/components/ErrorComponent';
-import '@/global.css';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
+import { ErrorComponent } from '../../components/ErrorComponent';
+import 'global.css';
 
 interface VendorCardProps {
   onPress: (vendorId: string) => void;

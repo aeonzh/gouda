@@ -1,4 +1,3 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
   createOrderFromCart,
   createOrderFromCartAtomic,
@@ -6,12 +5,13 @@ import {
   getOrCreateCart,
   removeCartItem as removeCartItemApi,
   updateCartItemQuantity as updateCartItemQuantityApi,
-} from 'packages/shared/api/orders';
-import { resolveBusinessIdForUser } from 'packages/shared/api/organisations';
-import { Product } from 'packages/shared/api/products';
-import { supabase } from 'packages/shared/api/supabase';
-import { Button } from 'packages/shared/components';
-import { QuantitySelector } from 'packages/shared/components/QuantitySelector';
+} from '@api/orders';
+import { resolveBusinessIdForUser } from '@api/organisations';
+import { Product } from '@api/products';
+import { supabase } from '@api/supabase';
+import { Button } from '@components/Button';
+import { QuantitySelector } from '@components/QuantitySelector';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +26,7 @@ interface CartItem {
   product?: Product; // Optional: to include product details when fetching cart
   quantity: number;
   created_at?: string;
-  deleted_at?: null | string;
+  deleted_at?: string | null;
   updated_at?: string;
 }
 

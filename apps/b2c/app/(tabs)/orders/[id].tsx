@@ -1,15 +1,15 @@
+import { getOrderDetails, Order, OrderItem } from '@api/orders';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { getOrderDetails, Order, OrderItem } from 'packages/shared/api/orders';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const orderId = typeof id === 'string' ? id : undefined;
 
-  const [order, setOrder] = useState<null | Order>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 

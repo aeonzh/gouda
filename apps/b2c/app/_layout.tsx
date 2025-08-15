@@ -1,8 +1,8 @@
 import '@expo/metro-runtime';
+import { supabase } from '@api/supabase';
+import { AuthProvider } from '@components/AuthProvider';
 import { Session } from '@supabase/supabase-js';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { supabase } from 'packages/shared/api/supabase';
-import { AuthProvider } from 'packages/shared/components';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -17,7 +17,7 @@ import { isAllowedAuthedRoute, isAuthRoute } from './utils/routeGuards';
  * It displays a loading screen until the session is determined and then redirects the user to the appropriate route.
  */
 export default function InitialLayout() {
-  const [session, setSession] = useState<null | Session>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const segments = useSegments();
   const router = useRouter();
@@ -77,34 +77,13 @@ export default function InitialLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         <AuthProvider>
-          <SafeAreaView
-            edges={['top']}
-            style={{ flex: 1 }}
-          >
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name='(tabs)'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='(auth)'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='order-confirmation'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='storefront'
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name='cart'
-                options={{ headerShown: false }}
-              />
-              {/* Add other b2c routes here if needed */}
-            </Stack>
-          </SafeAreaView>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name='(tabs)' />
+            <Stack.Screen name='(auth)' />
+            <Stack.Screen name='order-confirmation' />
+            <Stack.Screen name='storefront' />
+            <Stack.Screen name='cart' />
+          </Stack>
         </AuthProvider>
       </ErrorBoundary>
     </SafeAreaProvider>

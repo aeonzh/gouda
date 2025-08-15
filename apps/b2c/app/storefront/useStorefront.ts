@@ -1,29 +1,24 @@
-import { getAuthorizedBusinesses } from 'packages/shared/api/organisations';
-import {
-  Category,
-  getCategories,
-  getProducts,
-  Product,
-} from 'packages/shared/api/products';
+import { getAuthorizedBusinesses } from '@api/organisations';
+import { Category, getCategories, getProducts, Product } from '@api/products';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UseStorefrontActions {
   setSearchQuery: (value: string) => void;
-  setSelectedCategoryId: (value: null | string) => void;
+  setSelectedCategoryId: (value: string | null) => void;
 }
 
 export interface UseStorefrontArgs {
   rawStoreId: unknown;
-  userId: null | string;
+  userId: string | null;
 }
 
 export interface UseStorefrontState {
   categories: Category[];
-  error: null | string;
+  error: string | null;
   loading: boolean;
   products: Product[];
   searchQuery: string;
-  selectedCategoryId: null | string;
+  selectedCategoryId: string | null;
   storeName: string;
 }
 
@@ -37,17 +32,17 @@ export function useStorefront({
 }: UseStorefrontArgs): [UseStorefrontState, UseStorefrontActions] {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<null | string>(
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null,
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedQuery, setDebouncedQuery] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<null | string>(null);
+  const [error, setError] = useState<string | null>(null);
   const [storeName, setStoreName] = useState<string>('Store');
 
   // Normalize storeId: must be a non-empty string
-  const storeId: null | string = useMemo(() => {
+  const storeId: string | null = useMemo(() => {
     if (typeof rawStoreId !== 'string' || rawStoreId.trim().length === 0) {
       return null;
     }
@@ -96,7 +91,6 @@ export function useStorefront({
       const fetchedCategories = await getCategories({ business_id: storeId });
       setCategories([{ id: null, name: 'All' }, ...(fetchedCategories || [])]);
     } catch (err) {
-       
       console.error('Failed to fetch storefront data:', err);
       setError('Failed to load products or categories.');
     } finally {

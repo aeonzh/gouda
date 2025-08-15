@@ -1,5 +1,5 @@
+import { signInWithEmail } from '@api/auth';
 import { Stack, useRouter } from 'expo-router';
-import { signInWithEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -15,11 +15,9 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-      // Navigate to main app screen after successful login
-      router.replace('/'); // Navigate to the root of the app (e.g., home screen)
+      router.replace('/');
     } catch (error: any) {
-      // Optionally set local error state; avoid Alert in tests/app
-      // noop
+      // Avoid alerts in tests/app; optionally track error state
     } finally {
       setLoading(false);
     }
@@ -67,7 +65,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <View className='mt-8 flex-row'>
-          <Text className='text-lg text-gray-700'>Don't have an account? </Text>
+          <Text className='text-lg text-gray-700'>No account? </Text>
           <TouchableOpacity onPress={() => router.push('/signup')}>
             <Text className='text-lg font-semibold text-blue-600'>Sign Up</Text>
           </TouchableOpacity>

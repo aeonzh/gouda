@@ -27,7 +27,10 @@ export function isAllowedAuthedRoute(segments: string[]): boolean {
   if (root === 'products') {
     return segments[1] === '[id]';
   }
-
+  // orders detail must be [id]
+  if (root === 'orders') {
+    return segments[1] === '[id]';
+  }
   // Other allowed roots are fine regardless of deeper segments
   return true;
 }

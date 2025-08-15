@@ -1,6 +1,6 @@
+import { getProfile, Profile } from '@api/profiles';
+import { useAuth } from '@components/AuthProvider';
 import { useRouter } from 'expo-router';
-import { getProfile, Profile } from 'packages/shared/api/profiles';
-import { useAuth } from 'packages/shared/components/AuthProvider';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { ErrorComponent } from '@/components/ErrorComponent';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { ErrorComponent } from '../../../components/ErrorComponent';
 
 export default function ProfileScreen() {
   const { session, supabase } = useAuth();
-  const [profile, setProfile] = useState<null | Profile>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

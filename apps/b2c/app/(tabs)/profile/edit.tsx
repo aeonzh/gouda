@@ -8,7 +8,6 @@ import { supabase } from 'packages/shared/api/supabase';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
   Text,
   TextInput,
   TouchableOpacity,
@@ -121,7 +120,9 @@ export default function EditProfileScreen() {
           disabled={loading}
           onPress={handleUpdateProfile}
         >
-          <Text className='text-base font-semibold text-white'>Save Changes</Text>
+          <Text className='text-base font-semibold text-white'>
+            Save Changes
+          </Text>
         </TouchableOpacity>
       </View>
     </ErrorBoundary>

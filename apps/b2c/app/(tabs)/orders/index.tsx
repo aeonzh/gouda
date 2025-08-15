@@ -1,6 +1,6 @@
+import { getCustomerOrderHistory, Order } from '@api/orders';
+import { supabase } from '@api/supabase';
 import { Link, Stack } from 'expo-router';
-import { getCustomerOrderHistory, Order } from 'packages/shared/api/orders';
-import { supabase } from 'packages/shared/api/supabase';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
-import { ErrorComponent } from '../../components/ErrorComponent';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { ErrorComponent } from '../../../components/ErrorComponent';
 
 export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);

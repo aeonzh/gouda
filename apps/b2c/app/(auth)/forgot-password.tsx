@@ -1,9 +1,9 @@
+import { resetPasswordForEmail } from '@api/auth';
 import { Stack, useRouter } from 'expo-router';
-import { resetPasswordForEmail } from 'packages/shared/api/supabase';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -14,9 +14,9 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await resetPasswordForEmail(email);
-      router.push('/login'); // Navigate back to login after sending reset link
+      router.push('/login');
     } catch (error: any) {
-      // Avoid alerts in tests/app
+      // Avoid alerts in tests/app; optionally track error state
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export default function ForgotPasswordScreen() {
           Forgot Your Password?
         </Text>
         <Text className='mb-6 text-center text-lg text-gray-700'>
-          Enter your email address below and we&apos;ll send you a link to reset
+          Enter your email address below and we will send you a link to reset
           your password.
         </Text>
 

@@ -1,7 +1,7 @@
+import { Product } from '@api/products';
+import { useAuth } from '@components/AuthProvider';
+import { Input } from '@components/Input';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Product } from 'packages/shared/api/products';
-import { Input } from 'packages/shared/components';
-import { useAuth } from 'packages/shared/components/AuthProvider';
 import { useCallback } from 'react';
 import {
   ActivityIndicator,

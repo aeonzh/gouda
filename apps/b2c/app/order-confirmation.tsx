@@ -1,5 +1,5 @@
+import { Button } from '@components/Button';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Button } from 'packages/shared/components';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

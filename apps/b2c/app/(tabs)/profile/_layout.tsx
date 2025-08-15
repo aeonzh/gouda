@@ -1,13 +1,6 @@
 import { Stack } from 'expo-router';
-import { useEffect } from 'react';
 
 export default function ProfileLayout() {
-  useEffect(() => {
-    console.log(
-      'ProfileLayout: Rendering with screens: index, edit, addresses',
-    );
-  }, []);
-
   return (
     <Stack>
       <Stack.Screen

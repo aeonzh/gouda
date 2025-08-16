@@ -2,7 +2,7 @@ import { AuthProvider, useAuth } from '@components/AuthProvider';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { isAllowedAuthedRoute, isAuthRoute } from './utils/routeGuards';

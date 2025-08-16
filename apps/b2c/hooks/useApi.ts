@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 
 export interface ApiState<T = any> {
-  data: null | T;
-  error: null | string;
+  data: T | null;
+  error: string | null;
   loading: boolean;
 }
 

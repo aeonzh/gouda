@@ -465,3 +465,81 @@ This change explicitly tells the TypeScript compiler to include all `.ts` files 
 - **What was changed/decided and why (root cause/reason)**: The original `tasks/b2b_store_management_prompt_plan.md` contained concise bullets that could lead to misinterpretation. We expanded each prompt (create/update/delete product; add/update/delete member) with detailed scope, UI/data/security requirements, testing guidance, and step-by-step actions, aligned to `@b2b_store_management_plan.md` as the source of truth.
 - **How the change addresses the root cause**: By enumerating explicit validation rules, accessibility needs, lazy Supabase usage, RLS reliance, separation of concerns, and exact testing expectations, developers can implement features without guessing hidden constraints.
 - **Why the change addresses the root cause**: Removing ambiguity reduces rework, improves consistency, and accelerates delivery. The prompts now function as precise implementation checklists wired to our architecture and testing setup.
+
+### Session: Tuesday, August 12, 2025
+
+#### Complete Types, Schema, and RLS Alignment Implementation (Prompt #7)
+
+- **What were we trying to do**: Implement Prompt #7 from `b2c_app_review_prompt_plan.md` to align types, schema, and RLS enforcement points across the codebase.
+- **What was changed/decided and why (root cause/reason)**: The implementation addressed six key areas:
+  1. **Standardize Supabase client access** - Mixed usage patterns were identified and standardized to use `getSupabase()` consistently.
+  2. **Split UI sentinel vs DB types** - Created distinct TypeScript interfaces for DB entities, insert operations, update operations, and UI sentinels to improve type safety.
+  3. **Add UUID input validation and business_id early return guards** - Added comprehensive UUID validation to API functions and early return guards for business_id to prevent invalid operations.
+  4. **Document RLS enforcement points** - Created detailed documentation of RLS policies in `docs/rls_enforcement.md` to clarify data access controls.
+  5. **Add unit tests for CRUD and filter logic** - Created comprehensive unit tests for all API functions to ensure functionality and prevent regressions.
+  6. **Validate pagination/filters boundaries and defaults** - Added boundary validation for pagination parameters to ensure sensible limits and defaults.
+- **How the change addresses the root cause**:
+  1. Standardized Supabase client usage eliminates inconsistencies in database access patterns.
+  2. Type splitting improves type safety and makes the distinction between different data representations clear.
+  3. UUID validation and early return guards prevent invalid operations from reaching the database layer.
+  4. RLS documentation provides a clear reference for understanding data access controls.
+  5. Comprehensive unit tests ensure functionality works as expected and prevents regressions.
+  6. Pagination validation ensures sensible performance characteristics and prevents abuse.
+- **Why the change addresses the root cause**: These changes collectively improve code quality, type safety, security, and maintainability while ensuring the application functions correctly and efficiently. The implementation provides a solid foundation for future development.
+
+### Session: Tuesday, August 13, 2025
+
+#### Error Boundary Implementation for B2C Authentication Screens
+
+- **What were we trying to do**: Add error boundaries to prevent app crashes in the B2C authentication screens, specifically the login and forgot-password screens.
+- **What was changed/decided and why (root cause/reason)**: The B2C application lacked error boundaries, which could lead to app crashes if unexpected errors occurred in authentication screens. This would create a poor user experience and make debugging difficult.
+- **How the change addresses the root cause**:
+  1. Created a reusable `ErrorBoundary` component in `apps/b2c/components/ErrorBoundary.tsx` that catches JavaScript errors in its child components, displays an error message, and provides a way to retry the operation.
+  2. Wrapped the login screen in `apps/b2c/app/(auth)/login.tsx` with the `ErrorBoundary` component.
+  3. Added error handling to the login function to catch and display specific error messages to users.
+  4. Started implementing error boundary for the forgot-password screen but the session was interrupted before completion.
+- **Why the change addresses the root cause**: Error boundaries prevent the entire app from crashing when an error occurs in a specific component. By adding them to authentication screens, we ensure that users can still access other parts of the app even if an error occurs during login or password reset. This improves the overall stability and user experience of the application.
+
+**Next Steps**:
+
+- Complete the error boundary implementation for the forgot-password screen
+- Add error boundaries to other critical screens in the B2C application
+- Implement improved error handling and user feedback mechanisms
+- Add loading states for better UX
+- Test all error handling implementations
+
+### Session: Thursday, August 14, 2025
+
+#### Fix TypeScript and Linting Errors in B2C Test Files
+
+- **What were we trying to do**: Fix TypeScript and linting errors in the `apps/b2c/__tests__` directory, focusing on a DRY and scalable solution.
+- **What was changed/decided and why (root cause/reason)**:
+  1. **`__routerReplaceMock` Type Error**: The global `__routerReplaceMock` used in Jest tests was not recognized by TypeScript, leading to `Property '__routerReplaceMock' does not exist on type 'typeof globalThis'` errors.
+  2. **JSX Parsing Errors**: Several JSX files in `apps/b2c/app/profile/` had parsing errors due to unclosed JSX tags.
+  3. **`msw` Import Resolution Errors**: `Unable to resolve path to module 'msw'` errors were occurring in `b2c` test files, likely due to `pnpm`'s symlinking and ESLint's module resolver configuration.
+  4. **ESLint `no-undef` and `@typescript-eslint/no-require-imports` in JS files**: `jest-setup.js` and mock `.js` files were reporting `no-undef` for `jest`, `module`, `globalThis` and `@typescript-eslint/no-require-imports` errors.
+
+- **How the change addresses the root cause**:
+  1. **`__routerReplaceMock` Type Error**: Implemented a DRY and scalable solution by creating `packages/shared/types/global.d.ts` with `declare global { var __routerReplaceMock: jest.Mock; }` and updated `apps/b2c/tsconfig.json` and `apps/b2b/tsconfig.json` to include this shared type declaration.
+  2. **JSX Parsing Errors**: Corrected unclosed JSX tags in `apps/b2c/app/profile/addresses.tsx`, `apps/b2c/app/profile/addresses/add.tsx`, `apps/b2c/app/profile/addresses/edit.tsx`, `apps/b2c/app/profile/edit.tsx`, and `apps/b2c/app/profile/index.tsx`.
+  3. **`msw` Import Resolution Errors**: Converted `apps/b2c/testing/msw/server.ts` to use ES module `import` syntax. The `msw` import resolution issue in `b2c` test files remains unresolved, with root cause identified as a potential interaction between `pnpm`'s symlinking and ESLint's `import/resolver`.
+  4. **ESLint `no-undef` and `@typescript-eslint/no-require-imports` in JS files**: Updated `eslint.config.js` to include a specific configuration for test-related JavaScript files (`**/*.test.{js,ts,tsx}`, `**/jest-setup.js`, `**/__mocks__/**/*.js`, `**/__tests__/**/*.js`) that uses `languageOptions.globals` to define `jest`, `module`, and `globalThis` as globals, and disables `@typescript-eslint/no-require-imports` for these files.
+
+- **Why the change addresses the root cause**:
+  1. **`__routerReplaceMock` Type Error**: Centralizing the global type declaration ensures consistency and avoids repetitive declarations, making the codebase more maintainable and scalable.
+  2. **JSX Parsing Errors**: Fixing these syntax errors allows the files to be parsed correctly by the linter and compiler.
+  3. **`msw` Import Resolution Errors**: Converting to ES module syntax aligns the `msw` setup with modern TypeScript practices. The remaining `msw` resolution issue requires further investigation into `tsconfig.json` paths or ESLint resolver configuration.
+  4. **ESLint `no-undef` and `@typescript-eslint/no-require-imports` in JS files**: Correctly configuring ESLint for test-related JavaScript files prevents false positives and ensures that linting rules are applied appropriately based on the file type and context.
+
+**Next Steps**:
+
+- Investigate and resolve `Unable to resolve path to module 'msw'` errors in `b2c` test files.
+- Address remaining `@typescript-eslint/no-empty-function` errors.
+- Address `react/prop-types` warnings.
+- Address `perfectionist` sorting/formatting errors (can likely be auto-fixed).
+- Address `react-hooks/exhaustive-deps` warnings.
+- Address `react/no-unescaped-entities` errors.
+- Investigate and resolve `module is not defined` errors in `jest.config.js` files.
+- Exclude `dist` files from linting.
+- Run `pnpm lint --fix` to auto-fix remaining issues.
+- Run `pnpm test` for `b2c` to verify all changes.

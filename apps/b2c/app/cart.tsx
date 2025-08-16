@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '@components/ErrorBoundary';
 import {
   createOrderFromCart,
   createOrderFromCartAtomic,
@@ -5,18 +6,16 @@ import {
   getOrCreateCart,
   removeCartItem as removeCartItemApi,
   updateCartItemQuantity as updateCartItemQuantityApi,
-} from '@api/orders';
-import { resolveBusinessIdForUser } from '@api/organisations';
-import { Product } from '@api/products';
-import { supabase } from '@api/supabase';
-import { Button } from '@components/Button';
-import { QuantitySelector } from '@components/QuantitySelector';
+} from '@shared/api/orders';
+import { resolveBusinessIdForUser } from '@shared/api/organisations';
+import { Product } from '@shared/api/products';
+import { supabase } from '@shared/api/supabase';
+import { Button } from '@shared/components/Button';
+import { QuantitySelector } from '@shared/components/QuantitySelector';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ErrorBoundary } from '../components/ErrorBoundary';
 
 interface CartItem {
   cart_id: string;

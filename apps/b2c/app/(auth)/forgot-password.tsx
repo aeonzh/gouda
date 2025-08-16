@@ -1,9 +1,8 @@
-import { resetPasswordForEmail } from '@api/auth';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { resetPasswordForEmail } from '@shared/api/auth';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-
-import { ErrorBoundary } from '../../components/ErrorBoundary';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');

@@ -1,10 +1,7 @@
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { getProfile, Profile, updateProfile } from '@shared/api/profiles';
+import { supabase } from '@shared/api/supabase';
 import { useRouter } from 'expo-router';
-import {
-  getProfile,
-  Profile,
-  updateProfile,
-} from 'packages/shared/api/profiles';
-import { supabase } from 'packages/shared/api/supabase';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -14,11 +11,9 @@ import {
   View,
 } from 'react-native';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
-
 export default function EditProfileScreen() {
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<null | Profile>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const router = useRouter();

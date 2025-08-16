@@ -1,5 +1,10 @@
-import { getAuthorizedBusinesses } from '@api/organisations';
-import { Category, getCategories, getProducts, Product } from '@api/products';
+import { getAuthorizedBusinesses } from '@shared/api/organisations';
+import {
+  Category,
+  getCategories,
+  getProducts,
+  Product,
+} from '@shared/api/products';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface UseStorefrontActions {

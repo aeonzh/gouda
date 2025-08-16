@@ -1,5 +1,6 @@
-import { getProfile, Profile } from '@api/profiles';
-import { useAuth } from '@components/AuthProvider';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { getProfile, Profile } from '@shared/api/profiles';
+import { useAuth } from '@shared/components/AuthProvider';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -10,7 +11,6 @@ import {
   View,
 } from 'react-native';
 
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { ErrorComponent } from '../../../components/ErrorComponent';
 
 export default function ProfileScreen() {

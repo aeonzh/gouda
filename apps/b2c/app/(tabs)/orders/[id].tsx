@@ -1,9 +1,8 @@
-import { getOrderDetails, Order, OrderItem } from '@api/orders';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { getOrderDetails, Order } from '@shared/api/orders';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();

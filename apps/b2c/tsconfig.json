@@ -3,8 +3,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@api/*": ["../../packages/shared/api/*"],
-      "@components/*": ["../../packages/shared/components/*"],
+      "@components/*": ["./components/*"],
+      "@constants/*": ["./constants/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@utils/*": ["./utils/*"],
+      "@shared/api/*": ["../../packages/shared/api/*"],
+      "@shared/components/*": ["../../packages/shared/components/*"],
       "global.css": ["./global.css"]
     },
     "strict": true

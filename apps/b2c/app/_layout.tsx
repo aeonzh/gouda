@@ -1,11 +1,11 @@
-import { AuthProvider, useAuth } from '@components/AuthProvider';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { AuthProvider, useAuth } from '@shared/components/AuthProvider';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { ErrorBoundary } from '../components/ErrorBoundary';
-import { isAllowedAuthedRoute, isAuthRoute } from './utils/routeGuards';
+import { isAllowedAuthedRoute, isAuthRoute } from '../utils/routeGuards';
 
 /**
  * Handles user redirection based on authentication status.

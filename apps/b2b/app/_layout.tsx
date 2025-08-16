@@ -1,4 +1,4 @@
-import '@/global.css';
+import '@global.css';
 import { Session } from '@supabase/supabase-js';
 import { SplashScreen, Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ SplashScreen.preventAutoHideAsync();
  * It displays a loading screen until the session is determined and then redirects the user to the appropriate route.
  */
 export default function InitialLayout() {
-  const [session, setSession] = useState<null | Session>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const segments = useSegments();
   const router = useRouter();

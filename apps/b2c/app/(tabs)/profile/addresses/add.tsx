@@ -1,8 +1,7 @@
+import { ErrorBoundary } from '@components/ErrorBoundary';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity } from 'react-native';
-
-import { ErrorBoundary } from '../../../components/ErrorBoundary';
 
 export default function AddressesAddUnavailableScreen() {
   const router = useRouter();

@@ -1,6 +1,7 @@
-import { Product } from '@api/products';
-import { useAuth } from '@components/AuthProvider';
-import { Input } from '@components/Input';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { Product } from '@shared/api/products';
+import { useAuth } from '@shared/components/AuthProvider';
+import { Input } from '@shared/components/Input';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import {
@@ -12,7 +13,6 @@ import {
   View,
 } from 'react-native';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { ErrorComponent } from '../../components/ErrorComponent';
 import { useStorefront } from './useStorefront';
 

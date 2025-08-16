@@ -1,10 +1,9 @@
-import { Button } from '@components/Button';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { Button } from '@shared/components/Button';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function OrderConfirmationScreen() {
   const router = useRouter();

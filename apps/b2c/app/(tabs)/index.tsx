@@ -1,11 +1,14 @@
-import { getAuthorizedBusinesses, Organisation } from '@api/organisations';
-import { useAuth } from '@components/AuthProvider';
-import { Input } from '@components/Input';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import {
+  getAuthorizedBusinesses,
+  Organisation,
+} from '@shared/api/organisations';
+import { useAuth } from '@shared/components/AuthProvider';
+import { Input } from '@shared/components/Input';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { ErrorComponent } from '../../components/ErrorComponent';
 import 'global.css';
 

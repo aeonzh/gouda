@@ -1,4 +1,4 @@
-import type { Category } from '@api/products';
+import type { Category } from '@shared/api/products';
 
 import { Picker } from '@react-native-picker/picker';
 import {

@@ -1,11 +1,10 @@
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { addOrUpdateCartItem, getOrCreateCart } from '@shared/api/orders';
+import { getProductById, Product } from '@shared/api/products';
+import { supabase } from '@shared/api/supabase';
+import { Button } from '@shared/components/Button';
+import { QuantitySelector } from '@shared/components/QuantitySelector';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  addOrUpdateCartItem,
-  getOrCreateCart,
-} from 'packages/shared/api/orders';
-import { getProductById, Product } from 'packages/shared/api/products';
-import { supabase } from 'packages/shared/api/supabase';
-import { Button, QuantitySelector } from 'packages/shared/components';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,8 +16,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ErrorBoundary } from '../../components/ErrorBoundary';
-
 export default function ProductDetailsScreen() {
   return (
     <ErrorBoundary>
@@ -29,7 +26,7 @@ export default function ProductDetailsScreen() {
 
 function ProductDetailsContent() {
   const { id } = useLocalSearchParams();
-  const [product, setProduct] = useState<null | Product>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);

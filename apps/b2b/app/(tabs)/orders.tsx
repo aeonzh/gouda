@@ -26,7 +26,7 @@ export default function OrdersScreen() {
       // The current getCustomerOrderHistory requires a userId.
       // For now, we'll assume we fetch all orders if userId is not provided, or we'll need a new API function.
       // Let's adapt getCustomerOrderHistory to fetch all orders if userId is null/undefined for admin view.
-      // This will require a modification to getCustomerOrderHistory in packages/shared/api/orders.ts
+      // This will require a modification to getCustomerOrderHistory in @shared/api/orders.ts
       // For now, I'll mock it or fetch a limited set.
       // TODO: Implement proper admin API for fetching all orders.
       const ordersData = await getCustomerOrderHistory(null as any); // Temporarily pass null to fetch all orders (will modify API)

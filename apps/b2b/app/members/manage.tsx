@@ -1,6 +1,6 @@
-import { Button } from '@components/Button';
-import { Input } from '@components/Input';
 import { Picker } from '@react-native-picker/picker';
+import { Button } from '@shared/components/Button';
+import { Input } from '@shared/components/onents/Input';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';

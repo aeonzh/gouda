@@ -1,9 +1,8 @@
-import { signInWithEmail } from '@api/auth';
+import { ErrorBoundary } from '@components/ErrorBoundary';
+import { signInWithEmail } from '@shared/api/auth';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
-
-import { ErrorBoundary } from '../../components/ErrorBoundary';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../api/supabase';
 
 interface AuthContextType {
+  loading: boolean;
   session: Session | null;
   supabase: SupabaseClient;
 }
@@ -16,6 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children: React.ReactNode;
 }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth
@@ -27,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           data: { session: Session | null };
         }) => {
           setSession(sessionData);
+          setLoading(false);
         },
       );
 
@@ -44,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, supabase }}>
+    <AuthContext.Provider value={{ loading, session, supabase }}>
       {children}
     </AuthContext.Provider>
   );
